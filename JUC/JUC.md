@@ -132,7 +132,22 @@ public class Test1 {
 }
 ```
 
-### 5）线程的状态
+
+
+> 多线程程序处理同一系列任务，是否比单线程效率更高？
+>
+> * 单核CPU：效率更低，因为有上下文切换开销(但是多线程能避免饥饿现象)
+> * 多核CPU：效率更高，因为可以把多个线程映射到不同内核上同时执行
+
+> 补充知识：
+>
+> IO操作不占用CPU，但是阻塞IO会阻塞线程；  优化：非阻塞IO/异步IO
+
+
+
+### 5）==线程的状态==
+
+> Java API层面
 
 ```java
 public enum State {	
@@ -155,6 +170,595 @@ public enum State {
     TERMINATED;
 }
 ```
+
+> **Java 的线程状态是对操作系统线程状态的一种抽象和简化**
+>
+> 其中:
+>
+> RUNNABLE对应就绪态 运行态 阻塞态(由BIO导致的线程阻塞)
+>
+> WAITING与TIMED_WAITING也对应阻塞态（是 Java API 层面对阻塞态的细分）
+>
+> | Java 状态     | 对应的 OS 状态                    | 说明                                                         |
+> | ------------- | --------------------------------- | ------------------------------------------------------------ |
+> | NEW           | 创建态                            | 线程对象已创建，但未调用 `start()`，OS 尚未为其分配资源。    |
+> | RUNNABLE      | 就绪态 (Ready) + 运行态 (Running) | 这是一个“组合态”。只要线程在等待 CPU 调度（就绪）或正在 CPU 上执行（运行），Java 都将其视为 `RUNNABLE`。 |
+> | BLOCKED       | 阻塞态 (Blocked)                  | 仅指等待获取 `synchronized` 监视器锁的线程。此时线程不占用 CPU，等待特定资源（锁）可用。 |
+> | WAITING       | 阻塞态 (Blocked)                  | 线程无限期等待另一个线程执行特定操作（如 `notify` 或 `join` 结束）。 |
+> | TIMED_WAITING | 阻塞态 (Blocked)                  | 带有时间限制的等待（如 `sleep`, `wait(timeout)`），超时后自动唤醒。 |
+> | TERMINATED    | 终止态                            | 线程执行完毕，生命周期结束。                                 |
+>
+> #### **BLOCKED vs WAITING：同样是“等”，等的内容不同**
+>
+> 这是最容易混淆的地方，也是 Java 状态机比 OS 状态更细腻的地方：
+>
+> - BLOCKED (Java) = 等“钥匙”
+>   - **场景：** 你想进 `synchronized` 房间，但门被锁了（锁被别人持有）。
+>   - **特点：** 你（线程）在门口排队，只有等里面的人把钥匙（锁）扔出来，你才能进去。你不知道里面发生了什么，只知道门打不开。
+>   - **OS 层面：** 这也是一种阻塞（等待资源）。
+> - WAITING / TIMED_WAITING (Java) = 等“通知”
+>   - **场景：** 你在房间里，调用了 `wait()` 或 `join()` 或 `LockSupport.park()`。
+>   - **特点：** 你主动放弃了钥匙（释放了锁），并且进入了“休息室”（等待队列）。你不再参与锁的竞争，直到有人喊你名字（`notify`）或者时间到了，你才会出来重新抢钥匙。
+>   - **OS 层面：** 这也是一种阻塞（等待事件/条件）。
+
+
+
+### ==创建线程的方法==
+
+
+
+1**.使用Thread的start方法**
+
+> 任务和线程合并(耦合)
+
+```java
+new Thread(){() -> {
+    log.debug("hello,I'm running");
+}}.start();
+```
+
+> ```java
+> Thread t = new Thread(){
+>     @Override
+>     public void run(){
+>         log.debug("hello,I'm running");
+>     }
+> };
+> t.start();
+> ```
+
+重写了父类的run方法
+
+
+
+
+
+**2.使用Runnable配合Thread**
+
+> 把任务和线程分离
+
+```java
+new Thread(() -> {
+        log.debug("I'm running");
+}}, "线程一").start();
+```
+
+> ```java
+> // Runnable runnable = () -> log.debug("running");
+> Runnable runnable = new Runnable() {
+>     public void run(){
+>         log.debug("I'm running");
+>     }
+> };
+> Thread t = new Thread(runnable, "线程一");
+> t.start();
+> ```
+>
+> 实际执行的时候，调用的是Runnable实现的run方法
+
+
+
+**3.使用FutureTask配合Thread**
+
+> 可以获取任务执行结果
+>
+> 间接实现了Runnable接口，也可以传入Thread：
+>
+> ![image-20260128120638151](assets/image-20260128120638151.png)
+>
+> ![image-20260128120647816](assets/image-20260128120647816.png)
+>
+> callable的唯一方法提供了返回值
+>
+> 
+>
+> 
+
+```java
+FutureTask<Integer> task = new FureTask<>(new Callable<Integer>(){
+    @Override
+    public Integer call() throws Exception {
+        log.debug("I'm running");
+        Thread.sleep(1000);
+        return 100;
+    }
+});
+new Thread(task, "线程一").start();
+
+Integer res = task.get();// 获取返回结果(会阻塞，直到结果返回)
+```
+
+
+
+4.
+
+
+
+#### 【查看进程】
+
+
+
+**windows**
+
+* 任务管理器
+
+* `tasklist` 查看进程
+
+  ```
+  tasklist
+  tasklist | findstr java
+  ```
+
+* `taskkill` 杀死进程
+
+  ```
+  taskkill /F /PID 12345
+  ```
+
+  
+
+
+
+**linux**
+
+* `ps -ef` 查看所有进程
+
+  ```
+  ps -ef | grep java
+  ```
+
+  > 会显示出相关进程+grep进程
+  >
+  > 查看java相关进程也可以用：`jps`
+
+* `ps -fT -p <PID>`：查看某个进程的所有线程
+
+* `kill <PID>`杀死进程
+
+* `top -H -p <PID>` 动态查看<u>某个进程中的所有线程的</u>信息
+
+  > 内存占用、CPU占用百分比
+  >
+  > 查看java相关线程也可以用：`jstack <PID>` 
+  > (把**某一瞬间的**<u>进程中的所有线程的</u>信息抓取出来)
+
+  > 按大写H可以切换是否显示线程
+
+
+
+**Java**
+
+* jconsole ：用图形化界面查看java进程中线程的运行情况
+
+
+
+### 线程运行的原理
+
+**栈与栈帧**
+
+JVM 中由堆、栈、方法区所组成，其中栈内存是给谁用的呢？其实就是线程
+
+* 每个线程启动后，虚拟机就会为其分配一块栈内存 (按照线程分配) 
+
+* 每个栈由多个栈帧（Frame）组成，对应着每次方法调用时所占用的内存
+* 每个线程只能有一个活动栈帧，对应着当前正在执行的那个方法 
+
+
+
+> 图解
+>
+> ![image-20260128132349169](assets/image-20260128132349169.png)
+>
+> ![image-20260128132419637](assets/image-20260128132419637.png)
+>
+> 
+
+
+
+
+
+**线程上下文切换**
+
+因为以下一些原因导致 cpu 不再执行当前的线程，转而执行另一个线程的代码 
+
+* 线程的 cpu 时间片用完
+* 垃圾回收
+* 有更高优先级的线程需要运行
+* <u>线程自己调用了 sleep、yield、wait、join、park、synchronized、lock 等方法</u>
+
+当上下文切换发生时，需要由操作系统保存当前线程的状态，并恢复另一个线程的状态，Java 中对应的概念 就是程序计数器（Program Counter Register），它的作用是记住下一条 jvm 指令的执行地址，是线程私有的
+
+* 状态包括程序计数器、虚拟机栈中每个栈帧的信息，如局部变量、操作数栈、返回地址等
+
+* 线程数不是越多越好，上下文切换频繁会影响性能
+
+  > <u>如何选择合适的线程数</u>
+
+
+
+> 
+>
+> ![image-20260128133552865](assets/image-20260128133552865.png)
+>
+> 
+
+
+
+### 主线程和守护线程
+
+默认情况下，Java 进程需要等待所有线程都运行结束，才会结束。有一种特殊的线程叫做守护线程，只要其它非守护线程运行结束了，即使守护线程的代码没有执行完，也会强制结束
+
+* 垃圾回收器线程就是一种守护线程
+* Tomcat 中的 Acceptor 和 Poller 线程都是守护线程，所以 Tomcat 接收到 shutdown 命令后，不会等 待它们处理完当前请求
+
+> ```java
+> log.debug("开始运行...");
+> Thread t1 = new Thread(() -> {
+>     log.debug("开始运行...");
+>     TimeUnit.SECONDS.sleep(2);
+>     log.debug("运行结束...");
+> }, "daemon");
+> // 设置该线程为守护线程
+> t1.setDaemon(true);
+> t1.start();
+> 
+> TimeUnit.SECONDS.sleep(1);
+> log.debug("运行结束...");
+> ```
+>
+> 
+
+
+
+
+
+
+
+### Thread类常见方法
+
+
+
+| 方法名                 | static | 功能说明                                                     | 注意                                                         |
+| ---------------------- | ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| start()                |        | 启动一个新线程，在新的线程运行run方法中的代码                | start 方法只是让线程进入就绪态(RUNNABLE)，不一定立刻进入运行(CPU时间片可能还没分给它)，每个线程对象的 start 方法只能调用一次，如果多次调用会出现IllegalThreadStateException |
+| run()                  |        | 新线程启动后会调用的方法                                     | 如果在构造Thread对象的时候传递了 Runnable 参数，则线程启动后会调用 Runnable 中的 run 方法，否则默认不执行任何操作。但可以创建 Thread 的子类对象，来覆盖默认行为 |
+| join()                 |        | 等待线程运行结束                                             |                                                              |
+| join(long n)           |        | 等待线程运行结束，最多等待n毫秒                              |                                                              |
+| getId()                |        | 获取线程长整型的id                                           | id 唯一                                                      |
+| getName()              |        | 获取线程名                                                   |                                                              |
+| setName(String)        |        | 修改线程名                                                   |                                                              |
+| getPriority()          |        | 获取线程优先级                                               |                                                              |
+| setPriority(int)       |        | 修改线程优先级                                               | java中规定线程优先级是 1~10 的整数，较大的优先级能提高该线程被CPU调度的机率 |
+| getState()             |        | 获取线程状态                                                 | Java中线程状态是用 6个enum 表示，分别为：NEW，RUNNABLE，BLOCKED，WAITING，TIMED_WAITING，TERMINATED |
+| <u>isInterrupted()</u> |        | 判断是否被打断                                               | <u>不会被清除`打断标记`</u>                                  |
+| isAlive()              |        | 线程是否存活(还没运行完毕)                                   |                                                              |
+| interrupt()            |        | 打断线程                                                     | 如果被打断的线程正在sleep / wait / join，会导致打断的线程抛出 InterruptedException，并清除`打断标记`，如果打断的是正在运行的线程，则会设置`打断标记`，park 的线程被打断，也会设置`打断标记` |
+| <u>interrupted()</u>   | static | 判断当前线程是否被打断                                       | <u>会清除`打断标记`</u>                                      |
+| currentThread()        | static | 获取当前正在执行的线程                                       |                                                              |
+| sleep(long n)          | static | 让当前执行的线程休眠n毫秒(阻塞态 TIMED_WAITING)，休眠时让出cpu的时间片给其他线程 |                                                              |
+| yield()                | static | 提示线程调度器让出当前线程对CPU的使用                        | 主要用于测试和调试                                           |
+
+
+
+
+
+#### sleep 与 yield
+
+**sleep**
+
+> **"躺下"**
+
+1. 调用sleep会让当前线程从**RUNNABLE(具体来说是RUNNING)进入TIMED_WAITING状态**
+
+2. 其它线程可以使用 interrupt 方法打断正在睡眠的线程，这是sleep方法会抛出InterruptedException
+
+3. 睡眠结束后的线程未必会立刻得到执行(进入就绪态 就绪队列)
+
+4. 建议用TimeUnit 的sleep 代替 Thread 的 sleep 来获得更好的可读性
+
+   ```java
+   Thread.sleep(2000);
+   TimeUnit.SECONDS.sleep(2); // 睡眠2s
+   ```
+
+   
+
+**yield**
+
+> “**谦让**”
+
+1. 调用yield 之后， JVM 层面的状态**仍然是 `RUNNABLE`**，向线程调度器发出信号 在操作系统层面由运行态转成就绪态、让出CPU时间片，然后调度器选择其他同优先级的线程运行，如果不存在同优先级的线程(，则当前线程可能被立即重新调度)，那么不能保证让当前线程暂停的效果
+2. 具体的实现依赖于操作系统的任务调度器
+
+
+
+
+
+#### join
+
+* 等待某个线程运行结束
+
+  > 在哪个线程中调用就是哪个线程开始等待
+
+  > 底层基于wait()
+
+```java
+log.debug("开始");
+Thread t1 = new Thread(() -> {
+    log.debug("开始");
+    sleep(1);
+	log.debug("结束");
+    r = 10;
+});
+t1.start();
+t1.join();
+log.debug("结果为:{}", r);
+log.debug("结束");
+```
+
+可以设置等待时间限制
+
+```java
+log.debug("开始");
+Thread t1 = new Thread(() -> {
+    log.debug("开始");
+    sleep(1);
+	log.debug("结束");
+    r = 10;
+});
+t1.start();
+t1.join(2000); // 最多等待两千毫秒
+log.debug("结果为:{}", r);
+log.debug("结束");
+```
+
+
+
+#### interrupt
+
+* 可以打断正在运行态或阻塞态的线程
+
+  > 阻塞态(**sleep wait join** / WAITING TIMED_WAITING BLOCK)
+
+```java
+Thread t1 = new Thread(() -> {
+	log.debug("sleep...");
+	try {
+		Thread.sleep(5000);
+	} catch(InterruptedException e) {
+		e.printStackTrace();
+	}
+}, "线程1");
+t1.start();
+
+TimeUnit.SECONDS.sleep(1);// 主线程睡一会，让线程1先进入睡眠
+log.debug("interrupt");
+t1.interrupt();
+log.debug(": {}", t1.isInterrupted()); // 打印false
+```
+
+
+
+**打断标记**：可以用于判断线程被打断之后继续运行还是终止
+
+* 在阻塞态被打断的线程，打断标记会置为false
+
+* 在运行态被打断的线程，打断标记会置为true
+
+  
+
+
+
+> ```java
+> Thread t1 = new Thread(() -> {
+> 	while(true){
+> 		boolean interrupted = Thread.currentThread().isInterrupted();
+> 		if(interrupted) {
+> 			log.debug("被打断了，退出循环");
+> 			break;
+> 		}
+> 	}
+> }, "线程1");
+> t1.start();
+> 
+> TimeUnit.SECONDS.sleep(1);
+> log.debug("打断线程1");
+> t1.interrupt();
+> 
+> ```
+>
+> 
+
+
+
+##### 使用 interrupt() 打断 park 线程
+
+可以打断处于 park 状态的线程，让它继续往下执行
+
+```java
+private static void test() throws InterruptedException {
+    Thread t1 = new Thread(() -> {
+        log.debug("park...");
+        LockSuport.park();
+        // 如果不打断，会保持 park，下面的代码不再执行
+        log.debug("unpark...");
+        log.debug("打断状态: {}", Thread.currentThread().isInterrupted());
+        
+        LockSuport.park();
+        log.debug("unpark...");// 二次park不会生效，会继续打印这行代码
+    }, "线程1");
+    t1.start();
+    
+    sleep(1);
+    t1.interrupt();
+}
+```
+
+打断标记为真的时候，park 方法不会生效
+
+
+
+```java
+private static void test() throws InterruptedException {
+    Thread t1 = new Thread(() -> {
+        log.debug("park...");
+        LockSuport.park();
+        // 如果不打断，会保持 park，下面的代码不再执行
+        log.debug("unpark...");
+        log.debug("打断状态: {}", Thread.currentThread().interrupted());
+        // interrupted()在返回打断标记的同时把打断标记置为
+        
+        LockSuport.park();// 此时二次 park 会生效
+        log.debug("unpark...");
+    }, "线程1");
+    t1.start();
+    
+    sleep(1);
+    t1.interrupt();
+}
+```
+
+
+
+#### 不推荐使用的方法
+
+| 方法名    | 功能说明           | 替代   |
+| --------- | ------------------ | ------ |
+| stop()    | 停止线程运行       |        |
+| suspend() | 挂起(暂停)线程运行 | wait   |
+| resume()  | 恢复线程运行       | notify |
+
+已过时，容易破坏同步代码块，造成死锁
+
+
+
+
+
+
+
+### 两阶段终止模式
+
+**错误的终止思路**：
+
+* 使用线程对象的`stop()`方法停止线程
+
+  * stop方法会真正杀死线程，如果这时线程锁住了共享资源，那么它被杀死后就再也没有机会释放锁，其他线程将永远无法获取锁
+
+* 使用`System.exit(int)`方法停止线程
+
+  此方法会让整个程序都停止，而不是仅停止一个线程
+
+
+
+**两阶段终止模式**：
+
+
+
+* 优点：给被终止线程处理后续工作的机会
+
+* 场景：监控线程，如果需要停止
+
+  > 监控线程一般会有个while(true)循环
+  >
+  > ![image-20260128212608909](assets/image-20260128212608909.png)
+  >
+  > 
+
+```java
+public class Test {
+    public static void main(String[] args) throws InterruptedException();
+    tpt.start();
+    
+    Thread.sleep(3500);
+    tpt.stop(); 
+}
+class TwoPhaseTermination {
+    private Thread monitor;
+    
+    // 启动监控线程
+    public void start() {
+        monitor = new Thread(() -> {
+            while(true){
+                Thread current = Thread.currentThread();
+                if(current.isInterrupted()){
+                    log.debug("处理终止工作(料理后事)");
+                    break;
+                }
+                
+                try {
+                    TimeUnit.SECONDS.sleep(1); // 1.睡眠中可能被打断
+                    log.debug("执行监控记录"); // 2.运行中可能被打断 
+                } catch (InterruptedException e) {
+                    // 睡眠中被打断会以异常的形式处理
+                    e.printStackTrace();
+                    // 设置打断标记为真，确保睡眠中被打断也能正常终止程序
+                    current.interrupt();
+                }
+            }
+        });
+        
+        monitor.start();
+    }
+    
+    // 停止监控线程
+    public void stop() {
+        monitor.interrupt();
+    }
+    
+}
+```
+
+可以用volatile优化
+
+
+
+
+
+
+
+### 线程优先级
+
+`package java.lang;`
+
+![image-20260128194023767](assets/image-20260128194023767.png)
+
+最小优先级1
+
+默认优先级5
+
+
+
+* 线程优先级会提示（hint）调度器优先调度该线程，但它仅仅是一个提示，调度器可以忽略它
+
+* 如果 cpu 比较忙，那么优先级高的线程会获得更多的时间片，但 cpu 闲时，优先级几乎没作用
+
+
+
+
+
+
+
+
 
 ### 6）wait/sleep
 

@@ -1,0 +1,129 @@
+# ==========================
+# 通用忽略项
+# ==========================
+
+# 编译/打包文件
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# 日志文件
+*.log
+hs_err_pid*
+replay_pid*
+
+# BlueJ files
+*.ctxt
+
+# 构建产物（前端 & 小程序）
+/dist/
+/build/
+/miniprogram-dist/
+/output/
+/out/
+/temp/
+/tmp/
+
+# Node.js 依赖
+node_modules/
+npm-debug.log*
+yarn-error.log*
+yarn.lock
+
+# Java
+target/
+bin/
+.classpath
+.project
+.settings/
+.metadata/
+
+# SpringBoot
+application-*.yml
+application-*.yaml
+
+# SpringCloud
+bootstrap-*.yml
+bootstrap-*.yaml
+
+# 其他常见
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.npmrc
+.pnpm-store
+*.lock
+*.iml
+
+!.mvn/wrapper/maven-wrapper.jar
+!.mvn/wrapper/maven-wrapper.properties
+
+# 一些编译器
+
+### vim
+*.swp
+*.swo
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+
+### VS Code ###
+.vscode/
+
+
+# macOS + Windows
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Maven
+.mvn/local/
+
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Coverage reports
+coverage/
+*.lcov
+*.clover
+
+# OS generated
+._*
+.Spotlight-V100
+.Trashes
+
+
+# 如果用了 Docker，可以考虑加：
+docker-compose.yml
+Dockerfile
+# 如果需要保密转发逻辑
+nginx.conf

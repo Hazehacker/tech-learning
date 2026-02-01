@@ -1,8 +1,10 @@
 > 这是本人听了狂神和黑马满老师的课程(强推[满老师的课程](https://www.bilibili.com/video/BV16J411h7Rd)) 之后重构出的笔记 ，其中面试高频部分已高亮
 
+> 推荐使用typora阅读，ctrl + shift + L 可以打开目录
 
 
 
+**面试：单例模式、排序算法、生产者和消费者、死锁问题**
 
 
 
@@ -204,6 +206,132 @@ public enum State {
 >   - **场景：** 你在房间里，调用了 `wait()` 或 `join()` 或 `LockSupport.park()`。
 >   - **特点：** 你主动放弃了钥匙（释放了锁），并且进入了“休息室”（等待队列）。你不再参与锁的竞争，直到有人喊你名字（`notify`）或者时间到了，你才会出来重新抢钥匙。
 >   - **OS 层面：** 这也是一种阻塞（等待事件/条件）。
+
+
+
+### 线程状态转换
+
+![image-20260131153549640](assets/image-20260131153549640.png)
+
+假设有线程 `Thread t` 
+
+#### 情况 1 `NEW --> RUNNABLE`
+
+* 当调用 `t.start()` 方法时，由 `NEW --> RUNNABLE` 
+
+
+
+#### 情况 2 `RUNNABLE <--> WAITING` 
+
+t 线程用 `synchronized(obj)` 获取了对象锁后 
+
+* 调用 `obj.wait()` 方法时，t 线程从 `RUNNABLE --> WAITING` 
+* 调用 `obj.notify()` ， `obj.notifyAll()` ， `t.interrupt()` 时 
+  * 竞争锁成功，t 线程从 `WAITING --> RUNNABLE`
+  * 竞争锁失败，t 线程从 `WAITING --> BLOCKED`
+
+```java
+public class TestWaitNotify {
+    final static Object obj = new Object();
+    public static void main(String[] args) {
+        new Thread(() -> {
+            synchronized (obj) {
+                log.debug("执行....");
+                try {
+                    obj.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                log.debug("其它代码...."); // 断点
+            }
+        },"t1").start();
+        new Thread(() -> {
+            synchronized (obj) {
+                log.debug("执行....");
+                try {
+                    obj.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                log.debug("其它代码...."); // 断点
+            }
+        },"t2").start();
+
+        sleep(0.5);
+        log.debug("唤醒 obj 上其它线程");
+        synchronized (obj) {
+            obj.notifyAll(); // 唤醒obj上所有等待线程 断点
+        }
+    }
+}
+```
+
+
+
+#### 情况 3 `RUNNABLE <--> WAITING` 
+
+* 当前线程调用 `t.join()` 方法时，当前线程从 `RUNNABLE --> WAITING` 
+  * 注意是当前线程在t 线程对象的监视器上等待 
+* t 线程运行结束，或调用了当前线程的 `interrupt()` 时，当前线程从 `WAITING --> RUNNABLE`
+
+
+
+#### 情况 4 `RUNNABLE <--> WAITING` 
+
+* 当前线程调用 `LockSupport.park()` 方法会让当前线程从 `RUNNABLE --> WAITING` 
+* 调用 `LockSupport.unpark(目标线程)` 或调用了线程 的 `interrupt()` ，会让目标线程从 `WAITING --> RUNNABLE`
+
+
+
+#### 情况 5 `RUNNABLE <--> TIMED_WAITING`
+
+t 线程用 `synchronized(obj)` 获取了对象锁后 
+
+* 调用 `obj.wait(long n)` 方法时，t 线程从 `RUNNABLE --> TIMED_WAITING` 
+* t 线程等待时间超过了 n 毫秒，或调用 `obj.notify()` ， `obj.notifyAll()` ， `t.interrupt()` 时 
+  * 竞争锁成功，t 线程从 `TIMED_WAITING --> RUNNABLE` 
+  * 竞争锁失败，t 线程从 `TIMED_WAITING --> BLOCKED`
+
+
+
+#### 情况 6 `RUNNABLE <--> TIMED_WAITING`
+
+* **当前线程调用 `t.join(long n)` 方法**时，当前线程从 `RUNNABLE --> TIMED_WAITING` 
+  * 注意是当前线程在t 线程对象的监视器上等待 
+* 当前线程等待时间超过了 n 毫秒，或t 线程运行结束，或调用了当前线程的 `interrupt()` 时，当前线程从 `TIMED_WAITING --> RUNNABLE`
+
+
+
+#### 情况 7 `RUNNABLE <--> TIMED_WAITING`
+
+* **当前线程调用 `Thread.sleep(long n)`** ，当前线程从 `RUNNABLE --> TIMED_WAITING` 
+* 当前线程等待时间超过了 n 毫秒，当前线程从 `TIMED_WAITING --> RUNNABLE`
+
+
+
+#### 情况 8 `RUNNABLE <--> TIMED_WAITING`
+
+* **当前线程调用 `LockSupport.parkNanos(long nanos)` 或 `LockSupport.parkUntil(long millis)`** 时，当前线 程从 `RUNNABLE --> TIMED_WAITING`
+* 调用 `LockSupport.unpark(目标线程)` 或调用了线程 的 `interrupt()` ，或是等待超时，会让目标线程从 `TIMED_WAITING--> RUNNABLE`
+
+
+
+
+
+#### 情况 9 `RUNNABLE <--> BLOCKED`
+
+* t 线程用 `synchronized(obj)` **获取对象锁**时如果**竞争失败**，从 `RUNNABLE --> BLOCKED` 
+* 持 obj 锁线程的同步代码块执行完毕，会唤醒该对象上所有 BLOCKED 的线程重新竞争，如果其中 t 线程竞争 成功，从 `BLOCKED --> RUNNABLE` ，其它失败的线程仍然 `BLOCKED`
+
+
+
+#### 情况 10 `RUNNABLE <--> TERMINATED`
+
+当前线程所有代码运行完毕，进入 `TERMINATED`
+
+
+
+
 
 
 
@@ -538,6 +666,26 @@ log.debug("结束");
 
 
 
+##### join原理
+
+> 底层基于[同步模式之保护性暂停](##同步模式之保护性暂停)
+
+
+
+> 源码：
+>
+> 
+>
+> ![image-20260131102641993](assets/image-20260131102641993.png)
+>
+> ![image-20260131102629620](assets/image-20260131103110983.png)
+>
+> 
+
+
+
+
+
 #### interrupt
 
 * 可以打断正在运行态或阻塞态的线程
@@ -644,6 +792,16 @@ private static void test() throws InterruptedException {
 
 
 
+
+
+
+
+
+
+## Object类
+
+
+
 #### ==wait / notify==
 
 
@@ -743,7 +901,7 @@ notifyAll 的结果
 >
 > ![image-20260130231308704](assets/image-20260130231308704.png)
 >
-> 
+> 在java中，Thread类线程执行完run()方法后，一定会自动执行notifyAll()方法。因为线程在die的时候会释放持用的资源和锁，自动调用自身的notifyAll方法。
 
 
 
@@ -754,20 +912,301 @@ notifyAll 的结果
 1) [API角度]sleep 是 Thread 的(静态)方法，而 wait 是 Object 的方法 
 2) [使用条件不同]sleep 不需要强制和 synchronized 配合使用，但 wait 需要 和 synchronized 一起用 
 3) [是否释放锁]sleep 在睡眠的同时，不会释放对象锁的，但 wait 在等待的时候会释放对象锁 
-4) 它们 状态 TIMED_WAITING
+
+> 共同点：调用之后，线程状态都是 TIMED_WAITING
 
 
 
-```java
-static final Object room = new Object(); // 推荐锁对象加上final保证其引用地址不可变，锁住的都是同一个对象
-static boolean hasCigarette = false;
-static boolean hasTakeout = false;
 
-```
+
+
 
 
 
 ##### 使用
+
+
+
+**step 1**
+
+```java
+static final Object room = new Object(); // 共享变量(房间)
+// 推荐锁对象加上final保证其引用地址不可变，锁住的都是同一个对象
+static boolean hasCigarette = false;
+static boolean hasTakeout = false;
+```
+
+思考下面的解决方案好不好，为什么？
+
+```java
+new Thread(() -> {
+    synchronized (room) {
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (!hasCigarette) {
+            log.debug("没烟，先歇会！");
+            sleep(2);
+        }
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (hasCigarette) {
+            log.debug("可以开始干活了");
+        }
+    }
+}, "小南").start();
+for (int i = 0; i < 5; i++) {
+    new Thread(() -> {
+        synchronized (room) {
+            log.debug("可以开始干活了");
+        }
+    }, "其它人").start();   
+}
+sleep(1);
+new Thread(() -> {
+    // 这里能不能加 synchronized (room)？
+    hasCigarette = true;
+    log.debug("烟到了噢！");
+}, "送烟的").start();
+```
+
+> 不能加。加了 synchronized (room) 后，就好比小南在里面反锁了门睡觉，烟根本没法送进门，main 没加 synchronized 就好像 main 线程是翻窗户进来的 
+
+输出
+
+```java
+20:49:49.883 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:49:49.887 [小南] c.TestCorrectPosture - 没烟，先歇会！
+20:49:50.882 [送烟的] c.TestCorrectPosture - 烟到了噢！
+20:49:51.887 [小南] c.TestCorrectPosture - 有烟没？[true]
+20:49:51.887 [小南] c.TestCorrectPosture - 可以开始干活了
+20:49:51.887 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:49:51.887 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:49:51.888 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:49:51.888 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:49:51.888 [其它人] c.TestCorrectPosture - 可以开始干活了
+```
+
+* 其它干活的线程，都要一直阻塞，效率太低 
+* 小南线程必须睡足 2s 后才能醒来，就算烟提前送到，也无法立刻醒来 
+* 改进方法，使用 wait - notify 机制
+
+
+
+**step 2**
+
+思考下面的实现行吗，为什么？思考下面的实现行吗，为什么？
+
+```java
+new Thread(() -> {
+    synchronized (room) {
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (!hasCigarette) {
+            log.debug("没烟，先歇会！");
+            try {
+                room.wait(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (hasCigarette) {
+            log.debug("可以开始干活了");
+        }
+    }
+}, "小南").start();
+
+for (int i = 0; i < 5; i++) {
+    new Thread(() -> {
+        synchronized (room) {
+            log.debug("可以开始干活了");
+        }
+ }, "其它人").start();
+}
+sleep(1);
+new Thread(() -> {
+    synchronized (room) {
+        hasCigarette = true;
+        log.debug("烟到了噢！");
+        room.notify();
+    }
+}, "送烟的").start();
+
+```
+
+输出
+
+```
+20:51:42.489 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:51:42.493 [小南] c.TestCorrectPosture - 没烟，先歇会！
+20:51:42.493 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:51:42.493 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:51:42.494 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:51:42.494 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:51:42.494 [其它人] c.TestCorrectPosture - 可以开始干活了
+20:51:43.490 [送烟的] c.TestCorrectPosture - 烟到了噢！
+20:51:43.490 [小南] c.TestCorrectPosture - 有烟没？[true]
+20:51:43.490 [小南] c.TestCorrectPosture - 可以开始干活了
+
+```
+
+* 解决了其它干活的线程阻塞的问题 
+* 问题：
+  * 如果有其它线程也在等待条件呢？
+    如果还有其他线程也在等待，不能保证唤醒的是“小南”的线程
+
+
+
+**step3**
+
+```java
+new Thread(() -> {
+    synchronized (room) {
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (!hasCigarette) {
+            log.debug("没烟，先歇会！");
+            try {
+                room.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.debug("有烟没？[{}]", hasCigarette);
+        if (hasCigarette) {
+            log.debug("可以开始干活了");
+        } else {
+            log.debug("没干成活...");
+        }
+    }
+}, "小南").start();
+
+new Thread(() -> {
+    synchronized (room) {
+        Thread thread = Thread.currentThread();
+        log.debug("外卖送到没？[{}]", hasTakeout);
+        if (!hasTakeout) {
+            log.debug("没外卖，先歇会！");
+            try {
+                room.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.debug("外卖送到没？[{}]", hasTakeout);
+        if (hasTakeout) {
+            log.debug("可以开始干活了");
+        } else {
+            log.debug("没干成活...");
+        }
+    }
+}, "小女").start();
+sleep(1);
+new Thread(() -> {
+    synchronized (room) {
+        hasTakeout = true;
+        log.debug("外卖到了噢！");
+        room.notify();
+    }
+}, "送外卖的").start();
+```
+
+输出
+
+```
+20:53:12.173 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:53:12.176 [小南] c.TestCorrectPosture - 没烟，先歇会！
+20:53:12.176 [小女] c.TestCorrectPosture - 外卖送到没？[false]
+20:53:12.176 [小女] c.TestCorrectPosture - 没外卖，先歇会！
+20:53:13.174 [送外卖的] c.TestCorrectPosture - 外卖到了噢！
+20:53:13.174 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:53:13.174 [小南] c.TestCorrectPosture - 没干成活... 
+```
+
+* notify 只能随机唤醒一个 WaitSet 中的线程，这时如果有其它线程也在等待，那么就可能唤醒不了正确的线程，称之为【虚假唤醒】 
+* 解决方法，改为 notifyAll
+
+
+
+**step4**
+
+```java
+new Thread(() -> {
+    synchronized (room) {
+        hasTakeout = true;
+        log.debug("外卖到了噢！");
+        room.notifyAll();
+    }
+}, "送外卖的").start();
+
+```
+
+输出
+
+```
+20:55:23.978 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:55:23.982 [小南] c.TestCorrectPosture - 没烟，先歇会！
+20:55:23.982 [小女] c.TestCorrectPosture - 外卖送到没？[false]
+20:55:23.982 [小女] c.TestCorrectPosture - 没外卖，先歇会！
+20:55:24.979 [送外卖的] c.TestCorrectPosture - 外卖到了噢！
+20:55:24.979 [小女] c.TestCorrectPosture - 外卖送到没？[true]
+20:55:24.980 [小女] c.TestCorrectPosture - 可以开始干活了
+20:55:24.980 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:55:24.980 [小南] c.TestCorrectPosture - 没干成活... 
+
+```
+
+* 用 notifyAll 仅解决某个线程的唤醒问题，但使用 if + wait 判断仅有一次机会，一旦条件不成立，就没有重新判断的机会了 
+* 解决方法，用 ==while + wait==（解决虚假唤醒问题，唤醒的时候惊喜那个条件判断，如果是假唤醒就继续等待），当条件不成立，再次 wait
+
+
+
+
+
+
+
+**step5**
+
+将 if 改为 while
+
+```java
+while (!hasCigarette) { // 类似自旋
+    log.debug("没烟，先歇会！");
+    try {
+        room.wait();
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+}
+
+```
+
+输出
+
+```
+20:58:34.322 [小南] c.TestCorrectPosture - 有烟没？[false]
+20:58:34.326 [小南] c.TestCorrectPosture - 没烟，先歇会！
+20:58:34.326 [小女] c.TestCorrectPosture - 外卖送到没？[false]
+20:58:34.326 [小女] c.TestCorrectPosture - 没外卖，先歇会！
+20:58:35.323 [送外卖的] c.TestCorrectPosture - 外卖到了噢！
+20:58:35.324 [小女] c.TestCorrectPosture - 外卖送到没？[true]
+20:58:35.324 [小女] c.TestCorrectPosture - 可以开始干活了
+20:58:35.324 [小南] c.TestCorrectPosture - 没烟，先歇会！
+```
+
+
+
+**使用套路**
+
+```java
+synchronized(lock) {
+    while(条件不成立) {
+        lock.wait();
+    }
+    // 干活
+}
+//另一个线程
+synchronized(lock) {
+    lock.notifyAll();
+}
+
+```
 
 
 
@@ -789,9 +1228,152 @@ static boolean hasTakeout = false;
 
 
 
+## LockSupport类
 
 
-## 两阶段终止模式
+
+### Park & Unpark
+
+
+
+**基本使用**
+
+它们是 LockSupport 类中的方法
+
+```java
+// 暂停当前线程
+LockSupport.park();
+
+// 恢复某个线程的运行
+LockSupport.unpark(暂停线程对象)
+```
+
+**先 park 再 unpark**
+
+```java
+Thread t1 = new Thread(() -> {
+    log.debug("start...");
+    sleep(1);
+    log.debug("park...");
+    LockSupport.park();
+    log.debug("resume...");
+},"t1");
+t1.start();
+
+sleep(2);
+log.debug("unpark...");
+LockSupport.unpark(t1); // 恢复t1线程运行
+```
+
+输出
+
+```
+18:42:52.585 c.TestParkUnpark [t1] - start...
+18:42:53.589 c.TestParkUnpark [t1] - park...
+18:42:54.583 c.TestParkUnpark [main] - unpark...
+18:42:54.583 c.TestParkUnpark [t1] - resume... 
+
+```
+
+**先 unpark 再 park**
+
+```java
+Thread t1 = new Thread(() -> {
+    log.debug("start...");
+    sleep(2);
+    log.debug("park...");
+    LockSupport.park();
+    log.debug("resume...");
+}, "t1");
+t1.start();
+
+sleep(1);
+log.debug("unpark...");
+LockSupport.unpark(t1);
+```
+
+输出
+
+```
+18:43:50.765 c.TestParkUnpark [t1] - start...
+18:43:51.764 c.TestParkUnpark [main] - unpark...
+18:43:52.769 c.TestParkUnpark [t1] - park...
+18:43:52.769 c.TestParkUnpark [t1] - resume... 
+
+```
+
+> 原因参考“原理”部分
+
+
+
+**与 Object 的 wait & notify 相比** 
+
+* wait，notify 和 notifyAll 必须配合 Object Monitor 一起使用，而 park，unpark 不必
+* park & unpark 是以线程为单位来【阻塞】和【唤醒】线程，而 notify 只能随机唤醒一个等待线程，notifyAll 是唤醒所有等待线程，就不那么【精确】 
+* park & unpark 可以先 unpark，而 wait & notify 不能先 notify
+
+
+
+#### 原理
+
+
+
+**每个线程都有自己的一个 Parker 对象**，由三部分组成 _counter ， _cond 和 _mutex ，打个比喻：_
+
+* **线程就像一个旅人，Parker 就像他随身携带的背包**，条件变量就好比背包中的帐篷。_counter 就好比背包中 的备用干粮（0 为耗尽，1 为充足） 
+* 调用 park 就是要看需不需要停下来歇息 
+  * 如果备用干粮耗尽(_counter为0)，那么钻进帐篷歇息 
+  * 如果备用干粮充足(_counter为1)，那么不需停留，继续前进 
+* 调用 unpark，就好比令干粮充足 (令_counter为1)
+  * 如果这时线程还在帐篷，就唤醒让他继续前进 
+  * 如果这时线程还在运行，那么下次他调用 park 时，仅是消耗掉备用干粮，不需停留继续前进 
+    * 因为背包空间有限，多次调用 unpark 仅会补充一份备用干粮
+
+![image-20260131152737834](assets/image-20260131152737834.png)
+
+1. 当前线程调用 Unsafe.park() 方法 
+2. 检查 _counter ，本情况为 0，这时，获得 _mutex 互斥锁 
+3. 线程进入 _cond 条件变量阻塞 
+4. 设置 _counter = 0
+
+![image-20260131153304426](assets/image-20260131153304426.png)
+
+1. 调用 Unsafe.unpark(Thread_0) 方法，设置 _counter 为 1 
+2. 唤醒 _cond 条件变量中的 Thread_0 
+3. Thread_0 恢复运行 
+4. 设置 _counter 为 0
+
+
+
+
+
+
+
+
+
+
+
+## 线程优先级
+
+`package java.lang;`
+
+![image-20260128194023767](assets/image-20260128194023767.png)
+
+最小优先级1
+
+默认优先级5
+
+
+
+* 线程优先级会提示（hint）调度器优先调度该线程，但它仅仅是一个提示，调度器可以忽略它
+
+* 如果 cpu 比较忙，那么优先级高的线程会获得更多的时间片，但 cpu 闲时，优先级几乎没作用
+
+
+
+# 模式
+
+## 终止模式之两阶段终止模式
 
 > 模式方面
 
@@ -819,7 +1401,10 @@ static boolean hasTakeout = false;
   >
   > ![image-20260128212608909](assets/image-20260128212608909.png)
   >
-  > 
+
+
+
+**使用打断标记实现**
 
 ```java
 public class Test {
@@ -849,7 +1434,7 @@ class TwoPhaseTermination {
                     // 睡眠中被打断会以异常的形式处理
                     e.printStackTrace();
                     // 设置打断标记为真，确保睡眠中被打断也能正常终止程序
-                    current.interrupt();
+                    current.interrupt();// 容易忘记将这个interrupt重新设置为true
                 }
             }
         });
@@ -865,78 +1450,1405 @@ class TwoPhaseTermination {
 }
 ```
 
-可以用volatile优化
 
 
-
-
-
-
-
-## 线程优先级
-
-`package java.lang;`
-
-![image-20260128194023767](assets/image-20260128194023767.png)
-
-最小优先级1
-
-默认优先级5
-
-
-
-* 线程优先级会提示（hint）调度器优先调度该线程，但它仅仅是一个提示，调度器可以忽略它
-
-* 如果 cpu 比较忙，那么优先级高的线程会获得更多的时间片，但 cpu 闲时，优先级几乎没作用
-
-
-
-
-
-
-
-
-
-## 6）wait/sleep
-
-**1、来自不同的类**
-
-wait => Object
-sleep => Thread
-一般情况企业中使用休眠是：
+**使用volatile优化**
 
 ```java
-TimeUnit.DAYS.sleep(1); //休眠1天
-TimeUnit.SECONDS.sleep(1); //休眠1s
+public class Test {
+    public static void main(String[] args) throws InterruptedException();
+    tpt.start();
+    
+    Thread.sleep(3500);
+    tpt.stop(); 
+}
+class TwoPhaseTermination {
+    private Thread monitor;
+    private volatile boolean stop; // 标记是否被打断了
+    
+    // 启动监控线程
+    public void start() {
+        monitor = new Thread(() -> {
+            while(true){
+                
+                if(stop){
+                    log.debug("处理终止工作(料理后事)");
+                    break;
+                }
+                
+                try {
+                    TimeUnit.SECONDS.sleep(1); // 1.睡眠中可能被打断
+                    log.debug("执行监控记录"); // 2.运行中可能被打断 
+                } catch (InterruptedException e) {
+                    // 睡眠中被打断会以异常的形式处理
+                    e.printStackTrace();
+                }
+            }
+        });
+        
+        monitor.start();
+    }
+    
+    // 停止监控线程
+    public void stop() { 
+        stop = true;
+        monitor.interrupt();
+    }
+    
+}
 ```
 
-**2、关于锁的释放**
-
-wait 会释放锁；
-
-sleep睡觉了，不会释放锁；
-
-**3、使用的范围是不同的**
-
-wait 必须在同步代码块中；
-
-sleep 可以在任何地方睡；
-
-**4、是否需要捕获异常**
-
-wait是也需要捕获异常；（网上非常多的代码说不用抛出异常，应该是没去看源码和尝试吧，下面附图，其实文章上一张源码的图也显示需要抛出异常），notify和notifyAll不需要捕获异常。）
-
-> 中断异常   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210131150856789.png)
-
-sleep必须要捕获异常；
-
-5、
 
 
 
 
 
-# ==并发-共享模型==
+
+
+
+
+
+
+
+## 同步模式之保护性暂停
+
+
+
+##### **1.定义**
+
+即 Guarded Suspension，用在一个线程等待另一个线程的执行结果 
+
+要点 
+
+* 有一个结果需要从一个线程传递到另一个线程，让他们关联同一个 GuardedObject 
+
+* 如果有结果不断从一个线程到另一个线程那么可以使用消息队列（见生产者/消费者） 
+
+* JDK 中，**join 的实现、Future 的实现，采用的就是此模式** 
+
+  > [join原理](####join原理)
+
+* 因为要等待另一方的结果，因此归类到同步模式
+
+
+
+![image-20260131094504397](assets/image-20260131094504397.png)
+
+
+
+##### **2.实现**
+
+
+
+```java
+class GuardedObject {
+    private Object response;
+    private final Object lock = new Object();
+    // 获取结果
+    public Object get() {
+        synchronized (lock) {
+            // 条件不满足则等待
+            while (response == null) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return response;
+        }
+    }
+    // 产生结果
+    public void complete(Object response) {
+        synchronized (lock) {
+            // 条件满足，通知等待线程
+            this.response = response;
+            lock.notifyAll();
+        }
+    }
+}
+
+```
+
+
+
+##### **应用**
+
+一个线程等待另一个线程的执行结果
+
+```java
+public static void main(String[] args) {
+    GuardedObject guardedObject = new GuardedObject();
+    new Thread(() -> {
+        try {
+            // 子线程执行下载
+            List<String> list = Downloader.download();
+            log.debug("download complete...");
+            guardedObject.complete(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }).start();
+    log.debug("waiting...");
+    // 主线程阻塞等待
+    Object response = guardedObject.get();
+    log.debug("get response: [{}] lines", ((List<String>) response).size());
+}
+
+```
+
+执行结果
+
+```
+08:42:18.568 [main] c.TestGuardedObject - waiting...
+08:42:23.312 [Thread-0] c.TestGuardedObject - download complete...
+08:42:23.312 [main] c.TestGuardedObject - get response: [3] lines
+```
+
+
+
+##### **3.带超时版 GuardedObject**
+
+控制超时时间的版本
+
+```java
+class GuardedObjectV2 {
+    private Object response;
+    private final Object lock = new Object();
+    public Object get(long millis) {
+        synchronized (lock) {
+            // 1) 记录最初时间
+            long begin = System.currentTimeMillis();
+            // 2) 已经经历的时间
+            long passedTime = 0;
+            while (response == null) {
+                // 4) 假设 millis 是 1000，结果在 400 时唤醒了，那么还有 600 要等
+                log.debug("还需等待时间: {}", millis - passedTime);
+                if (waitTime <= 0) {
+                    log.debug("break...");
+                    break;
+                }
+                try {
+                    lock.wait(millis - passedTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // 3) 如果提前被唤醒，这时已经经历的时间假设为 400
+                passedTime = System.currentTimeMillis() - begin;
+                log.debug("passedTime: {}, object is null {}", passedTime, response == null);
+            }
+            return response;
+        }
+    }
+    public void complete(Object response) {
+        synchronized (lock) {
+            // 条件满足，通知等待线程
+            this.response = response;
+            log.debug("notify...");
+            lock.notifyAll();
+        }
+    }
+}
+
+```
+
+测试，没有超时
+
+```java
+public static void main(String[] args) {
+    GuardedObjectV2 v2 = new GuardedObjectV2();
+    new Thread(() -> {
+        sleep(1);
+        v2.complete(null);
+        sleep(1);
+        v2.complete(Arrays.asList("a", "b", "c"));
+    }).start();
+    Object response = v2.get(2500);
+    if (response != null) {
+        log.debug("get response: [{}] lines", ((List<String>) response).size());
+    } else {
+        log.debug("can't get response");
+    }
+}
+
+```
+
+
+
+
+
+### 改进
+
+> #### 多任务版 GuardedObject
+>
+> (消息队列)
+
+![image-20260131103502510](assets/image-20260131103502510.png)
+
+图中 Futures 就好比居民楼一层的信箱（每个信箱有房间编号），左侧的 t0，t2，t4 就好比等待邮件的居民，右 侧的 t1，t3，t5 就好比邮递员 
+
+如果需要在多个类之间使用 GuardedObject 对象，作为参数传递不是很方便，因此设计一个用来解耦的中间类， 这样不仅能够解耦【结果等待者】和【结果生产者】，还能够同时支持多个任务的管理
+
+
+
+```java
+class GuardedObject {
+    // 标识 Guarded Object
+    private int id;
+    public GuardedObject(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
+    }
+    // 结果
+   private Object response;
+    // 获取结果
+    // timeout 表示要等待多久 2000
+    public Object get(long timeout) {
+        synchronized (this) {
+            // 开始时间 15:00:00
+           long begin = System.currentTimeMillis();
+            // 经历的时间
+            long passedTime = 0;
+            while (response == null) {
+                // 这一轮循环应该等待的时间
+                long waitTime = timeout - passedTime;
+                // 经历的时间超过了最大等待时间时，退出循环
+                if (timeout - passedTime <= 0) {
+                    break;
+                }
+                try {
+                    this.wait(waitTime); // 虚假唤醒 15:00:01
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // 求得经历时间
+                passedTime = System.currentTimeMillis() - begin; // 15:00:02 1s
+            }
+            return response;
+        }
+    }
+    // 产生结果
+    public void complete(Object response) {
+        synchronized (this) {
+            // 给结果成员变量赋值
+            this.response = response;
+            this.notifyAll();
+        }
+    }
+}
+```
+
+新增 id 用来标识 Guarded Object
+
+**中间解耦类**：
+
+```java
+class Mailboxes {
+    private static Map<Integer, GuardedObject> boxes = new Hashtable<>();
+    private static int id = 1;
+    // 产生唯一 id (在中间类中产生，避免外部自定义的id冲突)
+    private static synchronized int generateId() {
+        return id++;
+    }
+    public static GuardedObject getGuardedObject(int id) {
+        return boxes.remove(id); // 删除，避免内存溢出
+    }
+    public static GuardedObject createGuardedObject() {
+        GuardedObject go = new GuardedObject(generateId());
+        boxes.put(go.getId(), go);
+        return go;
+    }
+    public static Set<Integer> getIds() {
+        return boxes.keySet();
+    }
+}
+
+```
+
+
+
+**业务相关类**:
+
+```java
+class People extends Thread{
+    @Override
+    public void run() {
+        // 收信
+        GuardedObject guardedObject = Mailboxes.createGuardedObject();
+        log.debug("开始收信 id:{}", guardedObject.getId());
+        Object mail = guardedObject.get(5000); // 收信，最多等5s
+        log.debug("收到信 id:{}, 内容:{}", guardedObject.getId(), mail);
+    }
+}
+
+```
+
+```java
+class Postman extends Thread {
+    private int id;
+    private String mail;
+    public Postman(int id, String mail) {
+        this.id = id;
+        this.mail = mail;
+    }
+    @Override
+    public void run() {
+        GuardedObject guardedObject = Mailboxes.getGuardedObject(id);
+        log.debug("送信 id:{}, 内容:{}", id, mail);
+        guardedObject.complete(mail); // （送信）
+    }
+}
+```
+
+
+
+测试
+
+```java
+public static void main(String[] args) throws InterruptedException {
+    for (int i = 0; i < 3; i++) {
+        new People().start();
+    }
+    Sleeper.sleep(1);
+    for (Integer id : Mailboxes.getIds()) {
+        new Postman(id, "内容" + id).start();
+    }
+}
+
+```
+
+
+
+## 同步模式之顺序控制
+
+
+
+#### **固定运行顺序**
+
+
+
+案例：两个打印线程，要求必须先打印 2   后打印 1
+
+方法一：使用`wait()`+`notify()`方法
+
+```java
+public class Main{
+    static final Object lock = new Object();
+    private int count = 0;
+    static boolean t2Runned = false;// 【表示t2是否运行过】
+    new Thread(() -> {
+        synchronized (lock) {
+            while(!t2Runned){
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.debug("1");
+        }
+    },"t1").start();
+    new Thread(() -> {
+        synchronized (lock) {
+            log.debug("2");
+            t2Runned = true;
+            lock.notify();
+        }
+    },"t2").start();
+}
+```
+
+方法二：使用`await()`+`signal()`方法
+
+方法三：使用`park()` + `unpark()`方法
+
+```java
+public class Main{
+    static final Object lock = new Object();
+    private int count = 0;
+    Thread t1 = new Thread(() -> {
+        LockSupport.park();
+        log.debug("1");
+    },"t1");
+    Thread t2 = new Thread(() -> {
+        log.debug("2");
+        LockSupport.park(t1);
+    }, "t2");
+    
+    t1.start();
+    t2.start();
+}
+
+
+```
+
+
+
+#### 交替输出
+
+线程 1 输出 a 5 次，线程 2 输出 b 5 次，线程 3 输出 c 5 次。现在要求输出 abcabcabcabcabc 怎么实现
+
+方法一：使用`wait()`+`notify()`方法
+
+```java
+class SyncWaitNotify {
+    private int flag;
+    private int loopNumber;
+    public SyncWaitNotify(int flag, int loopNumber) {
+        this.flag = flag;
+        this.loopNumber = loopNumber;
+    }
+    public void print(int waitFlag, int nextFlag, String str) {
+        for (int i = 0; i < loopNumber; i++) {
+            synchronized (this) {// 如果不是当前线程期望打印的数字就继续等待
+                while (this.flag != waitFlag) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.print(str); 
+                flag = nextFlag;// flag标记为下一个应该打印的数字
+                this.notifyAll();
+            }
+        }
+    }
+}
+
+public static void main(String[] args){
+    SyncWaitNotify syncWaitNotify = new SyncWaitNotify(1, 5);
+    new Thread(() -> {
+     syncWaitNotify.print(1, 2, "a");// 每个线程自己运行完了就把标记改成下一个线程的标记
+    }).start();
+    new Thread(() -> {
+     syncWaitNotify.print(2, 3, "b");
+    }).start();
+    new Thread(() -> {
+     syncWaitNotify.print(3, 1, "c");
+    }).start();
+}
+```
+
+方法二：使用`await()`+`signal()`方法
+
+```java
+class AwaitSignal extends ReentrantLock {
+    public void start(Condition first) {
+        this.lock();
+        try {
+            log.debug("start");
+            first.signal();
+        } finally {
+            this.unlock();
+        }
+    }
+    public void print(String str, Condition current, Condition next) {
+        for (int i = 0; i < loopNumber; i++) {
+            this.lock();
+            try {
+                current.await();
+                log.debug(str);
+                next.signal();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                this.unlock();
+            }
+        }
+    }
+    // 循环次数
+    private int loopNumber;
+    public AwaitSignal(int loopNumber) {
+        this.loopNumber = loopNumber;
+    }
+}
+
+public static void main(String[] args){
+    AwaitSignal as = new AwaitSignal(5);
+    Condition aWaitSet = as.newCondition();
+    Condition bWaitSet = as.newCondition();
+    Condition cWaitSet = as.newCondition();
+    new Thread(() -> {
+        as.print("a", aWaitSet, bWaitSet);
+    }).start();
+    
+    new Thread(() -> {
+        as.print("b", bWaitSet, cWaitSet);
+    }).start();
+    new Thread(() -> {
+        as.print("c", cWaitSet, aWaitSet);
+    }).start();
+    Thread.sleep(1000);
+    try {
+        System.out.println("开始...");
+        aWaitSet.signal();
+    } finally {
+        awaitSignal.unlock();
+    }
+    
+}
+```
+
+
+
+
+
+方法三：使用`park()` + `unpark()`方法
+
+```java
+class SyncPark {
+    private int loopNumber;
+    private Thread[] threads;
+    public SyncPark(int loopNumber) {
+        this.loopNumber = loopNumber;
+    }
+    public void setThreads(Thread... threads) {
+        this.threads = threads;
+    }
+    public void print(String str) {
+        for (int i = 0; i < loopNumber; i++) {
+            LockSupport.park();
+            System.out.print(str);
+            LockSupport.unpark(nextThread());// 打印完唤醒下一个线程
+        }
+    }
+    private Thread nextThread() {
+        Thread current = Thread.currentThread();
+        int index = 0;
+        for (int i = 0; i < threads.length; i++) {
+            if(threads[i] == current) {
+                index = i;
+                break;
+            }
+        }
+        if(index < threads.length - 1) {
+            return threads[index+1];
+        } else {
+            return threads[0];
+        }
+    }
+    public void start() {
+        for (Thread thread : threads) {
+            thread.start();
+        }
+        LockSupport.unpark(threads[0]);
+    }
+}
+
+public static void main(String[] args){
+    SyncPark syncPark = new SyncPark(5);
+    Thread t1 = new Thread(() -> {
+        syncPark.print("a");
+    });
+    Thread t2 = new Thread(() -> {
+        syncPark.print("b");
+    });
+    Thread t3 = new Thread(() -> {
+        syncPark.print("c\n");
+    });
+    syncPark.setThreads(t1, t2, t3);
+    syncPark.start();
+
+}
+```
+
+
+
+
+
+
+
+
+
+**大厂面试原题 两个线程交替打印奇偶数**
+
+方法一：使用`synchronized` + `wait/notify`（推荐）
+
+```java
+public class Main{
+    public static void main(String[] args){
+        static final Object lock = new Object();
+        private int count = 1;
+        private static final int MAX = 100;
+        static boolean t2Runned = false;// 【表示t2是否运行过】
+        Thread t1 = new Thread(() -> {
+            synchronized (lock) {
+                while (count <= MAX) {
+                    if (count % 2 == 1) { // 奇数
+                        System.out.println(Thread.currentThread().getName() + ": " + count);
+                        count++;
+                        lock.notify(); // 唤醒t2
+                    } else {
+                        try {
+                            lock.wait(); // 等待t2打印偶数
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                    }
+                }
+            }
+        },"t1");
+
+        Thread t2 = new Thread(() -> {
+            synchronized (lock) {
+                while (count <= MAX) {
+                    if (count % 2 == 0) { // 偶数
+                        System.out.println(Thread.currentThread().getName() + ": " + count);
+                        count++;
+                        lock.notify(); // 唤醒t1
+                    } else {
+                        try {
+                            lock.wait(); // 等待t1打印奇数
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                    }
+                }
+            }
+        },"t2");
+        
+        t1.start();
+        t2.start();
+        
+    }    
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+> 
+>
+> 相关题：力扣1114题
+
+
+
+## 同步模式之 Balking
+
+> 和 “终止模式” 类似，都与监控场景相关
+>
+> ```java
+> public class Test {
+>     public static void main(String[] args) throws InterruptedException();
+>     tpt.start();
+>     
+>     Thread.sleep(3500);
+>     tpt.stop(); 
+> }
+> class TwoPhaseTermination {
+>     private Thread monitor;
+>     private volatile boolean stop; // 标记是否被打断了
+>     
+>     // 启动监控线程
+>     public void start() {
+>         monitor = new Thread(() -> {
+>             while(true){
+>                 
+>                 if(stop){
+>                     log.debug("处理终止工作(料理后事)");
+>                     break;
+>                 }
+>                 
+>                 try {
+>                     TimeUnit.SECONDS.sleep(1); // 1.睡眠中可能被打断
+>                     log.debug("执行监控记录"); // 2.运行中可能被打断 
+>                 } catch (InterruptedException e) {
+>                     // 睡眠中被打断会以异常的形式处理
+>                     e.printStackTrace();
+>                 }
+>             }
+>         });
+>         monitor.start();
+>     }
+>     
+>     // 停止监控线程
+>     public void stop() { 
+>         stop = true;
+>         monitor.interrupt();
+>     }
+>     
+> }
+> ```
+>
+> 存在问题：start 方法可以反复调用，每次掉员工都会创建一个监控线程
+
+
+
+**1.定义**
+
+Balking （犹豫）模式用在一个线程发现另一个线程或本线程已经做了某一件相同的事，那么本线程就无需再做 了，直接结束返回
+
+**2.实现**
+
+例如：
+
+```java
+public class MonitorService {
+    // 增加一个标记 用来表示是否已经有线程已经在执行启动了
+    private volatile boolean starting;
+    
+    public void start() {
+        log.info("尝试启动监控线程...");
+        synchronized (this) { // 需要加锁，否则多线程进入这段代码，都判断为false，导致仍然有多个线程被创建 (此处volatile不足以应对多线程，需要锁住临界区)
+            log.info("该监控线程已启动?({})", starting);
+            if (starting) {
+                return;
+            }
+            starting = true;
+        }
+        // 真正启动监控线程
+        monitor = new Thread(() -> {
+            while(true){       
+                if(stop){
+                    log.debug("处理终止工作(料理后事)");
+                    starting = false; // 用volatile保证可见性
+                    log.info("监控线程已经停止");
+                    break;
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(1); // 1.睡眠中可能被打断
+                    log.debug("执行监控记录"); // 2.运行中可能被打断 
+                } catch (InterruptedException e) {
+                    // 睡眠中被打断会以异常的形式处理
+                    e.printStackTrace();
+                }
+            }
+        });
+        monitor.start();
+    }
+}
+```
+
+当前端页面多次点击按钮调用 start 时 
+
+输出
+
+```
+[http-nio-8080-exec-1] cn.itcast.monitor.service.MonitorService - 该监控线程已启动?(false)
+[http-nio-8080-exec-1] cn.itcast.monitor.service.MonitorService - 监控线程已启动...
+[http-nio-8080-exec-2] cn.itcast.monitor.service.MonitorService - 该监控线程已启动?(true)
+[http-nio-8080-exec-3] cn.itcast.monitor.service.MonitorService - 该监控线程已启动?(true)
+[http-nio-8080-exec-4] cn.itcast.monitor.service.MonitorService - 该监控线程已启动?(true)
+```
+
+它还经常用来实现线程安全的单例
+
+```java
+public final class Singleton {
+    private Singleton() {
+        
+    }
+    private static Singleton INSTANCE = null;
+    public static synchronized Singleton getInstance() {
+        if (INSTANCE != null) { // 也是Balking 模式的体现
+            return INSTANCE;
+        }
+        INSTANCE = new Singleton();
+        return INSTANCE;
+    }
+}
+```
+
+对比一下保护性暂停模式：保护性暂停模式用在一个线程等待另一个线程的执行结果，当条件不满足时线程等待
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 异步模式之==生产者/消费者==
+
+> #### 生产者和消费者问题
+
+
+
+要点
+
+* 与前面的保护性暂停中的 GuardObject 不同，不需要产生结果和消费结果的线程一一对应 
+* 消费队列可以用来平衡生产和消费的线程资源 
+* 生产者仅负责产生结果数据，不关心数据该如何处理，而消费者专心处理结果数据 
+* 消息队列是有容量限制的，满时不会再加入数据，空时不会再消耗数据 
+* JDK 中各种阻塞队列，采用的就是这种模式
+
+![image-20260131142201641](assets/image-20260131142201641.png)
+
+### 代码实现
+
+
+
+#### 满哥讲解
+
+```java
+class Message {
+    private int id;
+    private Object message;
+    public Message(int id, Object message) {
+        this.id = id;
+        this.message = message;
+    }
+    public int getId() {
+        return id;
+    }
+    public Object getMessage() {
+        return message;
+    }
+}
+class MessageQueue {
+    private LinkedList<Message> queue;
+    private int capacity;
+    public MessageQueue(int capacity) {
+        this.capacity = capacity;
+        queue = new LinkedList<>();
+    }
+    
+    // 获取消息
+    public Message take() {
+        synchronized (queue) {
+            while (queue.isEmpty()) {
+                log.debug("没货了, wait");
+                try {
+                    queue.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Message message = queue.removeFirst();
+            queue.notifyAll();
+            return message;
+        }
+        
+        // 存入消息
+        public void put(Message message) {
+            synchronized (queue) {
+                while (queue.size() == capacity) {
+                    log.debug("库存已达上限, wait");
+                    try {
+                        queue.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                queue.addLast(message);
+                queue.notifyAll();
+            }
+        }
+}
+```
+
+
+
+```java
+MessageQueue messageQueue = new MessageQueue(2);
+// 4 个生产者线程, 下载任务
+for (int i = 0; i < 4; i++) {
+    int id = i;
+    new Thread(() -> {
+        try {
+            log.debug("download...");
+            List<String> response = Downloader.download();
+            log.debug("try put message({})", id);
+            // 存入下载结果
+            messageQueue.put(new Message(id, response));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }, "生产者" + i).start();
+}
+// 1 个消费者线程, 处理结果
+new Thread(() -> {
+    while (true) {
+        Message message = messageQueue.take();// 获取消息
+        List<String> response = (List<String>) message.getMessage();
+        log.debug("take message({}): [{}] lines", message.getId(), response.size());
+    }
+}, "消费者").start();
+
+```
+
+某次运行结果
+
+```
+10:48:38.070 [生产者3] c.TestProducerConsumer - download...
+10:48:38.070 [生产者0] c.TestProducerConsumer - download...
+10:48:38.070 [消费者] c.MessageQueue - 没货了, wait
+10:48:38.070 [生产者1] c.TestProducerConsumer - download...
+10:48:38.070 [生产者2] c.TestProducerConsumer - download...
+10:48:41.236 [生产者1] c.TestProducerConsumer - try put message(1)
+10:48:41.237 [生产者2] c.TestProducerConsumer - try put message(2)
+10:48:41.236 [生产者0] c.TestProducerConsumer - try put message(0)
+10:48:41.237 [生产者3] c.TestProducerConsumer - try put message(3)
+10:48:41.239 [生产者2] c.MessageQueue - 库存已达上限, wait
+10:48:41.240 [生产者1] c.MessageQueue - 库存已达上限, wait
+10:48:41.240 [消费者] c.TestProducerConsumer - take message(0): [3] lines
+10:48:41.240 [生产者2] c.MessageQueue - 库存已达上限, wait
+10:48:41.240 [消费者] c.TestProducerConsumer - take message(3): [3] lines
+10:48:41.240 [消费者] c.TestProducerConsumer - take message(1): [3] lines
+10:48:41.240 [消费者] c.TestProducerConsumer - take message(2): [3] lines
+10:48:41.240 [消费者] c.MessageQueue - 没货了, wait
+
+```
+
+
+
+#### Synchronized 版
+
+```
+/**
+ * 线程之间的通信问题：生产者和消费者问题 
+ * 解释：两个线程交替执行 A B 操作同一个变量 num = 0
+ * A 执行 num+1
+ * B 执行 num-1
+ * 使用“等待唤醒+通知唤醒”的方式让两个轮流执行
+ */
+```
+
+生产者和消费者问题-演示代码
+
+```JAVA
+package com.zzy.pc;
+//顺序：判断等待->业务->通知
+public class A {
+    public static void main(String[] args) {
+        Data data = new Data();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }, "A").start();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        },"B").start();
+    }
+}
+
+class Data {
+    private int number = 0;
+
+    //+1
+    public synchronized void increment() throws InterruptedException {
+        //一、等待
+        if (number != 0) {
+            this.wait();
+        }
+        
+        // 二、业务
+        number++;
+        System.out.println(Thread.currentThread().getName() + "=>" + number);
+        // 三、通知其他线程，我+1完毕了
+        this.notifyAll();
+    }
+
+    //-1
+    public synchronized void decrement() throws InterruptedException {
+        //一、等待
+        if (number == 0) {
+            this.wait();
+        }
+        
+        // 二、业务
+        number--;
+        System.out.println(Thread.currentThread().getName() + "=>" + number);
+        // 三、通知其他线程，我-1完毕了
+        this.notifyAll();
+    }
+}
+```
+
+##### 存在的虚假唤醒问题
+
+**问题，如果有四个线程**，会出现虚假唤醒
+
+![image-20200810224629273](https://img-service.csdnimg.cn/img_convert/1af314564aae84ed73a7ee90525f9d91.png)
+
+
+
+**虚假唤醒问题**：
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210130202723375.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzc1ODYzMw==,size_16,color_FFFFFF,t_70)
+
+解决方式 ，**if 改为while即可，防止虚假唤醒**
+
+> 结论：**就是用if判断的话，唤醒后线程会从wait之后的代码开始运行，但是不会重新判断if条件，直接继续运行if代码块之后的代码，而如果使用while的话，也会从wait之后的代码运行，但是唤醒后会重新判断循环条件，如果不成立再执行while代码块之后的代码块，成立的话继续wait。**
+> 这也就是为什么用while而不用if的原因了，因为线程被唤醒后，执行开始的地方是wait之后
+>
+> 
+>
+> (本来只需要一个消费者，但是notifyAll唤醒了一群消费者，一群只有一个可以消费，那么其他消费者就是虚假唤醒了，所以才需要使用while来多次判断条件)
+
+```java
+package com.marchsoft.juctest;
+
+/**
+ * Description：
+ *
+ * @author jiaoqianjin
+ * Date: 2020/8/10 22:33
+ **/
+
+public class ConsumeAndProduct {
+    public static void main(String[] args) {
+        Data data = new Data();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "A").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "B").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "C").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "D").start();
+    }
+}
+
+class Data {
+    private int num = 0;
+
+    // +1
+    public synchronized void increment() throws InterruptedException {
+        // 判断等待
+        while (num != 0) {
+            this.wait();
+        }
+        num++;
+        System.out.println(Thread.currentThread().getName() + "=>" + num);
+        // 通知其他线程 +1 执行完毕
+        this.notifyAll();
+    }
+
+    // -1
+    public synchronized void decrement() throws InterruptedException {
+        // 判断等待
+        while (num == 0) {
+            this.wait();
+        }
+        num--;
+        System.out.println(Thread.currentThread().getName() + "=>" + num);
+        // 通知其他线程 -1 执行完毕
+        this.notifyAll();
+    }
+}
+```
+
+#### Lock版
+
+![image-20200811094721678](https://img-service.csdnimg.cn/img_convert/dad7044c4b8b46648084823841cb6781.png)
+
+> Lock场景下，Condition对象的await方法起到wait的作用，signal方法起到notify的作用
+
+
+
+生产者和消费者问题-演示代码：
+
+```java
+package com.marchsoft.juctest;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * Description：
+ *
+ * @author jiaoqianjin
+ * Date: 2020/8/11 9:48
+ **/
+
+public class LockCAP {
+    public static void main(String[] args) {
+        Data2 data = new Data2();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+
+                try {
+                    data.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, "A").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "B").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.increment();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "C").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                try {
+                    data.decrement();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "D").start();
+    }
+}
+
+class Data2 {
+    private int num = 0;
+    Lock lock = new ReentrantLock();
+    Condition condition = lock.newCondition();
+    // +1
+    public  void increment() throws InterruptedException {
+        lock.lock();
+        try {
+            // 一、判断等待
+            while (num != 0) {
+                condition.await();
+            }
+            // 二、业务
+            num++;
+            System.out.println(Thread.currentThread().getName() + "=>" + num);
+            // 三、通知其他线程 +1 执行完毕
+            condition.signalAll();
+        }finally {
+            lock.unlock();
+        }
+
+    }
+
+    // -1
+    public  void decrement() throws InterruptedException {
+        lock.lock();
+        try {
+            // 判断等待
+            while (num == 0) {
+                condition.await();
+            }
+            num--;
+            System.out.println(Thread.currentThread().getName() + "=>" + num);
+            // 通知其他线程 +1 执行完毕
+            condition.signalAll();
+        }finally {
+            lock.unlock();
+        }
+
+    }
+}
+```
+
+
+
+#### Condition的优势
+
+精准的通知和唤醒的线程 
+
+**如果我们要指定通知的下一个进行顺序怎么办呢？ 我们<u>可以使用Condition来指定通知进程执行顺序</u>~**
+
+示例代码
+
+```java
+package com.marchsoft.juctest;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * Description：实现
+ * A 执行完 调用B
+ * B 执行完 调用C
+ * C 执行完 调用A
+ *
+ * @author jiaoqianjin
+ * Date: 2020/8/11 9:58
+ **/
+
+public class ConditionDemo {
+    public static void main(String[] args) {
+        Data3 data3 = new Data3();
+
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                data3.printA();
+            }
+        },"A").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                data3.printB();
+            }
+        },"B").start();
+        new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                data3.printC();
+            }
+        },"C").start();
+    }
+
+}
+
+//num为1的时候，让A执行；num为2的时候，让B执行；num为3的时候，让C执行；
+
+class Data3 {
+    private Lock lock = new ReentrantLock();
+    private Condition condition1 = lock.newCondition();
+    private Condition condition2 = lock.newCondition();
+    private Condition condition3 = lock.newCondition();
+    private int num = 1; // 1A 2B 3C
+
+    public void printA() {
+        lock.lock();
+        try {
+            // 业务代码 判断 -> 执行 -> 通知
+            while (num != 1) {
+                condition1.await();
+            }
+            System.out.println(Thread.currentThread().getName() + "==> AAAA" );
+            num = 2;
+            condition2.signal();//唤醒condition2
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            lock.unlock();
+        }
+    }
+    public void printB() {
+        lock.lock();
+        try {
+            // 业务代码 判断 -> 执行 -> 通知
+            while (num != 2) {
+                condition2.await();
+            }
+            System.out.println(Thread.currentThread().getName() + "==> BBBB" );
+            num = 3;
+            condition3.signal();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            lock.unlock();
+        }
+    }
+    public void printC() {
+        lock.lock();
+        try {
+            // 业务代码 判断 -> 执行 -> 通知
+            while (num != 3) {
+                condition3.await();
+            }
+            System.out.println(Thread.currentThread().getName() + "==> CCCC" );
+            num = 1;
+            condition1.signal();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            lock.unlock();
+        }
+    }
+}
+/*
+A==> AAAA
+B==> BBBB
+C==> CCCC
+A==> AAAA
+B==> BBBB
+C==> CCCC
+...
+*/
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==共享模型-管程==
 
 > 解决并发问题的思路-1
 
@@ -1107,12 +3019,22 @@ sleep必须要捕获异常；
 
 synchronized，即俗称的【对象锁】，它采用互斥的方式让同一时刻至多只有一个线程能持有【对象锁】，其它线程再想获取这个【对象锁】时就会阻塞住。这样就能保证拥有锁 的线程可以安全的执行临界区内的代码，不用担心线程上下文切换
 
+> 互斥：
+>
+> 保证临界区的代码片段同一时间内只有一个线程能够执行，不会因为线程的上下文切换导致指令的交错
+
+> 如果共享变量能够**完全被**`synchronized`代码块保护，就不会有可见性、有序性、原子性的相关问题
+>
+> > 虽然也有指令重排，但是由于被完全保护，单线程环境下的指令重排不会出现问题
+
 ```java
 synchronized(对象)
 {
     临界区
 }
 ```
+
+
 
 
 
@@ -2077,45 +3999,1046 @@ public class MyBenchmark {
 
 
 
+## 多把锁
+
+
+
+#### 多把不相干的锁
+
+
+
+> 一间大屋子有两个功能：睡觉、学习，互不相干。 
+>
+> 现在小南要学习，小女要睡觉，但如果只用一间屋子（一个对象锁）的话，那么并发度很低 
+>
+> 解决方法是准备多个房间（多个对象锁）
+
+例如
+
+```java
+class BigRoom {
+    public void sleep() {
+        synchronized (this) {
+            log.debug("sleeping 2 小时");
+            Sleeper.sleep(2);
+        }
+    }
+    public void study() {
+        synchronized (this) {
+            log.debug("study 1 小时");
+            Sleeper.sleep(1);
+        }
+    }
+}
+
+```
+
+执行
+
+```java
+BigRoom bigRoom = new BigRoom();
+new Thread(() -> {
+    bigRoom.study();
+},"小南").start();
+new Thread(() -> {
+    bigRoom.sleep();
+},"小女").start();
+
+```
+
+某次结果
+
+```
+12:13:54.471 [小南] c.BigRoom - study 1 小时
+12:13:55.476 [小女] c.BigRoom - sleeping 2 小时
+
+```
+
+改进
+
+```java
+class BigRoom {
+    private final Object studyRoom = new Object();
+    private final Object bedRoom = new Object();
+    public void sleep() {
+        synchronized (bedRoom) {
+            log.debug("sleeping 2 小时");
+            Sleeper.sleep(2);
+        }
+    }
+    public void study() {
+        synchronized (studyRoom) {
+            log.debug("study 1 小时");
+            Sleeper.sleep(1);
+        }
+    }
+}
+   
+```
+
+某次执行结果
+
+```
+12:15:35.069 [小南] c.BigRoom - study 1 小时
+12:15:35.069 [小女] c.BigRoom - sleeping 2 小时
+```
+
+
+
+**将锁的粒度细分** 
+
+* 好处，是可以**增强并发度** 
+* 坏处，如果一个线程需要同时获得多把锁，就容易发生死锁
+
+
+
+## 活跃性
+
+
+
+### 死锁
+
+如果一个线程需要同时获取多把锁，这时就容易发生死锁 
+
+> 例：
+> `t1线程` 获得 `A对象` 锁，接下来想获取 `B对象` 的锁 `t2线程` 获得 `B对象` 锁，接下来想获取 `A对象` 的锁
+>
+> ```java
+> Object A = new Object();
+> Object B = new Object();
+> Thread t1 = new Thread(() -> {
+>     synchronized (A) {
+>         log.debug("lock A");
+>         sleep(1);
+>         synchronized (B) {
+>             log.debug("lock B");
+>             log.debug("操作...");
+>         }
+>     }
+> }, "t1");
+> 
+> Thread t2 = new Thread(() -> {
+>     synchronized (B) {
+>         log.debug("lock B");
+>         sleep(0.5);
+>         synchronized (A) {
+>             log.debug("lock A");           
+>             log.debug("操作...");
+>         }
+>     }
+> }, "t2");
+> t1.start();
+> t2.start();
+> 
+> ```
+>
+> 结果
+>
+> ```
+> 12:22:06.962 [t2] c.TestDeadLock - lock B
+> 12:22:06.962 [t1] c.TestDeadLock - lock A 
+> ```
+>
+> 
+
+#### 定位死锁
+
+* 检测死锁
+  * 可以使用 jconsole工具，或者
+  * 使用 jps 定位进程 id，再用 jstack 定位死锁：
+
+```cmd
+cmd > jps // 查看当前运行的所有进程
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+12320 Jps
+22816 KotlinCompileDaemon
+33200 TestDeadLock 			// JVM 进程
+11508 Main
+28468 Launcher
+```
+
+
+
+```cmd
+cmd > jstack 33200 // 查看该进程中的线程信息
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8
+2018-12-29 05:51:40
+Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.91-b14 mixed mode):
+
+"DestroyJavaVM" #13 prio=5 os_prio=0 tid=0x0000000003525000 nid=0x2f60 waiting on condition
+[0x0000000000000000]
+ java.lang.Thread.State: RUNNABLE
+
+"Thread-1" #12 prio=5 os_prio=0 tid=0x000000001eb69000 nid=0xd40 waiting for monitor entry
+[0x000000001f54f000]
+   java.lang.Thread.State: BLOCKED (on object monitor) // 线程1阻塞
+		at thread.TestDeadLock.lambda$main$1(TestDeadLock.java:28)
+		- waiting to lock <0x000000076b5bf1c0> (a java.lang.Object) // 等待0x000000076b5bf1c0释放锁
+		- locked <0x000000076b5bf1d0> (a java.lang.Object)
+		at thread.TestDeadLock$$Lambda$2/883049899.run(Unknown Source)
+		at java.lang.Thread.run(Thread.java:745)
+
+"Thread-0" #11 prio=5 os_prio=0 tid=0x000000001eb68800 nid=0x1b28 waiting for monitor entry
+[0x000000001f44f000]
+   java.lang.Thread.State: BLOCKED (on object monitor) // 线程0阻塞
+		at thread.TestDeadLock.lambda$main$0(TestDeadLock.java:15)
+		
+		- waiting to lock <0x000000076b5bf1d0> (a java.lang.Object) // 等待0x000000076b5bf1d0释放锁
+		- locked <0x000000076b5bf1c0> (a java.lang.Object)
+		at thread.TestDeadLock$$Lambda$1/495053715.run(Unknown Source)
+		at java.lang.Thread.run(Thread.java:745)
+
+// 略去部分输出
+
+Found one Java-level deadlock: // 展示找到的死锁信息
+=============================
+"Thread-1":
+  waiting to lock monitor 0x000000000361d378 (object 0x000000076b5bf1c0, a java.lang.Object),
+  which is held by "Thread-0"
+"Thread-0":
+  waiting to lock monitor 0x000000000361e768 (object 0x000000076b5bf1d0, a java.lang.Object),
+  which is held by "Thread-1"
+
+Java stack information for the threads listed above: // 指出出现循环等待的代码位置
+===================================================
+"Thread-1":
+		at thread.TestDeadLock.lambda$main$1(TestDeadLock.java:28)
+		- waiting to lock <0x000000076b5bf1c0> (a java.lang.Object)
+		- locked <0x000000076b5bf1d0> (a java.lang.Object)
+		at thread.TestDeadLock$$Lambda$2/883049899.run(Unknown Source)
+		at java.lang.Thread.run(Thread.java:745)
+"Thread-0":
+		at thread.TestDeadLock.lambda$main$0(TestDeadLock.java:15)
+		- waiting to lock <0x000000076b5bf1d0> (a java.lang.Object)
+		- locked <0x000000076b5bf1c0> (a java.lang.Object)
+		at thread.TestDeadLock$$Lambda$1/495053715.run(Unknown Source)
+		at java.lang.Thread.run(Thread.java:745)
+
+Found 1 deadlock.
+
+```
+
+* 避免死锁要注意加锁顺序 
+* 另外如果由于某个线程进入了死循环，导致其它线程一直等待，对于这种情况 linux 下可以通过 top 先定位到 CPU 占用高的 Java 进程，再利用 top -Hp 进程id 来定位是哪个线程，最后再用 jstack 排查
+
+
+
+#### 哲学家就餐问题
+
+> 一个容易导致死锁的问题
+
+![image-20260131165910184](assets/image-20260131165910184.png)
+
+有五位哲学家，围坐在圆桌旁。 
+
+* 他们只做两件事，思考和吃饭，思考一会吃口饭，吃完饭后接着思考。
+* 吃饭时要用两根筷子吃，桌上共有 5 根筷子，每位哲学家左右手边各有一根筷子。 
+* 如果筷子被身边的人拿着，自己就得等待 
+
+
+
+筷子类：
+
+```java
+class Chopstick {
+    String name;
+    public Chopstick(String name) {
+        this.name = name;
+    }
+    @Override
+    public String toString() {
+        return "筷子{" + name + '}';
+    }
+}
+```
+
+哲学家类：
+
+```java
+class Philosopher extends Thread {
+    Chopstick left;
+    Chopstick right;
+    public Philosopher(String name, Chopstick left, Chopstick right) {
+        super(name);
+        this.left = left;
+        this.right = right;
+    }
+    private void eat() {
+        log.debug("eating...");
+        Sleeper.sleep(1);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            // 获得左手筷子
+            synchronized (left) {
+                // 获得右手筷子
+                synchronized (right) {
+                    // 吃饭
+                    eat();
+                }
+                // 放下右手筷子
+            }
+            // 放下左手筷子
+        }
+    }
+}
+
+```
+
+就餐：
+
+```java
+Chopstick c1 = new Chopstick("1");
+Chopstick c2 = new Chopstick("2");
+Chopstick c3 = new Chopstick("3");
+Chopstick c4 = new Chopstick("4");
+Chopstick c5 = new Chopstick("5");
+
+new Philosopher("苏格拉底", c1, c2).start();
+new Philosopher("柏拉图", c2, c3).start();
+new Philosopher("亚里士多德", c3, c4).start();
+new Philosopher("赫拉克利特", c4, c5).start();
+new Philosopher("阿基米德", c5, c1).start();
+```
+
+执行不多会，就执行不下去了
+
+```
+12:33:15.575 [苏格拉底] c.Philosopher - eating...
+12:33:15.575 [亚里士多德] c.Philosopher - eating...
+12:33:16.580 [阿基米德] c.Philosopher - eating...
+12:33:17.580 [阿基米德] c.Philosopher - eating...
+// 卡在这里, 不向下运行
+```
+
+使用 jconsole 检测死锁，发现
+
+```java
+-------------------------------------------------------------------------
+名称: 阿基米德
+状态: cn.itcast.Chopstick@1540e19d (筷子1) 上的BLOCKED, 拥有者: 苏格拉底
+总阻止数: 2, 总等待数: 1
+堆栈跟踪:
+cn.itcast.Philosopher.run(TestDinner.java:48)
+ - 已锁定 cn.itcast.Chopstick@6d6f6e28 (筷子5)
+-------------------------------------------------------------------------
+名称: 苏格拉底
+状态: cn.itcast.Chopstick@677327b6 (筷子2) 上的BLOCKED, 拥有者: 柏拉图
+总阻止数: 2, 总等待数: 1
+堆栈跟踪:
+cn.itcast.Philosopher.run(TestDinner.java:48)
+ - 已锁定 cn.itcast.Chopstick@1540e19d (筷子1)
+-------------------------------------------------------------------------
+名称: 柏拉图
+状态: cn.itcast.Chopstick@14ae5a5 (筷子3) 上的BLOCKED, 拥有者: 亚里士多德
+总阻止数: 2, 总等待数: 0
+堆栈跟踪:
+cn.itcast.Philosopher.run(TestDinner.java:48)
+ - 已锁定 cn.itcast.Chopstick@677327b6 (筷子2)
+-------------------------------------------------------------------------
+名称: 亚里士多德
+状态: cn.itcast.Chopstick@7f31245a (筷子4) 上的BLOCKED, 拥有者: 赫拉克利特
+总阻止数: 1, 总等待数: 1
+堆栈跟踪:
+cn.itcast.Philosopher.run(TestDinner.java:48)
+ - 已锁定 cn.itcast.Chopstick@14ae5a5 (筷子3)
+-------------------------------------------------------------------------
+名称: 赫拉克利特
+状态: cn.itcast.Chopstick@6d6f6e28 (筷子5) 上的BLOCKED, 拥有者: 阿基米德
+总阻止数: 2, 总等待数: 0
+堆栈跟踪:
+cn.itcast.Philosopher.run(TestDinner.java:48)
+ - 已锁定 cn.itcast.Chopstick@7f31245a (筷子4)
+```
+
+这种线程没有按预期结束，执行不下去的情况，归类为【活跃性】问题，除了死锁以外，还有活锁和饥饿者两种情 况
+
+
+
+#### 活锁
+
+活锁出现在两个线程互相改变对方的结束条件，最后谁也无法结束，例如
+
+```java
+public class TestLiveLock {
+    static volatile int count = 10;
+    static final Object lock = new Object();
+    public static void main(String[] args) {
+        new Thread(() -> { 
+            // 期望减到 0 退出循环
+            while (count > 0) {
+                sleep(0.2);
+                count--;
+                log.debug("count: {}", count);
+            }
+        }, "t1").start();
+        new Thread(() -> {
+            // 期望超过 20 退出循环
+            while (count < 20) {
+                sleep(0.2);
+                count++;
+                log.debug("count: {}", count);
+            }
+        }, "t2").start();
+    }
+}
+
+```
+
+> **也可以使用随机睡眠时间的方法来避免活锁**
+
+
+
+
+
+
+
+#### 饥饿者
+
+很多教程中把饥饿定义为，一个线程由于优先级太低，始终得不到 CPU 调度执行，也不能够结束，饥饿的情况不易演示，讲读写锁时会涉及饥饿问题 
+
+下面我讲一下我遇到的一个线程饥饿的例子，先来看看**使用顺序加锁的方式解决之前的死锁问题**
+
+![image-20260131171303124](assets/image-20260131171303124.png)
+
+![image-20260131171315848](assets/image-20260131171315848.png)
+
+但是顺序加锁容易产生饥饿问题
+
+
+
+
+
+
+
+
+
+## ReentrantLock
+
+可重入锁
+
+> 死锁、饥饿都可以用ReentrantLock解决
+>
+> 公平锁，可以避免饥饿现象
+
+
+
+相对于 synchronized 它具备如下特点 
+
+* 可中断 
+
+  > 这里的中断是指别的线程可以破坏你的blocking状态，而不是指自己中断阻塞状态
+
+* 可以设置超时时间 
+
+* 可以设置为公平锁 
+
+* 支持多个条件变量 
+
+  > 支持多个WaitSet，Synchronized支持一个WaitSet
+
+**与 synchronized 一样，都支持可重入**
+
+
+
+基本语法
+
+```java
+ReentrantLock lock = new ReentrantLock();
+// 获取锁
+lock.lock();
+try {
+    // 临界区代码
+} finally {
+    // 释放锁
+    reentrantLock.unlock(); // 保证是否有异常都会正常释放锁
+}
+
+```
+
+> synchronized是关键字级别，ReentranLock是对象级别保护临界区  需要创建对象
+
+> 在try块外面创建 （阿里规范）
+
+
+
+
+
+
+
+
+
+#### 可重入
+
+可重入是指同一个线程如果首次获得了这把锁，那么因为它是这把锁的拥有者，因此有权利再次获取这把锁 
+
+如果是不可重入锁，那么第二次获得锁时，自己也会被锁挡住
+
+```java
+static ReentrantLock lock = new ReentrantLock();
+public static void main(String[] args) {
+    method1();
+}
+public static void method1() {
+    lock.lock();
+    try {
+        log.debug("execute method1");
+        method2();
+    } finally {
+        lock.unlock();
+    }
+}
+public static void method2() {
+    lock.lock();
+    try {
+        log.debug("execute method2");
+        method3();
+    } finally {
+        lock.unlock();
+    }
+}
+public static void method3() {
+    lock.lock();
+    try {
+        log.debug("execute method3");
+    } finally {
+        lock.unlock();
+    }
+}
+```
+
+输出
+
+```
+17:59:11.862 [main] c.TestReentrant - execute method1
+17:59:11.865 [main] c.TestReentrant - execute method2
+17:59:11.865 [main] c.TestReentrant - execute method3 
+```
+
+
+
+#### 可打断
+
+示例
+
+```java
+ReentrantLock lock = new ReentrantLock();
+Thread t1 = new Thread(() -> {
+    debug("启动...");
+    try {
+        lock.lockInterruptibly(); // lockInterruptibly()方法是可打断的，lock()方法是不可打断的
+        // 【如果没有竞争，那么此方法就会获取lock对象锁】
+        // 【如果其他线程持有了锁，那么就会进入阻塞队列，可以被其他线程用interrupt打断阻塞状态】
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+        log.debug("等锁的过程中被打断");
+        return;
+    }
+    try {
+        log.debug("获得了锁");
+    } finally {
+        lock.unlock();
+    }
+}, "t1");
+
+lock.lock();
+log.debug("获得了锁");
+t1.start();
+try {
+    sleep(1);
+    t1.interrupt(); // 打断t1
+    log.debug("执行打断");
+} finally {
+    lock.unlock();
+}
+```
+
+输出
+
+```
+18:02:40.520 [main] c.TestInterrupt - 获得了锁
+18:02:40.524 [t1] c.TestInterrupt - 启动...
+18:02:41.530 [main] c.TestInterrupt - 执行打断
+java.lang.InterruptedException
+ at
+java.util.concurrent.locks.AbstractQueuedSynchronizer.doAcquireInterruptibly(AbstractQueuedSynchr
+onizer.java:898)
+ at
+java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireInterruptibly(AbstractQueuedSynchron
+izer.java:1222)
+ at java.util.concurrent.locks.ReentrantLock.lockInterruptibly(ReentrantLock.java:335)
+ at cn.itcast.n4.reentrant.TestInterrupt.lambda$main$0(TestInterrupt.java:17)
+ at java.lang.Thread.run(Thread.java:748)
+18:02:41.532 [t1] c.TestInterrupt - 等锁的过程中被打断
+```
+
+* 作用：防止无限制地在阻塞队列等待下去 (可用于打断死锁)
+* 被打断之后会抛出 `InterruptedException` 异常
+
+> synchorized的被打断：设置打断标识，根据打断标记是否为true来手动break或return
+>
+> 
+
+
+
+
+
+注意如果是不可中断模式，那么即使使用了 interrupt 也不会让等待中断
+
+```java
+ReentrantLock lock = new ReentrantLock();
+Thread t1 = new Thread(() -> {
+    log.debug("启动...");
+    lock.lock();
+    try {
+        log.debug("获得了锁");
+    } finally {
+        lock.unlock();
+    }
+}, "t1");
+
+lock.lock();
+log.debug("获得了锁");
+t1.start();
+
+try {
+    sleep(1);
+    t1.interrupt();
+    log.debug("执行打断");
+    sleep(1);
+} finally {
+    log.debug("释放了锁");
+    lock.unlock();
+}
+
+```
+
+输出
+
+```
+18:06:56.261 [main] c.TestInterrupt - 获得了锁
+18:06:56.265 [t1] c.TestInterrupt - 启动...
+18:06:57.266 [main] c.TestInterrupt - 执行打断 // 这时 t1 并没有被真正打断, 而是仍继续等待锁
+18:06:58.267 [main] c.TestInterrupt - 释放了锁
+18:06:58.267 [t1] c.TestInterrupt - 获得了锁
+```
+
+
+
+#### 锁超时
+
+如果持有锁的的线程超过一定时间，就不继续等待 放弃等待，此次获取锁失败
+
+* `tryLock()` 
+
+  * 返回布尔值，false表示获取失败
+
+  > 源码：
+  >
+  > ![image-20260131202558856](assets/image-20260131202558856.png)
+
+* `lock.tryLock(1, TimeUnit.SECONDS)`——可设置等待时间
+
+  如果等待时间内能获取到锁，就会停止等待  方法返回`true`
+
+  > 需要用`try catch`捕获`InterruptedException`异常
+
+  > `tryLock`方法也是可打断的
+
+  > 源码：
+  >
+  > ![image-20260131201834053](assets/image-20260131201834053.png)
+  >
+  > 1. **参数转换**：首先将时间参数转换为纳秒单位，unit.toNanos(time) 将传入的时间转换成纳秒。
+  > 2. **调用 AQS 的 tryAcquireNanos 方法**：这是 AbstractQueuedSynchronizer(AQS) 类中的一个核心方法，实现了带有超时功能的尝试获取同步状态。
+  > 3. **AQS 的 tryAcquireNanos 实现逻辑**：
+  >    * 首先检查当前线程是否被中断，如果是则抛出 [InterruptedException](file:///C:/Program Files/Java/jdk-17.0.5/lib/src/java.base/java/lang/InterruptedException.java#L54-L86)
+  >    * 调用 tryAcquire 方法尝试立即获取锁，如果成功直接返回 true
+  >    * 如果获取失败，计算超时截止时间
+  >    * 将当前线程封装成节点加入到同步队列中
+  >    * **在循环中持续尝试获取锁，直到成功或超时时间到达**
+  >    * 如果超时仍未获取到锁，返回 false
+  > 4. **超时机制**：该方法会在指定的时间内不断尝试获取锁，如果在超时时间内成功获取锁则返回 true，否则返回 false。
+
+* 
+
+
+
+
+
+
+
+**1.立刻失败**
+
+```java
+ReentrantLock lock = new ReentrantLock();
+Thread t1 = new Thread(() -> {
+    log.debug("t1线程启动...");
+    if (!lock.tryLock()) {
+        log.debug("获取立刻失败，返回");
+        return;
+    }
+    try {
+        log.debug("获得了锁");
+    } finally {
+        lock.unlock();
+    }
+}, "t1");
+lock.lock();
+log.debug("主线程获得了锁");
+
+t1.start();
+try {
+    sleep(2);
+} finally {
+    lock.unlock();
+}
+
+```
+
+输出
+
+```
+18:15:02.918 [main] c.TestTimeout - 主线程获得了锁
+18:15:02.921 [t1] c.TestTimeout - t1线程启动...
+18:15:02.921 [t1] c.TestTimeout - 获取立刻失败，返回
+```
+
+
+
+**2.超时失败**
+
+```java
+ReentrantLock lock = new ReentrantLock();
+Thread t1 = new Thread(() -> {
+    log.debug("启动...");
+    try {
+        if (!lock.tryLock(1, TimeUnit.SECONDS)) {
+            log.debug("获取等待 1s 后失败，返回");
+            return;
+        }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+        log.debug("获取不到锁");
+        return ;
+    }
+    try {
+        log.debug("获得了锁");
+    } finally {
+        lock.unlock();
+    }
+}, "t1");
+
+lock.lock();
+log.debug("获得了锁");
+t1.start();
+try {
+    sleep(2);
+} finally {
+    lock.unlock();
+}
+
+
+
+
+
+```
+
+输出
+
+```
+18:19:40.537 [main] c.TestTimeout - 获得了锁
+18:19:40.544 [t1] c.TestTimeout - 启动...
+18:19:41.547 [t1] c.TestTimeout - 获取等待 1s 后失败，返回
+```
+
+
+
+**使用 tryLock 解决哲学家就餐问题**
+
+* 继承 `ReentrantLock`
+* 使用 `tryLock()`或`tryLock(n,TimeUnit.SECONDS)`
+* 如果不能同时获取到两个锁，就会释放锁，不会导致死锁问题
+
+```java
+class Chopstick extends ReentrantLock {
+    String name;
+    public Chopstick(String name) {
+        this.name = name;
+    }
+    @Override
+    public String toString() {
+        return "筷子{" + name + '}';
+    }
+}
+
+class Philosopher extends Thread {
+    Chopstick left;
+    Chopstick right;
+    public Philosopher(String name, Chopstick left, Chopstick right) {
+        super(name);
+        this.left = left;
+        this.right = right;
+    }
+    @Override
+    public void run() {
+        while (true) {
+            // 尝试获得左手筷子
+            if (left.tryLock()) {
+                try {
+                    // 尝试获得右手筷子
+                    if (right.tryLock()) {
+                        try {
+                            eat();
+                        } finally {
+                            // 释放锁
+                            right.unlock();
+                        }
+                    }
+                } finally {
+                    // 释放锁
+                    left.unlock();
+                }
+            }
+        }
+    }
+    private void eat() {
+        log.debug("eating...");
+        Sleeper.sleep(1);
+    }
+}
+
+```
+
+
+
+#### 公平锁
+
+ReentrantLock 默认是不公平的
+
+```java
+ReentrantLock lock = new ReentrantLock(false);
+lock.lock();
+
+for (int i = 0; i < 500; i++) {
+    new Thread(() -> {
+        lock.lock();
+        try {
+          System.out.println(Thread.currentThread().getName() + " running...");
+        } finally {
+            lock.unlock();
+        }
+    }, "t" + i).start();
+}
+
+// 1s 之后去争抢锁
+Thread.sleep(1000);
+new Thread(() -> {
+    System.out.println(Thread.currentThread().getName() + " start...");
+    lock.lock();
+    try {
+        System.out.println(Thread.currentThread().getName() + " running...");
+    } finally {
+        lock.unlock();
+    }
+}, "强行插入").start();
+lock.unlock();
+```
+
+强行插入，有机会在中间输出
+
+> 注意：该实验不一定总能复现
+
+```
+t39 running...
+t40 running...
+t41 running...
+t42 running...
+t43 running...
+强行插入 start...
+强行插入 running...
+t44 running...
+t45 running...
+t46 running...
+t47 running...
+t49 running... 
+```
+
+改为公平锁后 （`ReentrantLock lock = new ReentrantLock(true);`）
+
+强行插入，总是在最后输出
+
+```
+t465 running...
+t464 running...
+t477 running...
+t442 running...
+t468 running...
+t493 running...
+t482 running...
+t485 running...
+t481 running...
+强行插入 running... 
+```
+
+公平锁意图是解决饥饿问题；
+
+但是公平锁一般没有必要，会降低并发度，后面分析原理时会讲解
+
+> 可以使用tryLock，立刻失败/超时失败，让其他线程先处理
+
+
+
+
+
+#### 条件变量
+
+synchronized 中也有条件变量，就是我们讲原理时那个 waitSet 休息室，当条件不满足时进入 waitSet 等待
+
+ReentrantLock 的条件变量比 synchronized 强大之处在于，它是支持多个条件变量的，这就好比 
+
+* synchronized 是那些不满足条件的线程都在一间休息室等消息 
+* 而 ReentrantLock 支持多间休息室，有专门等烟的休息室、专门等早餐的休息室、唤醒时也是按休息室来唤醒 
+
+使用要点： 
+
+* await 前需要获得锁 
+* await 执行后，会释放锁，进入 conditionObject 等待 
+* await 的线程被唤醒（或打断、或超时），会重新竞争 lock 锁 
+* 竞争 lock 锁成功后，从 await 后继续执行
+
+
+
+例子
+
+```java
+// static final Object room = new Object();
+static ReentrantLock lock = new ReentrantLock();
+// 创建条件队列
+static Condition waitCigaretteQueue = lock.newCondition();
+static Condition waitbreakfastQueue = lock.newCondition();
+
+static volatile boolean hasCigrette = false;
+static volatile boolean hasBreakfast = false;
+public static void main(String[] args) {
+    new Thread(() -> {
+        try {
+            lock.lock();
+            while (!hasCigrette) {
+                try {
+                    waitCigaretteQueue.await(); // 到指定的条件队列等待
+                    // room.wait()
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.debug("等到了它的烟，可以开始干活了");
+        } finally {
+            lock.unlock();
+        }
+    }).start();
+    new Thread(() -> {
+        try {
+            lock.lock();
+            while (!hasBreakfast) {
+                try {
+                    waitbreakfastQueue.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            log.debug("等到了它的早餐，可以开始干活了");
+        } finally {
+            lock.unlock();
+        }
+    }).start();
+    sleep(1);
+    sendBreakfast(); // 送早餐
+    sleep(1);
+    sendCigarette(); // 送烟
+}
+private static void sendCigarette() {
+    lock.lock();
+    try {
+        log.debug("送烟来了");
+        hasCigrette = true;
+        // 唤醒指定“休息室”里面的线程
+        waitCigaretteQueue.signal();
+    } finally {
+        lock.unlock();
+    }
+}
+private static void sendBreakfast() {
+    lock.lock();
+    try {
+        log.debug("送早餐来了");
+        hasBreakfast = true;
+        waitbreakfastQueue.signal();
+    } finally {
+        lock.unlock();
+    }
+}
+
+```
+
+> **源码**：
+>
+> Condition接口类：
+>
+> ![image-20260131210014077](assets/image-20260131210014077.png)
+>
+> AbstractQueuedSynchronizer实现类
+>
+> ![image-20260131210116343](assets/image-20260131210116343.png)
+>
+> 底层基于队列
+>
+> ![image-20260131210149977](assets/image-20260131210149977.png)
+> 
+
+
+
+### ReentrantLock原理
+
+> 在Java层面实现Monitor
+
+
+
+
+
+# ==共享模型-内存==
+
+
+
+
+
+
+
 
 
 
 
 ## JMM
 
-#### 1）对Volatile 的理解
 
-**Volatile** 是 Java 虚拟机提供 **<u>轻量级</u>的同步机制**
 
-**1、保证可见性
-2、不保证原子性
-3、禁止指令重排**
+#### 什么是JMM
+
+**JMM：JAVA内存模型**——Java Memory Model，它定义了主存、工作内存抽象概念，<u>底层对应着</u> CPU 寄存器、缓存、硬件内存、 CPU 指令优化等
 
 
 
+JMM 体现在以下几个方面 
 
-
-**如何实现可见性**
-
-volatile变量修饰的共享变量在进行写操作的时候回多出一行汇编：
-
-0x01a3de1d:movb $0×0，0×1104800（%esi）;0x01a3de24**:lock** addl $0×0,(%esp);
-
-Lock前缀的指令在多核处理器下会引发两件事情。
-
- 1）将当前处理器缓存行的数据写回到系统内存。
-
- 2）这个写回内存的操作会使其他cpu里缓存了该内存地址的数据无效。
-
-**多处理器总线嗅探：**
-
-为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存后再进行操作，但操作不知道何时会写到内存。如果对声明了**volatile**的变量进行写操作，JVM就会向处理器发送一条lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存。但是在**多处理器下**，为了保证各个处理器的缓存是一致的，就会实现缓存缓存一致性协议，**每个处理器通过嗅探在总线上传播的数据来检查自己的缓存值是不是过期了，如果处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置无效状态**，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据库读到处理器缓存中。
+* 原子性 - 保证指令不会受到线程上下文切换的影响 
+* 可见性 - 保证指令不会受 cpu 缓存的影响 
+* 有序性 - 保证指令不会受 cpu 指令并行优化的影响
 
 
 
-#### 2）什么是JMM
 
-**JMM：JAVA内存模型**——Java Memory Model
 
 **关于JMM的一些同步的约定：**
 
@@ -2161,6 +5084,899 @@ Lock前缀的指令在多核处理器下会引发两件事情。
 - 如果一个变量没有被lock，就不能对其进行unlock操作。也不能unlock一个被其他线程锁住的变量对一个变量进行unlock操作之前，必须把此变量同步回主内存
   问题： 程序不知道主内存的值已经被修改过了
   ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021013020545399.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzc1ODYzMw==,size_16,color_FFFFFF,t_70)
+
+
+
+### 可见性
+
+
+
+> #### 退不出的循环 
+>
+> 先来看一个现象，main 线程对 run 变量的修改对于 t 线程不可见，导致了 t 线程无法停止：
+>
+> ```java
+> static boolean run = true;
+> public static void main(String[] args) throws InterruptedException {
+>     Thread t = new Thread(()->{
+>         while(run){
+>             // ....
+>         }
+>     });
+>     t.start();
+>     sleep(1);
+>     run = false; // 线程t不会如预想的停下来
+> }
+> 
+> ```
+>
+> > 停下来的同学可能是在while里面加了println吧，因为println是一个线程安全的方法 ，底层有synchronized，而synchronized保证了可见性，不会一直循环
+
+为什么呢？分析一下： 
+
+1. 初始状态， t 线程刚开始从主内存读取了 run 的值到工作内存。
+
+   ![image-20260201100729892](assets/image-20260201100729892.png)
+
+2. 因为 t 线程要频繁从主内存中读取 run 的值，JIT 编译器会将 run 的值缓存至自己工作内存中的高速缓存中， 减少对主存中 run 的访问，提高效率
+
+   ![image-20260201100747600](assets/image-20260201100747600.png)
+
+3. 1 秒之后，main 线程修改了 run 的值，并**同步至主存**，而 t 是从**自己工作内存中的高速缓存中**读取这个变量 的值，结果永远是旧值
+
+   ![image-20260201100823527](assets/image-20260201100823527.png)
+
+
+
+**解决方法**
+
+**1.volatile（易变关键字）** 
+
+> 能保证可见性，不能保证原子性，适合一写多读的场景
+
+```java
+volatile static boolean run = true;
+public static void main(String[] args) throws InterruptedException {
+    Thread t = new Thread(()->{
+        while(run){
+            // ....
+        }
+    });
+    t.start();
+    sleep(1);
+    run = false; // 线程t会如预想的停下来
+}
+```
+
+
+
+- volatile 变量在修改后，会插入**写屏障（StoreBarrier）**，强制将该变量的最新值从 CPU 缓存写回主内存；
+- 同时，通过**缓存一致性协议（如 Intel 的 MESI 协议）**，其他 CPU 核心会感知到该变量的缓存行已失效（Invalid），在下一次读取时必须从主内存重新加载最新值；
+- 读取 volatile 变量前会插入**读屏障（LoadBarrier）**，确保不会使用过期的缓存值，而是从主内存或最新缓存中获取。
+
+> 因此，volatile 的可见性并非“跳过缓存直接操作主存”，而是通过**控制缓存同步时机**和**禁止指令重排序**，保证多线程环境下变量的修改对所有线程立即可见。
+>
+> 
+
+**2.synchronized**
+
+```java
+static boolean run = true;
+final Object lock = new Object();
+public static void main(String[] args) throws InterruptedException {
+    Thread t = new Thread(()->{
+        while(true){
+            // ....
+            synchronized(lock) {
+                if(!run){
+                    break;
+                }
+            }
+        }
+    });
+    t.start();
+    sleep(1);
+    synchronized(lock) {
+        run = false; // 线程t会如预想的停下来
+    }
+}
+```
+
+> 两者都能保证可见性，但是synchronized更重、需要关联Monitor，volatile更轻量
+>
+> 
+
+
+
+**可见性 vs 原子性**
+
+前面例子体现的实际就是可见性，它保证的是在多个线程之间，一个线程对 volatile 变量的修改对另一个线程可 见， 不能保证原子性，仅用在一个写线程，多个读线程的情况： 上例从字节码理解是这样的：
+
+```
+getstatic run // 线程 t 获取 run true
+getstatic run // 线程 t 获取 run true
+getstatic run // 线程 t 获取 run true
+getstatic run // 线程 t 获取 run true
+putstatic run // 线程 main 修改 run 为 false， 仅此一次
+getstatic run // 线程 t 获取 run false 
+```
+
+思考一下之前我们将线程安全时举的例子：两个线程一个 i++ 一个 i-- ，是否能用volatile解决？
+
+> 不能 volatile 只能保证看到最新值，不能解决指令交错
+
+```cmd
+/ 假设i的初始值为0
+getstatic 	i // 线程2-获取静态变量i的值 线程内i=0
+
+getstatic 	i // 线程1-获取静态变量i的值 线程内i=0
+iconst_1 	  // 线程1-准备常量1
+iadd 		  // 线程1-自增 线程内i=1
+putstatic   i // 线程1-将修改后的值存入静态变量i 静态变量i=1
+
+iconst_1 	  // 线程2-准备常量1
+isub 		  // 线程2-自减 线程内i=-1
+putstatic   i // 线程2-将修改后的值存入静态变量i 静态变量i=-1 
+
+```
+
+> **注意** synchronized 语句块既可以保证代码块的原子性，也同时保证代码块内变量的可见性。但缺点是 synchronized 是属于重量级操作，性能相对更低 
+>
+> 如果在前面示例的死循环中加入 System.out.println() 会发现即使不加 volatile 修饰符，线程 t 也能正确看到 对 run 变量的修改了，想一想为什么？
+>
+> ![image-20260201110954164](assets/image-20260201110954164.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### volatile 原理
+
+volatile 的底层实现原理是内存屏障，Memory Barrier（Memory Fence） 
+
+* 对 volatile 变量的写指令后会加入写屏障 
+* 对 volatile 变量的读指令前会加入读屏障
+
+
+
+##### 1.如何保证可见性
+
+* 写屏障（sfence）保证在该屏障之前的，对共享变量的改动，都同步到主存当中
+
+```java
+public void actor2(I_Result r) {
+    num = 2;
+    ready = true; // (ready被volatile修饰)
+    // 写屏障加在赋值操作之后
+}
+```
+
+* 而读屏障（lfence）保证在该屏障之后，对共享变量的读取，加载的是主存中最新数据(从主存加载最新数据到高速缓存中)
+
+```java
+public void actor1(I_Result r) {
+    // 读屏障加在读取操作之前
+    if(ready) {
+        r.r1 = num + num;
+    } else {
+        r.r1 = 1;
+    }
+}
+```
+
+![image-20260201151101139](assets/image-20260201151101139.png)
+
+
+
+##### 2.如何保证有序性
+
+* 写屏障会确保指令重排序时，不会将写屏障之前的代码排在写屏障之后
+
+```java
+public void actor2(I_Result r) {
+    num = 2;
+    ready = true; // (ready被volatile修饰)
+    // 写屏障
+}
+
+```
+
+* 读屏障会确保指令重排序时，不会将读屏障之后的代码排在读屏障之前
+
+```java
+public void actor1(I_Result r) {
+    // 读屏障
+    if(ready) {
+        r.r1 = num + num;
+    } else {
+        r.r1 = 1;
+    }
+}
+```
+
+![image-20260201151236530](assets/image-20260201151236530.png)
+
+还是那句话，不能解决指令交错(保证了有序性和可见性，不能保证原子性)： 
+
+* 写屏障仅仅是保证之后的读能够读到最新的结果，但不能保证读跑到它前面去 
+* 而有序性的保证也只是保证了本线程内相关代码不被重排序
+
+
+
+![image-20260201151315033](assets/image-20260201151315033.png)
+
+##### 3.double-checked locking 问题
+
+以著名的 double-checked locking 单例模式为例`
+
+```java
+public final class Singleton {
+    private Singleton() { }
+    private static Singleton INSTANCE = null;
+    public static Singleton getInstance() {
+        if(INSTANCE == null) { // 因为只有第一次之后的使用不需要线程安全保护；两次检查，只让第一次访问的时候加锁
+            // t2
+            // 首次访问会同步，而之后的使用不需要线程安全保护
+            synchronized(Singleton.class) {
+                if (INSTANCE == null) { // t1
+                    INSTANCE = new Singleton();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+}
+
+```
+
+以上的实现特点是：
+
+* 懒惰实例化 
+* 首次使用 getInstance() 才使用 synchronized 加锁，后续使用时无需加锁 
+* 有隐含的，但很关键的一点：第一个 if 使用了 INSTANCE 变量，是在同步块之外
+
+但在多线程环境下，上面的代码是有问题的，getInstance 方法对应的字节码为：
+
+> 由于synchronized代码块之外的INSTANCE变量不受保护，由于会有指令重排，可能导致问题
+
+```
+0: getstatic 		#2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+3: ifnonnull 		37
+6: ldc 				#3 // class cn/itcast/n5/Singleton
+8: dup
+9: astore_0
+10: monitorenter
+11: getstatic 		#2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+14: ifnonnull 		27
+
+17: new 			#3 // class cn/itcast/n5/Singleton
+20: dup
+21: invokespecial 	#4 // Method "<init>":()V
+24: putstatic 		#2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+
+27: aload_0
+28: monitorexit
+29: goto 37
+32: astore_1
+33: aload_0
+34: monitorexit
+35: aload_1
+36: athrow
+37: getstatic 		#2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+40: areturn
+```
+
+其中 
+
+* 17 表示创建对象，将对象引用入栈 // new Singleton 
+* 20 表示复制一份对象引用 // 引用地址 
+* 21 表示利用一个对象引用，调用构造方法 
+* 24 表示利用一个对象引用，赋值给 static INSTANCE 
+
+也许 jvm 会优化为：先执行 24，再执行 21。如果两个线程 t1，t2 按如下时间序列执行：
+
+![image-20260201151645710](assets/image-20260201155851561.png)关键在于 0: getstatic 这行代码在 monitor 控制之外，它就像之前举例中不守规则的人，可以越过 monitor 读取 INSTANCE 变量的值 
+
+**这时 t1 还未完全将构造方法执行完毕，如果在构造方法中要执行很多初始化操作，那么 t2 拿到的是将是一个未初 始化完毕的单例** 
+
+([05.016-volatile-原理-dcl-问题分析_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV16J411h7Rd?spm_id_from=333.788.player.switch&vd_source=67ef3bb4c8d68a96408acdaa865b1313&p=149))
+
+对 INSTANCE 使用 volatile 修饰即可，可以禁用指令重排，但要注意在 JDK 5 以上的版本的 volatile 才会真正有效
+
+
+
+![image-20260201155812432](assets/image-20260201155812432.png)
+
+
+
+
+
+
+
+##### 4.double-checked locking 解决
+
+加入`volatile`关键字
+
+```java
+public final class Singleton {
+    private Singleton() { }
+    private static volatile Singleton INSTANCE = null;
+    public static Singleton getInstance() {
+        // 实例没创建，才会进入内部的 synchronized代码块
+        if (INSTANCE == null) {
+            synchronized (Singleton.class) { 
+                // t2
+                // 也许有其它线程已经创建实例，所以再判断一次
+                if (INSTANCE == null) { // t1
+                    INSTANCE = new Singleton();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+}
+
+```
+
+
+
+```
+// -------------------------------------> 加入对 INSTANCE 变量的读屏障
+0: getstatic #2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+
+3: ifnonnull 37
+6: ldc #3 // class cn/itcast/n5/Singleton
+8: dup
+9: astore_0
+10: monitorenter -----------------------> 保证原子性、可见性
+11: getstatic #2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+14: ifnonnull 27
+17: new #3 // class cn/itcast/n5/Singleton
+20: dup
+21: invokespecial #4 // Method "<init>":()V
+24: putstatic #2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+// -------------------------------------> 加入对 INSTANCE 变量的写屏障
+27: aload_0
+28: monitorexit ------------------------> 保证原子性、可见性
+29: goto 37
+32: astore_1
+33: aload_0
+34: monitorexit
+35: aload_1
+36: athrow
+37: getstatic #2 // Field INSTANCE:Lcn/itcast/n5/Singleton;
+40: areturn
+```
+
+如上面的注释内容所示，读写 volatile 变量时会加入内存屏障（Memory Barrier（Memory Fence）），保证下面 两点： 
+
+* 可见性 
+  * 写屏障（sfence）保证在该屏障之前的 t1 对共享变量的改动，都同步到主存当中 
+  * 而读屏障（lfence）保证在该屏障之后 t2 对共享变量的读取，加载的是主存中最新数据 
+* 有序性 
+  * 写屏障会确保指令重排序时，不会将写屏障之前的代码排在写屏障之后 
+  * 读屏障会确保指令重排序时，不会将读屏障之后的代码排在读屏障之前 
+* 更底层是读写变量时使用 lock 指令来多核 CPU 之间的可见性与有序性
+
+![image-20260201151908548](assets/image-20260201151908548.png)
+
+保证了getStatic 获取引用的时候获取到的一定是构造完成的对象
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 对Volatile 的理解
+
+**Volatile** 是 Java 虚拟机提供 **轻量级的同步机制**
+
+**1、保证可见性 2、不保证原子性 3、禁止指令重排**
+
+
+
+
+
+**如何实现可见性**
+
+volatile变量修饰的共享变量在进行写操作的时候回多出一行汇编：
+
+0x01a3de1d:movb $0×0，0×1104800（%esi）;0x01a3de24**:lock** addl $0×0,(%esp);
+
+Lock前缀的指令在多核处理器下会引发两件事情。
+
+ 1）将当前处理器缓存行的数据写回到系统内存。
+
+ 2）这个写回内存的操作会使其他cpu里缓存了该内存地址的数据无效。
+
+**多处理器总线嗅探：**
+
+为了提高处理速度，处理器不直接和内存进行通信，而是先将系统内存的数据读到内部缓存后再进行操作，但操作不知道何时会写到内存。如果对声明了**volatile**的变量进行写操作，JVM就会向处理器发送一条lock前缀的指令，将这个变量所在缓存行的数据写回到系统内存。但是在**多处理器下**，为了保证各个处理器的缓存是一致的，就会实现缓存缓存一致性协议，**每个处理器通过嗅探在总线上传播的数据来检查自己的缓存值是不是过期了，如果处理器发现自己缓存行对应的内存地址被修改，就会将当前处理器的缓存行设置无效状态**，当处理器对这个数据进行修改操作的时候，会重新从系统内存中把数据库读到处理器缓存中。
+
+
+
+### 有序性
+
+JVM 会在不影响正确性的前提下，可以调整语句的执行顺序(指令重排)，思考下面一段代码
+
+```java
+static int i;
+static int j;
+// 在某个线程内执行如下赋值操作
+i = ...;
+j = ...; 
+
+```
+
+可以看到，至于是先执行 i 还是 先执行 j ，对最终的结果不会产生影响。所以，上面代码真正执行时，既可以是
+
+```java
+i = ...;
+j = ...;
+```
+
+也可以是
+
+```java
+j = ...;
+i = ...; 
+```
+
+这种特性称之为『指令重排』
+
+
+
+**多线程下『指令重排』会影响正确性：**
+
+```java
+int num = 0;
+boolean ready = false;
+// 线程1 执行此方法
+public void actor1(I_Result r) {
+    if(ready) {
+        r.r1 = num + num;
+    } else {
+        r.r1 = 1;
+    }
+}
+
+// 线程2 执行此方法
+public void actor2(I_Result r) {
+    num = 2;
+    ready = true;
+}
+```
+
+I_Result 是一个对象，有一个属性 r1 用来保存结果，问，可能的结果有几种？ 
+
+有同学这么分析 
+
+情况1：线程1 先执行，这时 ready = false，所以进入 else 分支结果为 1 
+
+情况2：线程2 先执行 num = 2，但没来得及执行 ready = true，线程1 执行，还是进入 else 分支，结果为1 
+
+情况3：线程2 执行到 ready = true，线程1 执行，这回进入 if 分支，结果为 4（因为 num 已经执行过了） 
+
+但我告诉你，结果还有可能是 0 😁😁😁，信不信吧！ 
+
+这种情况下是：线程2 执行 ready = true，切换到线程1，进入 if 分支，相加为 0，再切回线程2 执行 num = 2 
+
+相信很多人已经晕了 😵😵😵 
+
+这种现象叫做指令重排，是 JIT 编译器在运行时的一些优化，这个现象需要通过大量测试才能复现： 
+
+> 借助 java 并发压测工具 jcstress https://wiki.openjdk.java.net/display/CodeTools/jcstress
+>
+> ```
+> mvn archetype:generate -DinteractiveMode=false -DarchetypeGroupId=org.openjdk.jcstress -
+> DarchetypeArtifactId=jcstress-java-test-archetype -DarchetypeVersion=0.5 -DgroupId=cn.itcast -
+> DartifactId=ordering -Dversion=1.0 
+> ```
+>
+> 创建 maven 项目，提供如下测试类
+>
+> ```java
+> @JCStressTest
+> @Outcome(id = {"1", "4"}, expect = Expect.ACCEPTABLE, desc = "ok")
+> @Outcome(id = "0", expect = Expect.ACCEPTABLE_INTERESTING, desc = "!!!!")
+> @State
+> public class ConcurrencyTest {
+>     int num = 0;
+>     boolean ready = false;
+>     @Actor
+>     public void actor1(I_Result r) {
+>         if(ready) {
+>             r.r1 = num + num;
+>         } else {
+>             r.r1 = 1;
+>         }
+>     }
+>     @Actor
+>     public void actor2(I_Result r) {
+>         num = 2;
+>         ready = true;
+>     }
+> }
+> 
+> ```
+>
+> 执行
+>
+> ```
+> mvn clean install
+> java -jar target/jcstress.jar 
+> ```
+>
+> 会输出我们感兴趣的结果，摘录其中一次结果：
+>
+> ```
+> *** INTERESTING tests
+>  Some interesting behaviors observed. This is for the plain curiosity.
+>  2 matching test results.
+>  [OK] test.ConcurrencyTest
+>  (JVM args: [-XX:-TieredCompilation])
+>  Observed state Occurrences Expectation Interpretation
+>  0 1,729 ACCEPTABLE_INTERESTING !!!!
+>  1 42,617,915 ACCEPTABLE ok
+>  4 5,146,627 ACCEPTABLE ok
+>  [OK] test.ConcurrencyTest
+>  (JVM args: [])
+>  Observed state Occurrences Expectation Interpretation
+>  0 1,652 ACCEPTABLE_INTERESTING !!!!
+>  1 46,460,657 ACCEPTABLE ok
+>  4 4,571,072 ACCEPTABLE ok 
+> ```
+>
+> 可以看到，出现结果为 0 的情况有 638 次，虽然次数相对很少，但毕竟是出现了
+
+**解决方法**
+
+volatile 修饰的变量，可以禁用指令重排
+
+```java
+@JCStressTest
+@Outcome(id = {"1", "4"}, expect = Expect.ACCEPTABLE, desc = "ok")
+@Outcome(id = "0", expect = Expect.ACCEPTABLE_INTERESTING, desc = "!!!!")
+@State
+public class ConcurrencyTest {
+    int num = 0;
+    volatile boolean ready = false;// 通过写屏障，防止之前的指令重排序
+    @Actor
+    public void actor1(I_Result r) {
+        if(ready) {
+            r.r1 = num + num;
+        } else {
+            r.r1 = 1;
+        }
+    }
+    @Actor
+    public void actor2(I_Result r) {
+        num = 2;
+        ready = true;
+    }
+}
+```
+
+结果为：
+
+```
+*** INTERESTING tests
+ Some interesting behaviors observed. This is for the plain curiosity.
+ 0 matching test results.
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### CPU指令级并行原理
+
+> 为什么要有重排指令这项优化呢？从 CPU 执行指令的原理来理解一下
+
+**1.概念**
+
+**Clock Cycle Time** 
+
+主频的概念大家接触的比较多，而 CPU 的 Clock Cycle Time（时钟周期时间），等于主频的倒数，意思是 CPU 能 够识别的最小时间单位，比如说 4G 主频的 CPU 的 Clock Cycle Time 就是 0.25 ns，作为对比，我们墙上挂钟的 Cycle Time 是 1s 
+
+例如，运行一条加法指令一般需要一个时钟周期时间
+
+**CPI**
+
+有的指令需要更多的时钟周期时间，所以引出了 CPI （Cycles Per Instruction）指令平均时钟周期数
+
+**IPC**
+
+IPC（Instruction Per Clock Cycle） 即 CPI 的倒数，表示每个时钟周期能够运行的指令数
+
+**CPU 执行时间**
+
+程序的 CPU 执行时间，即我们前面提到的 user + system 时间，可以用下面的公式来表示
+
+```
+程序 CPU 执行时间 = 指令数 * CPI * Clock Cycle Time 
+```
+
+
+
+> #### 鱼罐头的故事
+>
+> 加工一条鱼需要 50 分钟，只能一条鱼、一条鱼顺序加工...
+>
+> ![image-20260201140945194](assets/image-20260201140945194.png)
+>
+> 可以将每个鱼罐头的加工流程细分为 5 个步骤： 
+>
+> * 去鳞清洗 10分钟 
+> * 蒸煮沥水 10分钟 
+> * 加注汤料 10分钟 
+> * 杀菌出锅 10分钟 
+> * 真空封罐 10分钟![image-20260201141036033](assets/image-20260201141036033.png)即使只有一个工人，最理想的情况是：他能够在 10 分钟内同时做好这 5 件事，因为对第一条鱼的真空装罐，不会 影响对第二条鱼的杀菌出锅...
+
+
+
+**2.利用指令重排序优化**
+
+事实上，现代处理器会设计为一个时钟周期完成一条执行时间最长的 CPU 指令。为什么这么做呢？可以想到指令 还可以再划分成一个个更小的阶段，例如，每条指令都可以分为： `取指令 - 指令译码 - 执行指令 - 内存访问 - 数据` 写回 这 5 个阶段
+
+![image-20260201141743322](assets/image-20260201141743322.png)
+
+
+
+> 术语参考： 
+>
+> * instruction fetch (IF) 
+> * instruction decode (ID) 
+> * execute (EX) 
+> * memory access (MEM) 
+> * register write back (WB)
+
+在不改变程序结果的前提下，这些指令的<u>各个阶段可以通过**重排序**和**组合**</u>来实现指令级并行，这一技术在 80's 中 叶到 90's 中叶占据了计算架构的重要地位
+
+> **提示：**
+>
+> 分阶段，分工是提升效率的关键！
+
+
+
+指令重排的前提是，重排指令不能影响结果，例如
+
+```java
+// 可以重排的例子
+int a = 10; // 指令1
+int b = 20; // 指令2
+System.out.println( a + b );
+
+// 不能重排的例子
+int a = 10; // 指令1
+int b = a - 5; // 指令2
+```
+
+> **参考：** Scoreboarding and the Tomasulo algorithm (which is similar to scoreboarding but makes use of register renaming) are two of the most common techniques for implementing out-of-order execution and instruction-level parallelism.
+
+
+
+**3.支持流水线的处理器**
+
+现代 CPU 支持**多级指令流水线**，例如支持同时执行 `取指令 - 指令译码 - 执行指令 - 内存访问 - 数据写回` 的处理 器，就可以称之为**五级指令流水线**。这时 CPU 可以在一个时钟周期内，**同时运行五条指令的不同阶段**（相当于一条执行时间最长的复杂指令），IPC = 1，本质上，流水线技术并不能缩短单条指令的执行时间，但它变相地提高了 指令地吞吐率
+
+> 提示：
+>
+>  奔腾四（Pentium 4）支持高达 35 级流水线，但由于功耗太高被废弃
+
+![image-20260201142133162](assets/image-20260201142133162.png)
+
+
+
+
+
+
+
+**4.SuperScalar 处理器**
+
+大多数处理器包含多个执行单元，并不是所有计算功能都集中在一起，可以再细分为整数运算单元、浮点数运算单 元等，这样可以把多条指令也可以做到并行获取、译码等，CPU 可以在一个时钟周期内，执行多于一条指令，IPC > 1
+
+![image-20260201142200335](assets/image-20260201142200335.png)
+
+![image-20260201142219851](assets/image-20260201142219851.png)
+
+
+
+### happens-before
+
+happens-before **规定了对共享变量的写操作对其它线程的读操作可见**，它**是可见性与有序性的一套规则总结**，抛开以下 happens-before 规则，JMM 并不能保证一个线程对共享变量的写，对于其它线程对该共享变量的读可见 
+
+1. 线程解锁 m 之前对变量的写，对于接下来对 m 加锁的其它线程对该变量的读可见
+
+```java
+static int x;
+static Object m = new Object();
+new Thread(()->{
+    synchronized(m) {
+        x = 10;
+    }
+},"t1").start();
+
+new Thread(()->{
+    synchronized(m) {
+        System.out.println(x);
+    }
+},"t2").start();
+
+```
+
+
+
+2. 线程对 volatile 变量的写，对接下来其它线程对该变量的读可见
+
+```java
+volatile static int x;
+new Thread(()->{
+    x = 10;
+},"t1").start();
+new Thread(()->{
+    System.out.println(x);
+},"t2").start();
+```
+
+
+
+3. 线程 start 前对变量的写，对该线程开始后对该变量的读可见
+
+```java
+static int x;
+x = 10;
+new Thread(()->{
+    System.out.println(x);
+},"t2").start();
+
+```
+
+4. 线程结束前对变量的写，对其它线程得知它结束后的读可见（比如其它线程调用 t1.isAlive() 或 t1.join()等待 它结束）
+
+```java
+static int x;
+Thread t1 = new Thread(()->{
+    x = 10;
+},"t1");
+t1.start();
+t1.join();
+System.out.println(x);
+```
+
+5. 线程 t1 打断 t2（interrupt）前对变量的写，对于其他线程得知 t2 被打断后对变量的读可见（通过 t2.interrupted 或 t2.isInterrupted）
+
+```java
+static int x;
+public static void main(String[] args) {
+    Thread t2 = new Thread(()->{
+        while(true) {
+            if(Thread.currentThread().isInterrupted()) {
+                System.out.println(x);
+                break;
+            }
+        }
+    },"t2");
+    t2.start();
+    new Thread(()->{
+        sleep(1);    
+        x = 10;
+        t2.interrupt();
+    },"t1").start();
+    while(!t2.isInterrupted()) {
+        Thread.yield();
+    }
+    System.out.println(x);
+}
+```
+
+
+
+6. 对变量默认值（0，false，null）的写，对其它线程对该变量的读可见 
+
+7.  具有传递性，如果 x hb-> y 并且 y hb-> z 那么有 x hb-> z ，配合 volatile 的防指令重排，有下面的例子
+
+```java
+volatile static int x;
+static int y;
+new Thread(()->{
+    y = 10;
+    x = 20;
+},"t1").start();
+new Thread(()->{
+    // x=20 对 t2 可见, 同时 y=10 也对 t2 可见
+    System.out.println(x);
+},"t2").start();
+```
+
+> 变量都是指成员变量或静态成员变量 
+>
+> 参考： 第17页
+
+
+
+
+
+
+
+# 习题
+
+
+
+
+
+#### 线程安全单例习题
+
+
+
+
+
+
+
+# ==共享模型-无锁==
+
+> 乐观锁
+
+jdk提供的无锁并发的原子实现
+
+* CAS 与 volatile
+* 原子整数
+* 原子引用
+* 原子累加器
+* Unsafe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2318,434 +6134,6 @@ class Ticket2 {
 - Synchronized 线程1(获得锁->阻塞)、线程2(等待)；lock就不一定会一直等待下去，l<u>ock会有一个**trylock**去尝试获取锁</u>，不会造成长久的等待。
 - Synchronized **是可重入锁**，不可以中断的，**非公平的**；Lock，可重入的，可以判断锁，可以自己设置公平锁和非公平锁；
 - Synchronized 适合锁少量的代码同步问题，Lock适合锁大量的同步代码；
-
-
-
-
-
-
-
-# 4、==生产者和消费者问题==
-
-**面试：单例模式、排序算法、生产者和消费者、死锁问题**
-
-### 1) Synchronized 版
-
-```
-/**
- * 线程之间的通信问题：生产者和消费者问题 
- * 解释：两个线程交替执行 A B 操作同一个变量 num = 0
- * A 执行 num+1
- * B 执行 num-1
- * 使用“等待唤醒+通知唤醒”的方式让两个轮流执行
- */
-```
-
-生产者和消费者问题-演示代码
-
-```JAVA
-package com.zzy.pc;
-//顺序：判断等待->业务->通知
-public class A {
-    public static void main(String[] args) {
-        Data data = new Data();
-
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.increment();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }, "A").start();
-
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.decrement();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            
-        },"B").start();
-    }
-}
-
-class Data {
-    private int number = 0;
-
-    //+1
-    public synchronized void increment() throws InterruptedException {
-        //一、等待
-        if (number != 0) {
-            this.wait();
-        }
-        
-        // 二、业务
-        number++;
-        System.out.println(Thread.currentThread().getName() + "=>" + number);
-        // 三、通知其他线程，我+1完毕了
-        this.notifyAll();
-    }
-
-    //-1
-    public synchronized void decrement() throws InterruptedException {
-        //一、等待
-        if (number == 0) {
-            this.wait();
-        }
-        
-        // 二、业务
-        number--;
-        System.out.println(Thread.currentThread().getName() + "=>" + number);
-        // 三、通知其他线程，我-1完毕了
-        this.notifyAll();
-    }
-}
-```
-
-### 2）存在问题（虚假唤醒）
-
-**问题，如果有四个线程**，会出现虚假唤醒
-
-![image-20200810224629273](https://img-service.csdnimg.cn/img_convert/1af314564aae84ed73a7ee90525f9d91.png)
-
-
-
-**虚假唤醒问题**：
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210130202723375.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzc1ODYzMw==,size_16,color_FFFFFF,t_70)
-
-解决方式 ，**if 改为while即可，防止虚假唤醒**
-
-> 结论：**就是用if判断的话，唤醒后线程会从wait之后的代码开始运行，但是不会重新判断if条件，直接继续运行if代码块之后的代码，而如果使用while的话，也会从wait之后的代码运行，但是唤醒后会重新判断循环条件，如果不成立再执行while代码块之后的代码块，成立的话继续wait。**
-> 这也就是为什么用while而不用if的原因了，因为线程被唤醒后，执行开始的地方是wait之后
->
-> 
->
-> (本来只需要一个消费者，但是notifyAll唤醒了一群消费者，一群只有一个可以消费，那么其他消费者就是虚假唤醒了，所以才需要使用while来多次判断条件)
-
-```java
-package com.marchsoft.juctest;
-
-/**
- * Description：
- *
- * @author jiaoqianjin
- * Date: 2020/8/10 22:33
- **/
-
-public class ConsumeAndProduct {
-    public static void main(String[] args) {
-        Data data = new Data();
-
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.increment();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "A").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.decrement();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "B").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.increment();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "C").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.decrement();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "D").start();
-    }
-}
-
-class Data {
-    private int num = 0;
-
-    // +1
-    public synchronized void increment() throws InterruptedException {
-        // 判断等待
-        while (num != 0) {
-            this.wait();
-        }
-        num++;
-        System.out.println(Thread.currentThread().getName() + "=>" + num);
-        // 通知其他线程 +1 执行完毕
-        this.notifyAll();
-    }
-
-    // -1
-    public synchronized void decrement() throws InterruptedException {
-        // 判断等待
-        while (num == 0) {
-            this.wait();
-        }
-        num--;
-        System.out.println(Thread.currentThread().getName() + "=>" + num);
-        // 通知其他线程 -1 执行完毕
-        this.notifyAll();
-    }
-}
-```
-
-### 3）Lock版
-
-![image-20200811094721678](https://img-service.csdnimg.cn/img_convert/dad7044c4b8b46648084823841cb6781.png)
-
-> Lock场景下，Condition对象的await方法起到wait的作用，signal方法起到notify的作用
-
-
-
-生产者和消费者问题-演示代码：
-
-```java
-package com.marchsoft.juctest;
-
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-/**
- * Description：
- *
- * @author jiaoqianjin
- * Date: 2020/8/11 9:48
- **/
-
-public class LockCAP {
-    public static void main(String[] args) {
-        Data2 data = new Data2();
-
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-
-                try {
-                    data.increment();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, "A").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.decrement();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "B").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.increment();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "C").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                try {
-                    data.decrement();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, "D").start();
-    }
-}
-
-class Data2 {
-    private int num = 0;
-    Lock lock = new ReentrantLock();
-    Condition condition = lock.newCondition();
-    // +1
-    public  void increment() throws InterruptedException {
-        lock.lock();
-        try {
-            // 一、判断等待
-            while (num != 0) {
-                condition.await();
-            }
-            // 二、业务
-            num++;
-            System.out.println(Thread.currentThread().getName() + "=>" + num);
-            // 三、通知其他线程 +1 执行完毕
-            condition.signalAll();
-        }finally {
-            lock.unlock();
-        }
-
-    }
-
-    // -1
-    public  void decrement() throws InterruptedException {
-        lock.lock();
-        try {
-            // 判断等待
-            while (num == 0) {
-                condition.await();
-            }
-            num--;
-            System.out.println(Thread.currentThread().getName() + "=>" + num);
-            // 通知其他线程 +1 执行完毕
-            condition.signalAll();
-        }finally {
-            lock.unlock();
-        }
-
-    }
-}
-```
-
-
-
-#### Condition的优势
-
-精准的通知和唤醒的线程 
-
-**如果我们要指定通知的下一个进行顺序怎么办呢？ 我们<u>可以使用Condition来指定通知进程执行顺序</u>~**
-
-示例代码
-
-```java
-package com.marchsoft.juctest;
-
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-/**
- * Description：实现
- * A 执行完 调用B
- * B 执行完 调用C
- * C 执行完 调用A
- *
- * @author jiaoqianjin
- * Date: 2020/8/11 9:58
- **/
-
-public class ConditionDemo {
-    public static void main(String[] args) {
-        Data3 data3 = new Data3();
-
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                data3.printA();
-            }
-        },"A").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                data3.printB();
-            }
-        },"B").start();
-        new Thread(() -> {
-            for (int i = 0; i < 10; i++) {
-                data3.printC();
-            }
-        },"C").start();
-    }
-
-}
-
-//num为1的时候，让A执行；num为2的时候，让B执行；num为3的时候，让C执行；
-
-class Data3 {
-    private Lock lock = new ReentrantLock();
-    private Condition condition1 = lock.newCondition();
-    private Condition condition2 = lock.newCondition();
-    private Condition condition3 = lock.newCondition();
-    private int num = 1; // 1A 2B 3C
-
-    public void printA() {
-        lock.lock();
-        try {
-            // 业务代码 判断 -> 执行 -> 通知
-            while (num != 1) {
-                condition1.await();
-            }
-            System.out.println(Thread.currentThread().getName() + "==> AAAA" );
-            num = 2;
-            condition2.signal();//唤醒condition2
-        }catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            lock.unlock();
-        }
-    }
-    public void printB() {
-        lock.lock();
-        try {
-            // 业务代码 判断 -> 执行 -> 通知
-            while (num != 2) {
-                condition2.await();
-            }
-            System.out.println(Thread.currentThread().getName() + "==> BBBB" );
-            num = 3;
-            condition3.signal();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            lock.unlock();
-        }
-    }
-    public void printC() {
-        lock.lock();
-        try {
-            // 业务代码 判断 -> 执行 -> 通知
-            while (num != 3) {
-                condition3.await();
-            }
-            System.out.println(Thread.currentThread().getName() + "==> CCCC" );
-            num = 1;
-            condition1.signal();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            lock.unlock();
-        }
-    }
-}
-/*
-A==> AAAA
-B==> BBBB
-C==> CCCC
-A==> AAAA
-B==> BBBB
-C==> CCCC
-...
-*/
-```
-
-
-
-
-
-
 
 
 
@@ -5632,7 +9020,7 @@ public class TestSpinLock {
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021020323352695.png)
 
-### 4）死锁
+### 4）==死锁==
 
 > 死锁是什么
 

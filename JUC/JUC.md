@@ -5909,12 +5909,13 @@ public static void main(String[] args) {
 volatile static int x;
 static int y;
 new Thread(()->{
-    y = 10;
+    y = 10;v
     x = 20;
 },"t1").start();
+
 new Thread(()->{
     // x=20 对 t2 可见, 同时 y=10 也对 t2 可见
-    System.out.println(x);
+    System.out.println(x);093
 },"t2").start();
 ```
 

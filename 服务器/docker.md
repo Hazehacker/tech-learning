@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                    
+>                                                       
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                    
+>                                                       
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                    
+>                                                       
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -2474,7 +2474,7 @@ docker compose ps
 
 
 
-#### 抓取线程
+### 抓取线程
 
 ```
 sudo netstat -tulnp | grep ':8082'
@@ -2496,7 +2496,7 @@ sudo netstat -tulnp | grep ':8082'
 
 
 
-#### 杀死进程
+### 杀死进程
 
 ```
 kill -9 [PID]
@@ -2518,7 +2518,7 @@ kill -9 [PID]
 
 
 
-#### 更换微服务jar包
+### 更换微服务jar包
 
 
 
@@ -2530,7 +2530,7 @@ mv 原文件 新文件名
 
 
 
-#### 查看实时最新日志
+### 查看实时最新日志
 
 ```
 tail -f console.log
@@ -2544,7 +2544,7 @@ tail -f console.log
 
 
 
-#### ==服务器日志查看==
+### ==服务器日志查看==
 
 > 启动jar包并且不开后台运行就能 看到后端控制台的运行日志
 >
@@ -3007,3 +3007,56 @@ esac
 > ## 總結
 >
 > 完成以上檢查清單後，您的應用應該能夠在生產環境中正常運行。如果遇到問題，請參考 `SLUG_ROUTING_TROUBLESHOOTING.md` 進行故障排除。
+
+
+
+
+
+
+
+### 查看证书是否过期
+
+
+
+
+
+**使用OpenSSL检查本地证书文件**
+
+```bash
+# 检查证书文件的详细信息
+openssl x509 -in /path/to/your/certificate.crt -text -noout
+
+# 只查看证书的有效期
+openssl x509 -in /path/to/your/certificate.crt -dates -noout
+
+# 检查证书是否在有效期内
+openssl x509 -in /path/to/your/certificate.crt -checkend 0 -noout
+```
+
+
+
+```bash
+# 检查 .pem 文件（这是证书文件）
+openssl x509 -in /usr/local/nginx/certs/xk.zxgxk.com.pem -text -noout
+
+# 或者只查看日期信息
+openssl x509 -in /usr/local/nginx/certs/xk.zxgxk.com.pem -dates -noout
+
+# 查看证书的有效期
+openssl x509 -in /usr/local/nginx/certs/xk.zxgxk.com.pem -dates -noout
+
+# 示例输出：
+# notBefore=Mar  1 13:21:00 2026 GMT
+# notAfter=Mar  1 13:21:00 2027 GMT
+```
+
+
+
+
+
+
+
+
+
+
+

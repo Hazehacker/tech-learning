@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                       
+>                                                          
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                       
+>                                                          
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                       
+>                                                          
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -2536,11 +2536,20 @@ mv 原文件 新文件名
 tail -f console.log
 ```
 
-查看新追加进入的行
+查看新追加进入的行 (`-f` 指 follow)
 
 
 
+如果是使用容器运行的
 
+```
+docker logs --tail 10 <container_name_or_id>
+docker logs -f --tail 10 <container_name_or_id>
+```
+
+```
+docker-compose logs --tail 10 <service_name>
+```
 
 
 
@@ -2551,6 +2560,8 @@ tail -f console.log
 > 
 >
 > 
+
+
 
 
 

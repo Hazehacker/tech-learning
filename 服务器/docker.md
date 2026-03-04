@@ -2470,7 +2470,7 @@ docker compose ps
 
 
 
-# 其他
+# 线上问题与解决
 
 
 
@@ -3060,6 +3060,182 @@ openssl x509 -in /usr/local/nginx/certs/xk.zxgxk.com.pem -dates -noout
 # notBefore=Mar  1 13:21:00 2026 GMT
 # notAfter=Mar  1 13:21:00 2027 GMT
 ```
+
+
+
+
+
+
+
+## 请求 404
+
+
+
+#### 线上服务更新完后端之后，请求全部404
+
+
+
+在Docker中，如果只是替换了宿主机上的jar包，但容器内的jar包并没有更新，那么重启容器（docker restart）并不会加载新的jar包。因为容器内的文件系统是独立的，除非在构建镜像时将新的jar包打包进去，或者通过卷（volume）挂载了宿主机的jar包，否则重启容器不会更新应用
+
+所以换完jar包之后`docker restart blog`还是运行的旧容器，应该用 `docker compose up -d --build ` ，让新容器使用基于新jar包的的镜像
+
+
+
+
+
+
+
+
+
+
+
+## 黑客攻击
+
+
+
+### ssh 入口控制
+
+修改 SSH 默认端口 & 禁止密码登录
+
+- **现状**：黑客用脚本全天候扫描全球服务器的 **22** 端口，尝试弱密码爆破。
+- 对策：
+  - 将 SSH 端口改为非标准端口（如 `22222`）。
+  - **强制使用 SSH 密钥对登录**，彻底关闭密码登录功能（`PasswordAuthentication no`）。
+  - *效果*：直接废掉 99% 的自动化暴力破解脚本
+
+
+
+```
+sudo vim /etc/ssh/sshd_config
+```
+
+**找到并修改这一行：**
+
+```
+#Port 22
+```
+
+取消注释并添加你想要的端口，比如`Port 2222`
+
+> 建议使用一个不常用的高位端口
+
+**在安全组开放新的端口，重启ssh：`systemctl restart ssh`**
+
+
+
+> 如果你的系统使用了 **Systemd Socket Activation（套接字激活）** 机制
+>
+> ```
+> systemctl restart ssh.service
+> ```
+>
+> 这说明 SSH 服务是由 `ssh.socket` 触发的，而 `ssh.socket` 默认只监听 22 端口。即使你在 `sshd_config` 里加了 `Port 2222`，如果 `ssh.socket` 没配置监听该端口，SSH 主进程根本不会去监听它
+>
+> 
+
+**安全组关闭旧端口 `22`**
+
+
+
+#### **强制使用密钥登录**
+
+在同一个配置文件中 (`/etc/ssh/sshd_config`)，找到或添加以下行：
+
+```
+PasswordAuthentication no
+PubkeyAuthentication yes
+ChallengeResponseAuthentication no
+UsePAM no
+```
+
+> ⚠️ 注意：如果你还没有设置 SSH 密钥对，请先完成下一步再重启服务！
+
+------
+
+**✅ 第三步：生成并上传 SSH 密钥对（客户端操作）**
+
+**在本地电脑（你的笔记本/台式机）生成密钥：**
+
+**macOS / Linux：**
+
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+按提示回车即可（可设密码保护私钥）。
+
+生成的文件位于：
+
+- 私钥：`~/.ssh/id_ed25519`
+- 公钥：`~/.ssh/id_ed25519.pub`
+
+**Windows（使用 PowerShell 或 Git Bash）：**
+
+同样运行上述命令，路径类似。
+
+------
+
+**将公钥上传到服务器：**
+
+**方法一：自动上传（推荐）**
+
+```bash
+ssh-copy-id -p 22222 user@your_server_ip
+```
+
+> 如果还没改端口，先用 `-p 22`；改了后用 `-p 22222`
+
+#### **方法二：手动复制粘贴**
+
+1. 查看本地公钥内容：
+
+   ```bash
+   cat ~/.ssh/id_ed25519.pub
+   ```
+
+2. 登录服务器（仍用密码）：
+
+   ```bash
+   ssh user@your_server_ip
+   ```
+
+3. 创建 
+
+   ```
+   .ssh
+   ```
+
+    目录和授权文件：
+
+   ```bash
+   mkdir -p ~/.ssh
+   chmod 700 ~/.ssh
+   echo "你的公钥内容" >> ~/.ssh/authorized_keys
+   chmod 600 ~/.ssh/authorized_keys
+   ```
+
+------
+
+**✅ 第四步：重启 SSH 服务使配置生效**
+
+```bash
+sudo systemctl restart sshd
+```
+
+或（某些系统）：
+
+```bash
+sudo service ssh restart
+```
+
+> 🛑 重要提醒：**不要直接关闭当前 SSH 会话！**
+> 应该新开一个终端窗口，尝试用新端口 + 密钥登录：
+
+```bash
+ssh -p 22222 user@your_server_ip
+```
+
+✅ 成功后，再回到原会话，把 `Port 22` 注释掉或删除，只保留新端口。
 
 
 

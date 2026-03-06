@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                          
+>                                                             
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                          
+>                                                             
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                          
+>                                                             
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -3137,6 +3137,10 @@ sudo vim /etc/ssh/sshd_config
 
 
 
+
+
+
+
 #### **强制使用密钥登录**
 
 在同一个配置文件中 (`/etc/ssh/sshd_config`)，找到或添加以下行：
@@ -3241,7 +3245,25 @@ ssh -p 22222 user@your_server_ip
 
 
 
+#### 设置开机自启动
 
+```
+systemctl enable 
+```
+
+
+
+
+
+## 拒绝访问
+
+
+
+![image-20260305225917586](assets/image-20260305225917586.png)
+
+
+
+* nginx启动失败，看nginx日志，定位问题
 
 
 

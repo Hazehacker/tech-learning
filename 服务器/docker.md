@@ -3081,7 +3081,152 @@ openssl x509 -in /usr/local/nginx/certs/xk.zxgxk.com.pem -dates -noout
 
 
 
+## 后端问题
 
+
+
+#### MySQL挂了但是 `docker ps` 查看正常
+
+```bash
+root@iZf8z9luf0hpokkcyk03p9Z:~# docker exec -it mysql mysql -uroot -p
+cannot exec in a stopped state: unknown
+root@iZf8z9luf0hpokkcyk03p9Z:~# docker ps
+CONTAINER ID   IMAGE                                 COMMAND                  CREATED      STATUS                  PORTS                                                                          NAMES
+5a5431c95d3d   ghcr.io/umami-software/umami:latest   "docker-entrypoint.s…"   2 days ago   Up 43 hours (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp                                    umami
+13a9180500fd   postgres:15-alpine                    "docker-entrypoint.s…"   3 days ago   Up 43 hours (healthy)   5432/tcp                                                                       umami-db
+a79f36da4765   nginx                                 "/docker-entrypoint.…"   4 days ago   Up 27 hours             0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp   nginx
+c9b5a924dcc5   root-blog                             "java -jar /app.jar"     4 days ago   Up 27 hours             0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                                    blog
+3d72d9c814a1   redis                                 "docker-entrypoint.s…"   4 days ago   Up 27 hours             0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp                                    redis
+e045509449f8   mysql                                 "docker-entrypoint.s…"   4 days ago   Up 27 hours             0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp                         mysql
+root@iZf8z9luf0hpokkcyk03p9Z:~# 
+root@iZf8z9luf0hpokkcyk03p9Z:~# docker ps -a | grep mysql
+e045509449f8   mysql                                 "docker-entrypoint.s…"   4 days ago     Up 27 hours                   0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp                         mysql
+root@iZf8z9luf0hpokkcyk03p9Z:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           162M  1.6M  160M   1% /run
+efivarfs        256K  7.3K  244K   3% /sys/firmware/efi/efivars
+/dev/vda3        40G   15G   24G  38% /
+tmpfs           807M     0  807M   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+/dev/vda2       197M  6.2M  191M   4% /boot/efi
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/fc43b75d8d43373f5b2e67539b12051d8e6b6bed3b9163f9077e7f07c677e6e4/merged
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/5161992fc98894726926058ce267475bf95e712add74348c24f9d728c1383f60/merged
+tmpfs           162M   12K  162M   1% /run/user/0
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/7804267a77ecbb7f8fa22d605d45a16b53c1afa3078b8ccf6390beb053dc1ac9/merged
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/7e48d3a059301f67971a4752f43be038f8e89563cc93517a01ee758d63245b26/merged
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/42803cdde912b6d40cedaf74b3ceb70b5c46b4c58812718e866b380ebf4b1fd5/merged
+overlay          40G   15G   24G  38% /var/lib/docker/overlay2/b715dc9d89be9b1dc36c7fe0b48cba5a67b71cc84596825cb6203fc97492dcae/merged
+root@iZf8z9luf0hpokkcyk03p9Z:~# 
+
+root@iZf8z9luf0hpokkcyk03p9Z:~# dmesg | grep -i "kill" | grep -i mysql
+[129923.331126] oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=init.scope,mems_allowed=0,global_oom,task_memcg=/system.slice/docker-e045509449f8c1a47ecd2410d342e3a33a25174d50752290c1efe7b61ea7e991.scope,task=mysqld,pid=346433,uid=999
+[129923.331209] Out of memory: Killed process 346433 (mysqld) total-vm:1752264kB, anon-rss:369472kB, file-rss:0kB, shmem-rss:0kB, UID:999 pgtables:1104kB oom_score_adj:0
+
+
+```
+
+ `dmesg` 日志最后两行：
+
+```text
+[129923.331126] oom-kill: ... task=mysqld,pid=346433 ...
+[129923.331209] Out of memory: Killed process 346433 (mysqld) ...
+```
+
+**解释**：
+
+1. **OOM (Out Of Memory)**：你的服务器内存不足了。
+2. **Kill**：Linux 内核的自我保护机制触发了，它强制杀掉了占用内存最多的进程，也就是 MySQL (`mysqld`)。
+3. 假死现象：
+   - Docker 守护进程（dockerd）可能还没完全检测到容器内主进程已退出，或者容器处于一种“僵尸”状态。
+   - 所以 `docker ps` 依然显示 `Up`（因为它还没来得及更新状态，或者网络端口映射还占着）。
+   - 但是当你试图进入容器 (`docker exec`) 时，Docker 发现容器内的 Shell 或主进程已经没了，所以报错 `cannot exec in a stopped state`（实际上容器内部已经停了，只是外部状态没刷新）。
+
+
+
+**处理方案**
+
+#### **重启 MySQL 容器（恢复服务）**
+
+既然进程已经被杀，必须重启容器才能重新拉起 MySQL 进程。
+
+```bash
+docker restart mysql
+```
+
+执行完后，等待约 10-20 秒，再尝试进入：
+
+```
+docker exec -it mysql mysql -uroot -p
+```
+
+如果成功进入，说明数据库恢复了。此时你的后端应用应该也能自动重连成功。
+
+**第二步：排查内存问题（防止复发）**
+
+如果不解决内存不足的问题，MySQL 还会再次被杀掉。
+
+1. **查看当前内存使用情况**：
+
+   ```bash
+   free -h
+   ```
+
+   看 `available` 还有多少。如果非常少，说明服务器本身内存就很紧张。
+
+2. **限制 MySQL 内存使用（推荐）**：
+   MySQL 默认会尝试使用大量内存。你可以在启动 MySQL 容器时限制它的最大可用内存，或者在 MySQL 配置文件 (`my.cnf`) 中限制 `innodb_buffer_pool_size`。
+
+   *方法 A：在 Docker 启动命令或 compose 文件中限制容器内存*
+
+   ```bash
+   # docker-compose.yml 示例
+   services:
+     mysql:
+       image: mysql
+       deploy:
+         resources:
+           limits:
+             memory: 1G  # 限制 MySQL 容器最多只能用 1G 内存，防止撑爆宿主机
+   ```
+
+   或者在 `docker run` 时加参数：`--memory=1g`。
+
+   *方法 B：修改 MySQL 内部配置*
+   进入容器后（如果还能进），编辑 `/etc/mysql/my.cnf` 或 `/etc/mysql/conf.d/custom.cnf`，添加：
+
+   ```bash
+   [mysqld]
+   innodb_buffer_pool_size = 256M  # 根据你的服务器总内存调整，不要设太大
+   ```
+
+   然后重启容器。
+
+3. **增加 Swap 交换空间（临时方案）**：
+   如果服务器物理内存实在无法增加，可以创建一个 Swap 文件作为虚拟内存，防止进程直接被杀。
+
+   ```bash
+   # 创建 2G 的 swap 文件
+   dd if=/dev/zero of=/swapfile bs=1M count=2048
+   chmod 600 /swapfile
+   mkswap /swapfile
+   swapon /swapfile
+   # 验证
+   free -h
+   ```
+
+   *(注意：Swap 速度比物理内存慢，但在内存紧张时能救命)*
+
+
+
+1. **立刻执行**：`docker restart mysql`。
+2. **根本原因**：服务器内存耗尽，Linux 杀死了 MySQL 进程。
+3. **后续优化**：给 MySQL 容器设置内存限制 (`--memory`) 或调小 MySQL 的缓冲池大小，避免再次触发 OOM Kill。
+
+
+
+#### ==内存管理==
+
+**1.docker-compose.yaml中配置各个容器的内存和健康检查**
 
 
 
@@ -3248,7 +3393,7 @@ ssh -p 22222 user@your_server_ip
 #### 设置开机自启动
 
 ```
-systemctl enable 
+systemctl enable ssh
 ```
 
 

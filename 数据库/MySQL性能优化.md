@@ -278,6 +278,25 @@ tail -f localhost-slow.log
 
 
 
+explain 分析SQL执行计划
+
+1. 避免使用 select * ，避免查询不必要的列、占用网络带宽、发生不必要的回表查询
+2. 考虑给where order by group by join 后面的字段添加索引
+3. 添加索引尽量使用联合索引，尽量通过覆盖索引来避免回表
+4. update 和 delete 后面 where 条件应该使用索引列，让查询加行锁而不是表锁
+5. 优化sql语句
+   1. 插入数据
+      批量插入数据而不是逐个插入，大数据量插入的时候手动管理事务  避免事务频繁开启和关闭
+      按照主键顺序插入数据，避免页分裂
+   2. limit 优化
+      使用覆盖索引+子查询优化深度分页的效率
+   3. count 优化
+      尽量使用 `count(*)`统计数量（count(*) MySQL做过优化）
+   4. 主键优化
+   5. order by 优化
+   6. group by 优化
+   7. update 优化
+
 
 
 
@@ -466,9 +485,19 @@ select s.* from tb_sku s, (select id from tb_sku order by id limit 2000000,10) a
 
 
 
+* 尽量避免在 where 子句中使用!=或<>操作符，否则将引擎放弃 使用索引而进行全表扫描
+
+  > `<>` 和 `!=` 在功能上是等价的，都表示“不等于”
+
+* 尽量避免在 where 子句中对字段进行 null 值判断，否则将导致 引擎放弃使用索引而进行全表 扫描
+
+
+
 #### 多条件查询优化
 
 如果此多条件查询 想让它用到联合索引，注意**遵循最左前缀法则**(最左前缀法则指的是从索引的最左列开始，并且不跳过索引中的)
+
+
 
 
 
@@ -500,17 +529,44 @@ select s.* from tb_sku s, (select id from tb_sku order by id limit 2000000,10) a
 
 .
 
-#### order by语句优化
 
-<u>优化order by 语句的时候，尽量优化为Using index;</u>
 
-![image-20251203125651677](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203125651677.png)
+#### order by优化
+
+1. **Using filesort**：通过表的索引或全表扫描，读取满足条件的数据行，然后在排序缓冲区sort buffer中完成排序操作，所有不是通过索引直接返回排序结果的排序都叫 FileSort 排序
+2. **Using index**：通过有序索引顺序扫描直接返回有序数据，这种情况即为 using index，不需要额外排序，操作效率高
+
+优化order by 语句的时候，尽量优化为Using index;
+
+
+
+```sql
+# 没有创建索引时，根据age, phone进行排序
+explain select id, age, phone from tb_user order by age, phone;
+# 创建索引
+create index idx_user_age_phone_aa on tb_user(age, phone);
+```
+
+创建索引后，全部使用升序排序/降序排序，都会走索引
+
+```sql
+# 创建索引后，根据age, phone进行升序排序
+explain select id, age, phone from tb_user order by age, phone;
+# 创建索引后，根据age, phone进行降序排序
+explain select id, age, phone from tb_user order by age desc, phone desc;
+```
+
+如果一个升序，一个降序，索引就会部分失效
+
+![image-20260309122941226](assets/image-20260309122941226.png)
+
+
 
 
 
 **order by要走联合索引 就不能违背最左前缀法则（这里是要按顺序的）**
 
-```
+```sql
 比如联合索引创建语句是：
 CREATE INDEX idx_user_age_phone on tb_user(age, phone);
 
@@ -523,44 +579,223 @@ explain select id, age, phone from tb_user order by age asc, phone desc;//这种
 > CREATE INDEX idx_user_age_phone_ad on tb_user(age asc, phone desc);
 > ```
 >
-> 如果这样创建索引，第三条sql就不会再排一次
->
->
-> ![image-20251203131135823](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203131135823.png)
+> （默认情况下，两个字段都是升序排列）但如果这样创建索引，第三条sql就不会再排一次
 
 
 
-总
+如果没有使用覆盖索引，就会回表查询，获取行数据之后再在排序缓冲区中排序 (Using filesort 级别)
 
-![image-20251203131334908](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203131334908.png)
+![image-20260309123057572](assets/image-20260309123057572.png)
+
+
+总结：
+
+* 根据排序字段建立合适的索引，多字段排序时，也遵循最左前缀法则
+* 尽量使用覆盖索引
+* 多字段排序，一个升序一个降序，此时需要注意联合索引在创建时的规则 (ASC/DESC)
+* 如果不可避免的出现 filesort ，大数据量排序时，可以适当增加排序缓冲区的大小（sort_buffer_size（默认256k））
 
 
 
-#### group by 优化
+#### group by优化
 
-测试
+* 分组操作时，也可以通过索引来提高效率
+* 分组操作中，索引的使用也要满足最左前缀法则
 
-```
+```sql
 # 查看执行计划——根据profession分组
 explain select profession, count(*) from tb_user group by profession;
+# Using temporary（使用临时表）
+
 # 创建索引
 CREATE INDEX idx_user_pro_age_sta on tb_user(profession, age, status);
-
 # 查看执行计划——根据profession字段分组
 explain select profession, count(*) from tb_user group by profession;
-//Using index;
+# Using index;
 
 # 查看执行计划——根据profession字段分组
 explain select age, count(*) from tb_user group by age;
-//Using index;Using temporary
+# Using index;Using temporary（不满足最左前缀法则）
+# 其中Using index的含义是：查询所需的所有列（ GROUP BY 的列）都包含在这个联合索引的 B+ Tree 结构中（仅意味着不用回表查询）
 
 # 查看执行计划——根据profession，age字段分组
 explain select profession, count(*) from tb_user group by profession,age;
+# Using index（满足最左前缀法则）
 
+explain select age, count(*) from tb_user where profession = '软件工程' group by age;
+# Using index（满足最左前缀法则）
 
 ```
 
-，
+
+
+
+
+
+
+
+
+#### limit优化
+
+> 面试会问⬆️
+
+* **分页查询一定有排序吗？**
+  分页查询不一定会有 `order by` 字段，但是业务上的分页查询语句肯定都是有 `order by` 的，否则仅仅limit返回的顺序是不确定的，是物理存储顺序，每次查询结果可能不同
+  例：`SELECT * FROM t ORDER BY id LIMIT 100,10`
+  在分页查询sql语句一定有 `order by` 字段的前提下：
+
+  * 若 `order by` 字段有索引
+    ——无额外排序，只是”按索引顺序遍历“
+  * 若 `order by` 字段无索引
+    ——需要在排序缓冲区排序 (filesort)
+
+* **为什么深度分页效率低？**
+
+  | 步骤   | 组件       | 关键动作                                                     | 与深度分页的关联                                             |
+  | ------ | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | 1️⃣ 连接 | 连接器     | 验证用户/密码，检查权限，分配线程                            | 无                                                           |
+  | 2️⃣ 缓存 | 查询缓存   | （MySQL 8.0 已移除）                                         | 无                                                           |
+  | 3️⃣ 解析 | 分析器     | 词法分析 → 语法分析 → 生成解析树                             | 确认 `ORDER BY id` 和 `LIMIT` 语法合法                       |
+  | 4️⃣ 优化 | 优化器     | 生成执行计划： - 选索引（主键聚簇索引） - 确定扫描方向       | 决定“按 id 顺序扫描聚簇索引”                                 |
+  | 5️⃣ 执行 | **执行器** | 循环调用存储引擎： ① 要第1行 → 引擎返回完整行 → 执行器计数=1 ② 要第2行 → ... ... ⑩ 要第1,000,010行 → 引擎返回 → 执行器丢弃前1,000,000行，保留最后10行 | ❗ 深度分页瓶颈所在： - 执行器需处理 1,000,010 行完整数据 - 每行解析、内存暂存、丢弃 → CPU/内存爆炸 |
+  | 6️⃣ 返回 | 执行器     | 将10行结果封装，通过连接器返回客户端                         | 无                                                           |
+  | 7️⃣ 断开 | 连接器     | （若设置 wait_timeout）释放连接                              | 无                                                           |
+
+  
+
+
+
+
+
+大数据量下，越往后，分页效率越低(limit 20,10    ->   limit 200000,10)
+
+> 比如 `select s.* from tb_sku s order by created_at limit 2000000,10;`
+>
+> 此时只用查询10条数据，但是要对200万条数据都排序，最终才通过limit字段获取出需要的 10条数据
+
+> 就像你要在一本 200 万页的书里找第 200001 到 200010 页的内容，
+> 你必须一页一页翻过去，直到翻到那 10 页为止。
+> 即使你只关心最后 10 页，你也得翻前面 20 万页！
+
+
+
+##### 优化方式：覆盖索引+子查询
+
+* 覆盖索引：两次覆盖，子查询中只返回主键id (第一次覆盖索引)，主查询中利用主键id作为条件(聚簇索引叶子节点包含完整数据行，第二次覆盖索引)
+* 子查询：根据order by 条件先获取一个主键 id 的集合
+
+```sql
+例如：
+select s.* from tb_sku s order by id limit 2000000,10;
+
+select s.* from tb_sku s, (select id from tb_sku order by id limit 2000000,10) a where s.id = a.id;
+```
+
+> 子查询只查出主键id的集合（实现了覆盖索引的效果），主查询通过主键 id，直接在聚集索引中获取行数据
+>
+> 避免了原sql语句的低性能全表扫描
+
+
+
+
+
+
+
+
+
+###### 为什么“覆盖索引+子查询”会比正常的分页查询更高效？
+
+（以下情形是 两者都对 `order by`的字段创建了索引来提升效率，同时这也是本方法能提高效率的前提）
+
+正常的分页查询：`SELECT * FROM table ORDER BY indexed_col LIMIT offset, size`
+“覆盖索引+子查询”优化指的是：`SELECT t.* FROM table t INNER JOIN (SELECT id FROM table ORDER BY indexed_col LIMIT offset, size) tmp ON t.primary_key = tmp.id`（注意：子查询中SELECT的字段<u>必须是覆盖索引包含的，且能用于关联</u>，通常是主键）
+
+> ```sql
+> SELECT t.* FROM table t INNER JOIN (SELECT id FROM table ORDER BY id LIMIT offset, size) tmp ON t.primary_key = tmp.id
+> 
+> SELECT t.* FROM table t INNER JOIN (SELECT id FROM table ORDER BY balance LIMIT offset, size) tmp ON t.primary_key = tmp.id
+> ```
+
+  
+
+1. 正常分页查询的执行过程（以InnoDB为例）：
+
+   - 由于ORDER BY indexed_col有索引，MySQL会使用该索引进行扫描（避免filesort）。
+   - 但是，因为SELECT *，需要回表获取完整行数据。
+   - 执行步骤：
+     a. **从索引中按顺序读取(offset + size)条记录（即5000010条）**。
+     b. 对于每一条索引记录，**根据主键（或聚簇索引）回表查询完整行数据（即5000010次回表）**。
+     c. **将这5000010条完整行数据放入结果集**
+     d. **丢弃前offset条（5000000条），返回最后size条**（10条）。
+   - 问题：回表5000010次，且丢弃了5000000条完整行数据，浪费了大量I/O和CPU。【回表次数太多】
+
+2. 覆盖索引+子查询
+
+   - 子查询：
+
+     ```sql
+     SELECT id FROM table ORDER BY indexed_col LIMIT offset, size
+     ```
+
+     - 由于SELECT的字段（id）在索引中（覆盖索引），所以**子查询只需要扫描索引，不需要回表**。
+     - 扫描索引，按顺序读取(offset + size)条索引记录（5000010条），但只获取索引中的主键id，不回表。
+     - 丢弃前offset条，返回最后size条（10条）主键值。
+
+   - 外层查询：用这10个主键值，通过主键索引（聚簇索引）回表查询完整行数据（10次回表）。
+
+   - 总回表次数：10次。
+
+> 另外，在正常分页查询中，**如果ORDER BY的字段是聚簇索引(主键)**，此时不需要回表查询，**但 SELECT * 会读取整行数据**，假设是 `limit 100000,10`，执行器中需要处理100010条完整数据行  压力极大；而子查询中，仅提取 `id` ，执行器只用处理1000010个id+10行完整数据，而id通常很小（8字节），所以内存和CPU开销更低
+>
+> 因此此时覆盖索引+子查询效率仍然更高
+
+
+
+###### 注意：
+
+**对 `ORDER BY` 字段创建索引是 ”覆盖索引+子查询“能提升查询效率的前提**，没有这个索引，第一次覆盖查询就无从谈起
+
+当 **`ORDER BY` 字段无任何索引** 时，“覆盖索引+子查询”优化 **不仅不会提升效率，反而通常比正常分页查询更慢**。【关键：两种方式均需全表扫描 + filesort】
+
+由于 `ORDER BY non_indexed_col` 无索引，**两者都必须进行全表扫描 + 外部排序（filesort）**，<u>无法避免对全表 N 行数据的处理</u>
+
+执行过程对比（以 InnoDB 为例）
+
+| **环节**          | **正常分页查询** `SELECT * FROM t ORDER BY col LIMIT offset, size` | **“覆盖索引+子查询”** `SELECT t.* FROM t JOIN (SELECT id FROM t ORDER BY col LIMIT offset, size) tmp ...` |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| **排序阶段**      | filesort 处理 `(排序键, 主键)` 对；全表扫描、全量排序        | 子查询 filesort 同样处理 `(排序键, 主键)` 对；全表扫描，全量排序 |
+| **回表次数**      | 排序后通过主键回表 **size 次**（取最终结果行）               | 外层查询通过主键回表 **size 次**（取最终结果行）             |
+| **额外开销**      | 无                                                           | 子查询需物化为临时表（存 size 个 id） <br />额外 JOIN 操作 <br />查询解析/执行计划更复杂 |
+| **内存/磁盘压力** | 取决于 `sort_buffer_size`，但处理数据量与子查询相同          | 相同排序压力 + 临时表 I/O（虽小但存在）                      |
+
+
+
+- **子查询只查 `id`，排序时数据量更小？**
+  **事实**：MySQL 的 filesort 优化机制（5.6+）在 `SELECT *` 且无覆盖索引时，**默认仅存储 `(排序键, 主键)`** 进行排序，而非整行数据。因此两者的排序数据量**完全相同**。
+- **“覆盖索引”失效**：子查询中 `SELECT id` 本可构成覆盖索引，但因 `ORDER BY non_indexed_col` 无索引，**无法避免回表扫描聚簇索引获取排序值**，覆盖索引优势彻底丧失。
+- 所以此时“覆盖索引+子查询” 因临时表+JOIN 增加固定开销，通常略慢
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+##### 游标分页
+
+
+
+
+
+##### 滚动分页
 
 
 
@@ -592,17 +827,27 @@ explain select profession, count(*) from tb_user group by profession,age;
 
 **一条语句批量插入  而不是  多条语句插入**
 
-如果要批量插入，一次性插入的数据也不建议超过1000条（500-1000）
+> 如果要批量插入，一次性插入的数据也不建议超过1000条（500-1000）
+>
+> 更大的数据量、把它分成多条语句插入
 
-更大的数据量、把它分成多条语句插入
+```sql
+insert into test values(1, 'tom');
+insert into test values(1, 'cat');
+insert into test values(1, 'jerry');
+
+insert into test values(1, 'tom'), (2, 'Cat'), (3, 'Jerry');
+```
+
+
 
 
 
 **改成手动提交事务**
 
-MySQL的事务默认自动提交，这意味着你执行完一个insert语句之后，事务就会自动提交；这就会涉及到频繁的事务开启与提交，所以建议手动提交事务
+MySQL的事务默认自动提交，这意味着你执行完一个insert语句之后，事务就会自动提交；这就会涉及到频繁的事务开启与提交，所以建议手动提交事务，避免多次提交事务
 
-```
+```sql
 start transaction
 insert into tb_test value(1, 'Tom'),(2, 'Cat'),(3,'jerry');
 insert into tb_test value(4, 'Tom'),(5, 'Cat'),(6,'jerry');
@@ -616,7 +861,12 @@ commit
 
 采用主键顺序插入，顺序插入的性能高于乱序插入
 
-![image-20251202113054842](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202113054842.png)
+```
+主键乱序插入：8  1  9  21  88  2  4  15  89  5   7   3
+主键顺序插入：1  2  3  4   5   6  7  8   9   15  21  88  89
+```
+
+
 
 
 
@@ -624,18 +874,96 @@ commit
 
 如果一次性需要插入大批量数据，使用insert语句插入性能较低，此时可以使用MySQL数据库提供的load指令进行插入，操作如下：
 
-![image-20251203105142831](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203105142831.png)
+![image-20260309115025462](assets/image-20260309115025462.png)
 
-```
+```sql
 # 客户端连接服务端时，加上参数 --local-infile
 mysql --local-infile -u root -p
+
 # 设置全局参数local_infile为1，开启从本地加载文件导入数据库的开关
+select @@local_infile;
 set global local_infile = 1;
+
 # 执行load指令将准备好的数据，加载到表结构中
 load data local infile '/root/sql1.log' into table 'tb_user' fields terminated by ';' lines terminated by '\n'; 
+# (指令中说明了，每一个字段使用';'分隔， 每一行使用'\n'分隔)
 ```
 
 > load插入的时候，使用主键顺序插入，顺序插入的性能高于乱序插入
+
+
+
+#### 主键优化
+
+
+
+![image-20260309115756182](assets/image-20260309115756182.png)
+
+![image-20260309115855655](assets/image-20260309115855655.png)
+
+
+
+**页分裂现象**
+
+页可以为空，也可以填充一半，也可以填充100%。每个页包含了 2~N 行数据 (如果一行数据过大，会行溢出)
+
+<u>主键顺序插入：</u>
+
+![image-20260309120142679](assets/image-20260309120142679.png)
+
+
+
+<u>主键乱序插入：</u>
+
+主键乱序插入的情况下可能发生页分裂现象 (需要移动数据、调整链表指针)
+
+![image-20260309184341867](assets/image-20260309184341867.png)
+
+
+
+
+
+
+
+
+
+**页合并**
+
+当删除一行记录时，实际上记录并没有被物理删除，只是记录被标记为删除并且它的空间变得允许被其他记录声明使用
+
+![image-20260309120556197](assets/image-20260309120556197.png)
+
+![image-20260309121140653](assets/image-20260309121140653.png)
+
+当页中删除的记录达到 MERGE_THRESHOLD（默认为页的 50%），InnoDB 就会寻找靠近的页(前/后) 看看是否可以将两个页合并以优化空间使用
+
+![image-20260309121203561](assets/image-20260309121203561.png)
+
+> MERGE_THRESHOLD，合并页的阈值，可以在创建表或者创建索引时指定
+
+
+
+
+
+#### 主键设计原则
+
+1. 满足业务需求的情况下，尽量降低主键的长度
+
+   > 二级索引中挂的是主键的值，**如果主键长度比较长、二级索引比较多，就会占用较大磁盘空间  在搜索的时候耗费大量的磁盘IO**
+
+2. 插入数据时，尽量选择**顺序插入**，选择使用AUTO_INCREMENT自增主键
+
+   > 避免出现页分裂现象
+
+3. 尽量不要使用UUID或其他自然主键(如身份证号) 作为主键
+
+   > UUID无序，插入的时候就是乱序插入 存在页分裂现象
+   >
+   > 身份证号 长度较长，会耗费大量磁盘IO
+
+4. 业务操作时，避免对主键的修改
+
+   > 修改主键 还需要动对应的索引结构，代价很大
 
 
 
@@ -647,25 +975,43 @@ load data local infile '/root/sql1.log' into table 'tb_user' fields terminated b
 
 
 
-![image-20251203180109211](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203180109211.png)
+```sql
+update course set name = 'JavaEE' where id = 1;# 会给id为1的这行加上行锁 
+update course set name = 'Kafka1' where id = 4;# 不影响这条语句的更新
 
-```
-update course set name = 'JavaEE' where id = 1;//会给id为1的这行加上行锁 
-update course set name = 'Kafka1' where id = 4;//不影响这条语句的更新
-
-update course set name = 'SpringBoot' where name = 'PHP';//由于name这个字段没有索引，会加个表锁
-update course set name = 'Kafka2' where id = 4;//此时就会影响这条语句就的 正常执行
+update course set name = 'SpringBoot' where name = 'PHP';# 由于name这个字段没有索引，会加个表锁
+update course set name = 'Kafka2' where id = 4;# 此时就会影响这条语句就的 正常执行
 ```
 
-> InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则会从行锁升级为表锁
+**InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则会从行锁升级为表锁**
 
 
 
-**总结：更新某个字段是一定要走索引，否则走全表扫描会变成表级锁**
+**总结：更新某个字段是一定要走索引，否则会走全表扫描   变成表级锁**
 
 **——执行update如果条件字段没有索引 会进行全表扫描，就会上表锁，所以<u>在update的sql的条件尽量要使用有索引的字段</u>**
 
 > 表锁的并发性能低
+
+
+
+#### count优化
+
+![image-20251203142756241](assets/image-20260309170609227.png)
+
+> “自己计数”指自己建一张表，专门计数、并添加维护的逻辑
+
+
+
+**count的几种用法以及几种用法之间的性能差异**
+
+![image-20260309170712575](assets/image-20260309170712575.png)
+
+![image-20251203174631099](assets/image-20260309170639310.png)
+
+所以**选择count(*)**
+
+
 
 
 
@@ -731,14 +1077,7 @@ update course set name = 'Kafka2' where id = 4;//此时就会影响这条语句�
 
 
 
-## SQL优化
 
-
-
-![image-20251203181837911](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203181837911.png)
-
-
-![[技术学习/数据库/MySQL#SQL优化|MySQL]]
 
 
 

@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                             
+>                                                                   
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                             
+>                                                                   
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                             
+>                                                                   
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -3145,7 +3145,7 @@ root@iZf8z9luf0hpokkcyk03p9Z:~# dmesg | grep -i "kill" | grep -i mysql
 
 **处理方案**
 
-#### **重启 MySQL 容器（恢复服务）**
+##### **重启 MySQL 容器（恢复服务）**
 
 既然进程已经被杀，必须重启容器才能重新拉起 MySQL 进程。
 
@@ -3215,18 +3215,169 @@ docker exec -it mysql mysql -uroot -p
    ```
 
    *(注意：Swap 速度比物理内存慢，但在内存紧张时能救命)*
+   
+4. 给Redis设置 `maxmemory`（默认值为0，不会主动淘汰内存）
+
+   ```bash
+   # 查看当前redis使用了多少内存
+   docker exec redis redis-cli -a yourpassword --no-auth-warning INFO memory | \
+     grep -E "used_memory:|used_memory_rss:|maxmemory:|mem_fragmentation_ratio:"
+   ```
+   
+   > used_memory: Redis分配器分配的内存总量（以字节为单位）。这表示Redis逻辑上使用的内存，包括数据、内部开销等。
+   >
+   > used_memory_rss: 操作系统报告的Redis进程占用的物理内存（Resident Set Size，常驻内存集），即实际使用的物理内存（以字节为单位）。
+   >
+   > maxmemory: Redis配置中设置的最大内存限制（以字节为单位）。当达到此限制时，Redis会根据配置的淘汰策略删除键。
+   >
+   > mem_fragmentation_ratio: 内存碎片率，计算公式为 used_memory_rss / used_memory。这个比值反映了内存碎片的程度（>1.5 需关注）
+   
+   | 场景       | 命令                                                         | 说明                                            |
+   | ---------- | ------------------------------------------------------------ | ----------------------------------------------- |
+   | 实时监控   | `docker exec -it redis redis-cli -a 密码 --stat`             | 持续显示内存、连接数等动态指标                  |
+   | 容器级内存 | `docker stats redis --no-stream`                             | 查看容器总内存（含Redis进程开销，≈300MB limit） |
+   | 淘汰统计   | `docker exec redis redis-cli -a 密码 INFO stats | grep evicted_keys` | 关键！ `evicted_keys` 持续增长 = 缓存频繁淘汰   |
+
+   
+   
+   
+   
+   ```bash
+   # 方式1：redis.conf 配置（推荐重启生效）
+   maxmemory 4gb
+   maxmemory-policy allkeys-lru  # 示例：选择LRU策略
+   
+   # 方式2：运行时动态调整（立即生效）
+   CONFIG SET maxmemory 4294967296      # 4GB（单位：字节）
+   CONFIG SET maxmemory-policy allkeys-lru
+   ```
+   
+   
 
 
 
-1. **立刻执行**：`docker restart mysql`。
-2. **根本原因**：服务器内存耗尽，Linux 杀死了 MySQL 进程。
-3. **后续优化**：给 MySQL 容器设置内存限制 (`--memory`) 或调小 MySQL 的缓冲池大小，避免再次触发 OOM Kill。
 
 
 
-#### ==内存管理==
+
+
+
+
+
+
+
+##### ==内存管理==
+
+限制各个容器的内存上限，调整MySQL缓存池大小
 
 **1.docker-compose.yaml中配置各个容器的内存和健康检查**
+
+```yaml
+# docker-compose.yml 关键修改
+services:
+  mysql:
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # 从1G降至512M
+    
+  redis:
+    deploy:
+      resources:
+        limits:
+          memory: 256M  # 保持内部maxmemory 256mb
+    
+  blog:  # Java应用
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx384m -XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0
+    deploy:
+      resources:
+        limits:
+          memory: 512M  # 从1G降至512M
+    
+  umami:  # Node.js应用
+    deploy:  # 新增内存限制
+      resources:
+        limits:
+          memory: 256M
+    
+  umami-db:  # PostgreSQL
+    deploy:  # 新增内存限制
+      resources:
+        limits:
+          memory: 256M
+    
+  nginx:
+    deploy:
+      resources:
+        limits:
+          memory: 128M  # 从256M降至128M
+```
+
+>  \# MySQL默认配置在512MB内存机器上会崩溃（需调整innodb_buffer_pool_size）
+>
+> pg要限制shared_buffers → 否则在256MB容器内极易OOM
+
+**MySQL配置 (`./mysql/conf/custom.cnf`)**
+
+```ini
+[mysqld]
+# ⚠️ 关键：大幅降低内存使用
+innodb_buffer_pool_size = 64M        # 默认可能 128M~1G，这里压到 64MB
+innodb_log_file_size = 32M           # 日志文件大小
+innodb_log_buffer_size = 8M          # 日志缓冲
+innodb_flush_log_at_trx_commit = 2   # 提升性能，轻微降低安全性（可接受）
+innodb_flush_method = O_DIRECT
+performance_schema=OFF              # 关闭性能监控
+
+# 连接数限制（减少内存开销）
+max_connections = 50                 # 默认 151，太多会吃内存
+max_connect_errors = 100
+table_open_cache = 64
+thread_cache_size = 4
+```
+
+
+
+**PostgreSQL配置 (`./postgres/custom.conf` + 挂载)**
+
+```yaml
+umami-db:
+  volumes:
+    - umami-db-data:/var/lib/postgresql/data
+    - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+  command: postgres -c config_file=/etc/postgresql/postgresql.conf
+```
+
+> PostgreSQL 官方镜像（含 Alpine）**默认从 `$PGDATA/postgresql.conf`（即 `/var/lib/postgresql/data/postgresql.conf`）读取配置**，而非 `/etc/postgresql/`，所以需要这个command
+
+**custom.conf：**
+
+```ini
+# ⬇️大幅降低内存使用
+shared_buffers = 64MB       # 默认128MB → 减半
+effective_cache_size = 192MB
+work_mem = 4MB              # 防止排序操作OOM
+maintenance_work_mem = 16MB
+max_connections = 30        # 严格限制连接数
+```
+
+> `docker cp umami-db:/var/lib/postgresql/data/postgresql.conf ./postgres/postgresql.conf`
+
+
+
+**JVM应用调优**
+
+```yaml
+blog:
+  environment:
+    # 关键：使用容器感知参数
+    - JAVA_OPTS=-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -XX:+UseG1GC
+  # 验证命令：
+  # docker exec blog java -XX:+PrintFlagsFinal -version | grep -E "MaxRAM|HeapSize"
+```
+
+
 
 
 

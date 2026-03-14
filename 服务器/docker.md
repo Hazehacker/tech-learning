@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                                   
+>                                                                      
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                                   
+>                                                                      
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                                   
+>                                                                      
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -3163,6 +3163,10 @@ docker exec -it mysql mysql -uroot -p
 
 **第二步：排查内存问题（防止复发）**
 
+详见[内存管理](##内存管理)
+
+
+
 如果不解决内存不足的问题，MySQL 还会再次被杀掉。
 
 1. **查看当前内存使用情况**：
@@ -3266,7 +3270,40 @@ docker exec -it mysql mysql -uroot -p
 
 
 
-##### ==内存管理==
+## ==内存管理==
+
+
+
+
+
+### postgres 容器
+
+
+
+
+
+### mysql 容器
+
+
+
+### Redis 容器
+
+
+
+### 后端容器
+
+设定jvm内存，设定容器最大内存
+
+```yaml
+```
+
+
+
+
+
+### 调整步骤
+
+
 
 限制各个容器的内存上限，调整MySQL缓存池大小
 

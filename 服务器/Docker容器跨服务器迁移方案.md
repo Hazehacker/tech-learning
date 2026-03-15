@@ -106,7 +106,73 @@
 
 
 
+# 2.安装Docker compose
 
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin
+```
+
+#### **第一步：卸载旧的 Docker 源配置（清理现场）**
+
+bash
+
+
+
+```
+sudo rm /etc/apt/sources.list.d/docker.list
+```
+
+#### **第二步：安装必要的依赖工具**
+
+bash
+
+
+
+```
+sudo apt install ca-certificates curl gnupg
+```
+
+#### **第三步：下载并安装 Docker 的官方 GPG 公钥（关键步骤）**
+
+这条命令会直接从 Docker 服务器下载最新的密钥，并保存在正确的系统目录中：
+
+bash
+
+
+
+```
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+```
+
+#### **第四步：重新添加 Docker 源（使用新格式）**
+
+这一步会创建一个新的源配置，并明确告诉系统“这个源的密钥在 `/etc/apt/keyrings/docker.gpg` 里”：
+
+bash
+
+
+
+```
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+#### **第五步：更新并安装**
+
+```bash
+sudo apt update
+sudo apt install docker-compose-plugin
+# 验证
+docker compose version 
+```
+
+> - **精准定位**：我们将密钥文件保存在 `/etc/apt/keyrings/` 目录下，这是 Ubuntu 24.04 默认信任的密钥环目录。
+> - **显式绑定**：在 `.list` 文件中通过 `signed-by=` 参数显式指定了密钥路径，避免了旧版 `apt-key` 的全局污染和识别问题。
+> - **获取最新密钥**：我们不是手动导入一个可能过时的 Key ID，而是直接下载 Docker 官方服务器上的最新 `gpg` 文件（参考了你提供的网页[2]），确保了密钥的时效性。
 
 
 
@@ -148,11 +214,15 @@ mkdir
 
 
 
+# 4.更改DNS
+
+将域名对应的服务器ip修改
 
 
 
+# 5.腾讯云的安全组默认关闭了443端口
 
-
+无语死了，害我deb
 
 
 

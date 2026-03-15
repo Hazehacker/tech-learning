@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                                      
+>                                                                            
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                                      
+>                                                                            
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                                      
+>                                                                            
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -727,9 +727,10 @@ docker info //可以查看当前镜像源
 ```
 systemctl daemon-reload//更换完镜像源，需要重启
 systemctl restart docker
+
 ```
 
-
+rootbzh66ECS-tencent1
 
 
 
@@ -3272,6 +3273,34 @@ docker exec -it mysql mysql -uroot -p
 
 ## ==内存管理==
 
+参数
+
+* **mem_limit**：硬限制，容器可使用的最大内存【必须设置】
+
+* mem_reservation：软限制，当系统内存紧张时，Docker会<u>尝试</u>将内容内存限制在此值以下
+
+* memswap_limit： 交换内存限制（内存+swap）。设置为-1表示不限制swap，但通常建议谨慎使用swap
+
+  > 建议禁用swap（设置memswap_limit为与mem_limit相同）
+  >
+  > | 概念            | 说明                                                         |
+  > | --------------- | ------------------------------------------------------------ |
+  > | `mem_limit`     | 容器能使用的最大物理内存（RAM）                              |
+  > | `memswap_limit` | 容器能使用的 RAM + Swap 总量                                 |
+  > | 禁用 Swap       | 设置 `memswap_limit = mem_limit`（如均为 `1g`），容器无法使用 Swap |
+  > | 允许 Swap       | `memswap_limit > mem_limit`（如 `mem_limit: 1g`, `memswap_limit: 2g`），超 1G 后可用 1G Swap |
+
+* oom_score_adj：调整OOM Killer的优先级。
+
+* shm_size： 共享内存大小（对某些应用如PostgreSQL重要）
+
+监控容器内存使用情况
+
+* docker stats 实时查看容器内存使用
+* 使用docker inspect 查看容器内存限制
+* 集成监控工具，设置告警 (如cAdvisor + Prometheus + Grafana)
+* 定期压力测试，确定合理的内存限制
+
 
 
 
@@ -3280,22 +3309,312 @@ docker exec -it mysql mysql -uroot -p
 
 
 
+* 场景建议：
+
+  | 场景       | 容器内存建议 | 说明                                             |
+  | ---------- | ------------ | ------------------------------------------------ |
+  | 开发/测试  | 512MB – 1GB  | 仅用于功能验证，性能非重点                       |
+  | 轻量生产   | 2GB – 4GB    | 小型应用、低并发（<50连接）、数据量 <10GB        |
+  | 标准生产   | 4GB – 8GB    | 中等负载、百级并发、数据量 10–100GB              |
+  | 高负载生产 | 8GB+         | 高并发、复杂查询、大数据量（需结合监控动态调整） |
+  | ⚠️ 最低底线 | ≥512MB       | 低于此值易启动失败或频繁 OOM（知识库明确提示）   |
+
+  > 知识库补充：CLOUD 云计算资料指出 *"数据库容器至少需 512MB–2GB 内存"*；Microsoft Learn 强调 *"shared_buffers 默认 128MB，增大需重启"*。
+
+
+
+容器层面控制内存，示例：
+
+```yaml
+# docker-compose.yml 示例（PostgreSQL 14+）
+services:
+  postgres:
+    image: postgres:15
+    mem_limit: 2g          # 容器硬限制
+    memswap_limit: 2g      # 禁用 swap（防性能抖动）
+    shm_size: 512m         # 必须 ≥ shared_buffers（PostgreSQL 依赖共享内存）
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+      - ./postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf  # 覆盖默认配置
+      - ./postgres/initdb:/docker-entrypoint-initdb.d  # 挂载初始化脚本
+    environment:
+      POSTGRES_PASSWORD: example
+```
+
+* 共享内存 (`shm_size`)
+  - PostgreSQL 重度依赖 `/dev/shm`，**必须显式设置**（默认 64MB 易导致启动失败）
+  - 建议：`shm_size = shared_buffers` 或更高（如 512MB）
+
+
+
+postgresql.conf中配置其他参数
+
+```ini
+shared_buffers = 512MB 
+effective_cache_size = 1GB
+work_mem = 8MB
+maintenance_work_mem = 256MB
+max_connections = 100
+```
+
+| 参数                   | 建议值 | 计算依据                            |
+| ---------------------- | ------ | ----------------------------------- |
+| `shared_buffers`       | 512MB  | 容器内存 25%（OLTP 可提至 30%）     |
+| `work_mem`             | 4–16MB | 连接数越大，work_mem越小，避免 OOM  |
+| `maintenance_work_mem` | 256MB  | ≤ 容器内存 10%，加速 VACUUM/REINDEX |
+| `effective_cache_size` | 1GB    | 容器内存 50%（仅影响查询规划器）    |
+| `max_connections`      | 50–100 | 连接数↑ → work_mem 需↓，平衡资源    |
+
+> 参考
+>
+> `shared_buffers + (work_mem × max_connections × 2) + maintenance_work_mem < mem_limit × 0.8`
+> （预留 20% 给 WAL、后台进程、OS 缓存）
+
+
+
 
 
 ### mysql 容器
+
+**MySQL容器内存要求：**
+
+* **容器内存限制（`mem_limit`）必须 > MySQL 内部配置总和 + 安全余量**，否则极易 OOM 崩溃
+
+| 场景                               | 容器 `mem_limit`         | MySQL 内部关键配置                            | 适用说明                                                    |
+| ---------------------------------- | ------------------------ | --------------------------------------------- | ----------------------------------------------------------- |
+| 开发/测试                          | `512MB – 1GB`            | `innodb_buffer_pool_size=256M`                | 本地调试、CI 流水线；性能非重点                             |
+| 极小型生产 （个人博客、内部工具）  | `1.5GB – 2GB`            | `buffer_pool=768M–1G` `max_connections=100`   | 日活 < 1k，数据量 < 2GB，低并发                             |
+| 小型生产 （企业官网、SaaS 小模块） | `2GB – 4GB` ✅ 最常用起点 | `buffer_pool=1.2G–2.5G` `max_connections=150` | 日活 1k–1w，数据量 2–10GB，推荐 4GB 更稳妥                  |
+| 中型生产 （电商后台、中型 API）    | `4GB – 8GB`              | `buffer_pool=3G–5.5G` `max_connections=300`   | 日活 1w+，数据量 10–50GB，需监控调优                        |
+| 大型/高负载                        | 谨慎容器化               | 需专业 DBA 评估                               | 数据量 > 50GB、高 QPS 场景，优先考虑云数据库（RDS）或物理机 |
+
+
+
+
+
+容器层面控制内存，示例：
+
+```yaml
+services:
+  mysql:
+    image: mysql:8.0
+    mem_limit: 4g          # 容器硬限制
+    memswap_limit: 4g      # 禁用 swap
+    shm_size: 512m         # 共享内存（InnoDB 临时表/排序必需）
+    restart: always
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro  # 挂载自定义配置
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: your_strong_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  mysql-data:
+```
+
+
+
+
+
+MySQL内部参数协同(**挂载** `conf.d/custom.cnf`)：
+
+```ini
+[mysqld]
+# 核心原则：总内存需求 < mem_limit × 0.85（预留 OS/线程/连接开销）
+innodb_buffer_pool_size = 2560M      # ≈ mem_limit 的 60-70%（4G 容器示例）
+innodb_buffer_pool_instances = 4     # 每实例 ≥ 1G 时建议拆分
+key_buffer_size = 16M                # MyISAM 已少用，可调小
+max_connections = 150                # 每连接消耗内存，按需调整
+thread_cache_size = 50
+table_open_cache = 400
+tmp_table_size = 64M
+max_heap_table_size = 64M
+```
+
+> **计算公式**：
+> `innodb_buffer_pool_size = (mem_limit - 512M) × 0.7`
+> （预留 512M 给连接线程、排序缓冲、OS 缓存等）
+
+
+
+
+
+
+
+
 
 
 
 ### Redis 容器
 
+Redis 容器通常需要/分配多少内存
+
+
+* 没有统一的“标准内存值”，但有清晰的配置逻辑和行业实践。以下是结合生产经验与知识库整理的实用指南
+  | 项目                           | 建议                              | 原因                                                         |
+  | ------------------------------ | --------------------------------- | ------------------------------------------------------------ |
+  | **容器内存限制 (`mem_limit`)** | **`Redis maxmemory × 1.2 ~ 1.5`** | 预留空间给<u>进程开销、客户端缓冲区、复制积压缓冲区、内存碎片等</u> |
+  | **Redis `maxmemory`**          | **必须显式设置**                  | <u>避免 Redis 吃光容器内存 → 触发 OOM Killer → 容器被杀</u>  |
+  | 单实例上限                     | ≤ 10GB                            | 超过易导致持久化慢、主从同步延迟、故障恢复时间长（即使 Redis 7.x 优化，仍建议谨慎） |
+  | 大容量需求                     | 用 Redis Cluster 分片             | 5 节点 × 10GB = 50GB 可用内存（参考知识库生产案例）          |
+
+* 常见场景参考：
+
+  | 场景                     | 容器内存限制  | Redis `maxmemory` | 说明                                                   |
+  | ------------------------ | ------------- | ----------------- | ------------------------------------------------------ |
+  | 本地开发/测试            | 256MB ~ 512MB | 200MB ~ 400MB     | 快速验证，无需高可用                                   |
+  | 小型应用（缓存 <10万条） | 1GB ~ 2GB     | 800MB ~ 1.5GB     | 博客、内部工具等                                       |
+  | 中型生产服务             | 4GB ~ 8GB     | 3GB ~ 6GB         | 电商商品缓存（参考知识库：200万条×10KB≈20GB → 需分片） |
+  | 大型服务                 | 单实例 ≤10GB  | ≤8GB              | 超过则必须集群部署（5主5从等）                         |
+
+  > 示例：若业务需缓存 3GB 数据 → `maxmemory 3.5gb` → 容器 `mem_limit: 4.5g`
+
+* 注意：
+  必须配置内存淘汰策略
+
+
+
+容器层面控制内存，示例：
+
+```yaml
+services:
+  redis:
+    image: redis:7-alpine
+    command: 
+      - redis-server
+      - --maxmemory 3584mb          # ≈ 容器限制的 80%
+      - --maxmemory-policy allkeys-lru  # 推荐：LRU 淘汰策略
+      - --appendonly yes            # 按需开启 AOF
+      - --appendfsync everysec
+    mem_limit: 4500m                # 硬限制
+    mem_reservation: 3000m          # 软保障
+    shm_size: 64m                   # 共享内存（影响 BGSAVE）
+    # memswap_limit: 4500m          # 建议取消注释：禁用 swap 防抖动
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+volumes:
+  redis-data:
+```
+
+
+
+
+
+### nginx容器
+
+
+
 
 
 ### 后端容器
 
-设定jvm内存，设定容器最大内存
+后端容器内存要求：
+
+* **没有固定值**，但有清晰的参考范围与方法论。核心原则：**容器限制 > 应用实际需求 × 1.2，且应用层参数必须主动适配容器限制**
+
+  常见容器推荐内存：
+
+  | 技术栈/场景                      | 推荐容器 `mem_limit` | 关键说明                                                     |
+  | -------------------------------- | -------------------- | ------------------------------------------------------------ |
+  | Node.js / Python (Flask/FastAPI) | 256MB – 1GB          | 简单API 256–512MB；高并发/文件处理建议 768MB+                |
+  | **Java / Spring Boot**           | **512MB – 1.5GB**    | 必须配置：`-XX:MaxRAMPercentage=75.0` 或 `-Xmx=容器限制×0.7` |
+  | Go (轻量服务)                    | 128MB – 512MB        | 编译型语言内存效率高，监控实际峰值即可                       |
+  | PHP (Laravel 等)                 | 256MB – 1GB          | 参考独角数卡实践：1GB 支撑日均500订单                        |
+
+> 💡 示例：
+>
+> - 小程序Node.js后端（日活1万）：单容器 **512MB**（应用层设 `--max-old-space-size=400`）
+> - 中小型Java API服务：容器 **1GB**，JVM `-Xmx768m`
+> - 个人博客（Python+SQLite）：**256MB** 足够
+
+
+
+容器层面控制内存，示例：
 
 ```yaml
+  # ================= 后端auris应用 =================
+  auris:
+    build:
+      context: ./auris # 指向 auris 目录(auris的dockerfile和jar包放这里)
+      dockerfile: Dockerfile
+    container_name: auris
+    mem_limit: 1g
+    mem_reservation: 512m
+    mem_swap_limit: 1g # 禁用swap
+    restart: always
+    ports:
+      - "9090:9090" # auris后端使用9090端口
+    networks:
+      - hazenix-net
+    depends_on:
+      mysql:
+        condition: service_healthy # 等待 MySQL 健康检查通过
+      redis:
+        condition: service_started
 ```
+
+
+
+**应用层面的内存管理 (如JVM应用)**
+
+* 对于JVM应用：必须设置JVM堆内存（-Xmx, -Xms），且应小于容器的mem_limit（**留出空间给非堆内存、元空间、线程栈等**）。推荐使用JDK 8u191+或JDK 10+的容器感知特性（<u>-XX:+UseContainerSupport</u>），或手动计算。
+  - 示例：如果mem_limit=1G，JVM堆可设为768m（-Xmx768m）。
+  - 注意：旧版JDK可能无法正确识别容器内存限制，导致JVM申请超过容器限制的内存而被杀死。
+* 对于Node.js：可以使用--max-old-space-size参数限制V8堆内存。
+* 对于Python：通常依赖系统内存，但可以监控和优化（如使用内存分析工具）。
+* 对于Go：运行时会根据可用内存调整，但也可以通过GOMEMLIMIT（Go 1.19+）设置。
+
+以下是jvm的配置，采用**启动脚本 + 环境变量 + JVM 容器感知能力实现灵活控制**
+
+```dockerfile
+# 基础镜像
+FROM eclipse-temurin:17-jre
+# 设定时区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# 拷贝jar包
+# COPY auris-server-1.0-SNAPSHOT.jar /app.jar
+COPY auris-server-*.jar /app.jar
+
+# 拷贝并授权启动脚本
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# 启动入口（使用脚本）
+ENTRYPOINT ["/entrypoint.sh"]
+```
+
+entrypoint.sh ⬇️
+
+```sh
+# 通过启动脚本 + 环境变量 + JVM 容器感知能力实现灵活控制，不在Dockerfile中写死jvm参数
+
+#!/bin/sh
+set -e
+
+# 默认 JVM 参数（JDK 17 原生支持容器感知）
+# 使用百分比参数：堆内存 = 容器mem_limit * 百分比（避免硬编码）
+DEFAULT_JVM_OPTS="-XX:+UseContainerSupport \
+  -XX:MaxRAMPercentage=75.0 \
+  -XX:InitialRAMPercentage=25.0 \
+  -XX:MinRAMPercentage=10.0 \
+  -XX:+ExitOnOutOfMemoryError \
+  -XX:+CrashOnOutOfMemoryError"
+
+# 优先使用用户传入的 JAVA_OPTS，否则用默认值
+JVM_OPTS="${JAVA_OPTS:-$DEFAULT_JVM_OPTS}"
+
+# 执行应用（exec 保证 Java 进程成为 PID 1，正确处理 SIGTERM）
+exec java $JVM_OPTS -jar /app.jar "$@"
+```
+
+
 
 
 

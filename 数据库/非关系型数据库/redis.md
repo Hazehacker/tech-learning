@@ -1,3 +1,7 @@
+https://blog.csdn.net/qq_66345100/article/details/131986713
+
+
+
 #  介绍
 
 > 世界范围内最流行的缓存中间件，公司离不开redis
@@ -986,7 +990,7 @@ Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries("user:400
 
 
 
-#### 缓存工具类
+#### 缓存工具类封装
 
 解决缓存穿透、缓存基础击穿的代码逻辑较为复杂，每次都要写一遍、比较繁琐，封装成工具类
 
@@ -1995,6 +1999,8 @@ key：选用
 
 ### 缓存更新策略
 
+==内存淘汰、过期淘汰、主动更新==
+
 > 如果数据库做了修改，而缓存没有正确更新，就会出现数据不一致问题
 
 ![image-20251220200154444](assets/image-20251220200154444.png)
@@ -2589,6 +2595,8 @@ public class UserService {
 
 #### 缓存击穿-解决方案
 
+* 被**高并发访问 且 缓存重建耗时**的key
+
 
 
 ![image-20251220192009995](assets/image-20251220192009995.png)
@@ -2775,6 +2783,8 @@ public Result queryById(Long id) throws InterruptedException {
 ##### **被动措施-缓存空对象**
 
 * 优点
+  * 实现简单
+
 * 缺点
   * 额外的内存消耗(可以通过设置过期时间弥补)
   * 可能造成短期的不一致
@@ -2831,9 +2841,678 @@ public Result queryById(Long id) throws InterruptedException {
 
 
 
+## 优惠卷秒杀
 
 
-#### 缓存工具封装
+
+### 全局唯一ID(分布式场景)
+
+
+
+
+
+
+
+
+
+
+
+### 实现优惠卷秒杀下单
+
+自增ID存在的问题：
+
+当用户抢购时，就会生成订单并保存到tb_voucher_order这张表中，而订单表如果使用数据库自增ID就存在一些问题：
+
+* **id的规律性太明显**，容易出现信息的泄露、被不怀好意的人伪造请求等问题
+  1. 安全性问题：如果ID规律太明显，可能会使系统容易受到恶意攻击，例如暴力破解等。攻击者可以通过分析ID规律来推断出其他用户的ID，从而进行未授权的访问或操纵。
+  2. 隐私泄露风险：如果ID规律太明显，可能导致用户的个人信息或敏感数据被曝光。攻击者可以根据规律推测出其他用户的ID，并通过这些ID获取到相应的数据，进而侵犯用户的隐私。
+  3. 数据可预测性：当ID规律太明显时，使用这些规律的攻击者可以很轻易地猜测出其他实体（如订单、交易等）的ID。这可能破坏系统的数据安全性和防伪能力。
+  4. 扩展性受限：如果ID规律太明显，可能会对系统的扩展性造成一定影响。当系统需要处理大量并发操作时，如果ID规律过于明显，可能导致多个操作同时对同一资源进行竞争，从而增加冲突和性能瓶颈。
+  5. 维护困难：当ID规律太明显时，系统可能需要额外的资源和机制来保持规律的更新和变化，以确保安全性和数据完整性。这会增加系统的复杂度，并给维护带来挑战。
+* **受单表数据量的限制**，MySQL中表能够存储的数据有限，会出现分库分表的情况，id不能够一直自增
+
+
+
+在MySQL中，表最多可以存储的记录数取决于多个因素，包括数据库版本、操作系统和硬件配置等。下面是一些常见的限制：
+
+1. 行数限制：在MySQL 5.7及之前的版本中，InnoDB和XtraDB存储引擎的行数限制为最大约为64亿（2^32 − 1），即4 , 294 , 967 , 295 4,294,967,2954,294,967,295行。而在MySQL 8.0及以后的版本中，它们的行数限制可达到理论上的最大值，大约是1844万亿（2^64 − 1）行。
+2. 数据库文件大小限制：每个InnoDB表的存储大小受到所使用文件系统的限制。对于InnoDB表，默认情况下，数据库文件的大小限制取决于操作系统和文件系统，通常在几TB或更高。但是，这也可能受到特定的操作系统和文件系统的限制。
+3. 硬件资源限制：实际上，表的记录数还受到可用硬件资源，如磁盘空间、内存和处理能力的限制。当数据库文件较大时，磁盘空间变得关键，而在执行查询时，内存和处理能力可影响读写性能。
+
+业界流传是500万行。超过500万行就要考虑分表分库了。阿里巴巴《Java 开发手册》提出单表行数超过 500 万行或者单表容量超过 2GB，就需要考虑分库分表了
+
+
+**分布式ID**
+
+那么该如何解决呢？我们需要使用分布式ID（也可以叫全局唯一ID），分布式 ID满足以下特点：
+
+1. 全局唯一性：分布式ID保证在整个分布式系统中唯一性，不会出现重复的标识符。这对于区分和追踪系统中的不同实体非常重要。
+2. 高可用性：分布式ID生成器通常被设计为高可用的组件，可以通过水平扩展、冗余备份或集群部署来确保服务的可用性。即使某个节点或组件发生故障，仍然能够正常生成唯一的ID标识符。
+3. 安全性：分布式ID生成器通常是独立于应用程序和业务逻辑的。它们被设计为一个单独的组件或服务，可以被各种应用程序和服务所共享和使用，使得各个应用程序之间的ID生成过程互不干扰。
+4. 高性能：分布式ID生成器通常要求在很短的时间内生成唯一的标识符。为了实现低延迟，设计者通常采用高效的算法和数据结构，以及优化的网络通信和存储策略。
+5. 递增性：分布式ID通常可以被设计成可按时间顺序排序，以便更容易对生成的ID进行索引、检索或排序操作。这对于一些场景，如日志记录和事件溯源等，非常重要。
+   
+
+**分布式ID的实现**
+
+分布式ID的实现方式：
+
+1. UUID
+2. Redis自增
+3. 数据库自增
+4. snowflake算法（雪花算法）
+   64位（采用机器自增，需要维护机器id；有时钟回拨问题）
+
+这里我们使用自定义的方式实现：时间戳+序列号+数据库自增
+
+为了增加ID的安全性，我们可以不直接使用Redis自增的数值，而是拼接一些其它信息，比如时间戳、UUID、业务关键词
+
+
+![image-20260315203306246](assets/image-20260315203306246-1773577987686-1.png)
+
+* 符号位：1bit，永远为0（表示正数）
+* 时间戳：31bit，以秒为单位，可以使用69年（2^31 /3600/24/365 ≈ 69）
+* 序列号：32bit，秒内的计数器，支持每秒产生2^32个不同ID
+
+
+
+**分布式ID生成器**
+
+（需要满足下列特性）
+
+1. 唯一性
+2. 高可用
+   任何时候都能生成ID
+3. 高性能
+   生成ID的速度很快，不会拖慢业务
+4. 递增性
+   有利于数据库创建索引，提高插入速度
+5. 安全性
+   规律性不明显，不容易被猜测到
+
+```java
+package com.hmdp.utils;
+
+import cn.hutool.core.util.StrUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
+@Component
+@RequiredArgsConstructor
+public class RedisIdWorker {
+    /**
+     * 开始时间戳
+     */
+    public static final long BEGIN_TIMESTAMP = 1773532800L;
+    /**
+     *  序列号位数
+     */
+    private static final int COUNT_BITS = 32;
+    private final StringRedisTemplate stringRedisTemplate;
+
+
+    /**
+     *
+     * @param keyPrefix -- 不同业务使用不同的key，所以需要有个前缀区分不同的业务
+     * @return
+     */
+    public long nextId(String keyPrefix){
+        // 参数校验
+        if (StrUtil.isBlank(keyPrefix)) {
+            throw new RuntimeException("keyPrefix can not be null");
+        }
+
+        // 1. 生成时间戳
+        LocalDateTime now = LocalDateTime.now();
+        long nowSecond = now.toEpochSecond(ZoneOffset.UTC);
+        long timeStamp = nowSecond - BEGIN_TIMESTAMP;
+
+        // 2. 生成序列号
+        // 获取当前日期
+        String date = now.format(DateTimeFormatter.ofPattern("yyyy:MM:dd"));// 👍
+        // redis 单个自增key的增长有上限 (2^64)，不能使用同一个key，有超过上限的风险
+        // [加入一个当天的元素，这个key递增的上限就变成了当前的最大下单量]【同时这个标识能方便统计 某年/月的下单量】
+        // 创建一个自增长的序列号【使用redis实现自增】
+        Long count = stringRedisTemplate.opsForValue().increment("icr:" + keyPrefix + ":" + date);// increment
+
+
+        // 拼接并返回
+        return timeStamp << COUNT_BITS | count;// 👍
+    }
+
+    /**
+     * 该方法可以用于计算起始时间（单位 s）
+     * @param args
+     */
+//    public static void main(String[] args){
+//        LocalDateTime time = LocalDateTime.of(2026, 3, 15, 0, 0, 0);
+//        long second = time.toEpochSecond(ZoneOffset.UTC);// 指定时区
+//        System.out.println("second: "+ second);
+//    }
+}
+
+```
+
+
+
+---
+
+![image-20260315215420368](assets/image-20260315215420368.png)
+
+![image-20260315215328341](assets/image-20260315215328341.png)
+
+
+
+
+
+
+
+---
+
+
+
+
+
+
+
+### 超卖问题
+
+![image-20260316085811416](assets/image-20260316085811416.png)
+
+> 线程1查询库存，发现库存充足，创建订单，然后准备对库存进行扣减，但此时线程2和线程3也进行查询，同样发现库存充足，然后线程1执行完扣减操作后，库存变为了0，线程2和线程3同样完成了库存扣减操作，最终导致库存变成了负数！这就是超卖问题的完整流程
+
+
+
+* **超卖问题的常见解决方案：**
+  * 悲观锁，认为线程安全问题一定会发生，因此操作数据库之前都需要先获取锁，确保线程串行执行。常见的悲观锁有：synchronized、lock
+  * 乐观锁，认为线程安全问题不一定发生，因此不加锁，只会在更新数据库的时候去判断有没有其它线程对数据进行修改，如果没有修改则认为是安全的，直接更新数据库中的数据即可，如果修改了则说明不安全，直接抛异常或者等待重试。常见的实现方式有：版本号法、CAS操作、乐观锁算法
+* **悲观锁和乐观锁的比较**
+  * 悲观锁比乐观锁的性能低：悲观锁需要先加锁再操作，而乐观锁不需要加锁，所以乐观锁通常具有更好的性能。
+  * 悲观锁比乐观锁的冲突处理能力低：悲观锁在冲突发生时直接阻塞其他线程，乐观锁则是在提交阶段检查冲突并进行重试。
+  * 悲观锁比乐观锁的并发度低：悲观锁存在锁粒度较大的问题，可能会限制并发性能；而乐观锁可以实现较高的并发度。
+  * 应用场景：两者都是互斥锁，悲观锁适合写入操作较多、冲突频繁的场景；乐观锁适合读取操作较多、冲突较少的场景。
+
+
+
+**拓展**：CAS
+
+CAS（Compare and Set）是一种并发编程中常用的原子操作，用于解决多线程环境下的数据竞争问题。它是乐观锁算法的一种实现方式。
+
+CAS操作包含三个参数：内存地址V、旧的预期值A和新的值B。CAS的执行过程如下：
+
+1. 比较（Compare）：将内存地址V中的值与预期值A进行比较。
+2. 判断（Judgment）：如果相等，则说明当前值和预期值相等，表示没有发生其他线程的修改。
+3. 设置（Set）：使用新的值B来更新内存地址V中的值。
+
+CAS操作是一个原子操作，意味着在执行过程中不会被其他线程中断，保证了线程安全性。如果CAS操作失败（即当前值与预期值不相等），通常会进行重试，直到CAS操作成功为止。
+
+CAS操作适用于精细粒度的并发控制，可以避免使用传统的加锁机制带来的性能开销和线程阻塞。然而，CAS操作也存在一些限制和注意事项：
+
+1. ABA问题：CAS操作无法感知到对象值从A变为B又变回A的情况，可能会导致数据不一致。为了解决ABA问题，可以引入版本号或标记位等机制。
+2. 自旋开销：当CAS操作失败时，需要不断地进行重试，会占用CPU资源。如果重试次数过多或者线程争用激烈，可能会引起性能问题。
+3. 并发性限制：如果多个线程同时对同一内存地址进行CAS操作，只有一个线程的CAS操作会成功，其他线程需要重试或放弃操作。
+
+在Java中，提供了相关的CAS操作支持，如AtomicInteger、AtomicLong、AtomicReference等类，可以实现基于CAS操作的线程安全操作。
+
+
+#### 乐观锁解决一人多单超卖问题
+
+- **实现方式一**：版本号法
+
+  ![image-20260316091419593](assets/image-20260316091419593.png)
+
+  首先我们要为 tb_seckill_voucher 表新增一个版本号字段 version ，线程1查询完库存，在进行库存扣减操作的同时将版本号+1，线程2在查询库存时，同时查询出当前的版本号，发现库存充足，也准备执行库存扣减操作，但是需要判断当前的版本号是否是之前查询时的版本号，结果发现版本号发生了改变，这就说明数据库中的数据已经发生了修改，就会进行重试（或者直接抛异常中断）
+
+  > 在硬件层面其实有加锁，保证compare set 这两个操作的原子性，确保这两条指令是一个整体  防止其他线程在两个指令之间插入操作
+
+* **实现方式二**：CAS法
+
+  ![image-20260316091454639](assets/image-20260316091454639.png)
+
+  <u>CAS法类似与版本号法，但是不需要另外在添加一个 version 字段，而是直接使用库存替代版本号</u>，线程1查询完库存后进行库存扣减操作，线程2在查询库存时，发现库存充足，也准备执行库存扣减操作，但是需要判断当前的库存是否是之前查询时的库存，结果发现库存数量发生了改变，这就说明数据库中的数据已经发生了修改，需要进行重试（或者直接抛异常中断）
+
+综上所述，使用CAS法要更加好，能够避免额外的内存开销，下面就让我们用代码来实现吧(●ˇ∀ˇ●)
+
+```java
+// 5、秒杀券合法，则秒杀券抢购成功，秒杀券库存数量减一
+Boolean flag = false;
+while(flag){
+    SeckillVoucher seckillVoucher2 = seckillVoucherService.getById(voucherId);
+    seckillVoucherService.update(new LambdaUpdateWrapper<SeckillVoucher>()
+            .eq(SeckillVoucher::getVoucherId, voucherId)
+            .eq(SeckillVoucher::getStock, voucher.getStock())
+            .setSql("stock = stock -1"));
+}
+```
+
+> 硬件层面加了行锁，所以把条件和更新操作放到一条sql语句中能解决并发问题
+
+优化（上述方案在高并发下会导致大量线程不断重试，我们只需要确保 库存只在>0时执行更新操作 就能解决超卖问题）
+
+```java
+seckillVoucherService.update(new LambdaUpdateWrapper<SeckillVoucher>()
+        .eq(SeckillVoucher::getVoucherId, voucherId)
+        .gt(SeckillVoucher::getStock, 0)
+        .setSql("stock = stock -1"));
+```
+
+
+
+注意，一些场景只能通过判断数据是否变化来判断是否安全，此时要提高成功率  可以采用分批加锁的方案（分段锁）
+
+
+
+
+
+
+
+### 一人一单
+
+![image-20260316102342808](assets/image-20260316102342808.png)
+
+
+
+```java
+/**
+ * 用户抢秒杀优惠券
+ * @param voucherId
+ * @return
+ */
+@Override
+public Result seckillVoucherOrder(Long voucherId) {
+    // 1. 查询优惠卷是否存在
+    SeckillVoucher seckillVoucher = seckillVoucherService.getById(voucherId);
+
+    // 2. 判断秒杀是否开始
+    if (seckillVoucher.getBeginTime().isAfter(LocalDateTime.now())) {
+        return Result.fail("秒杀尚未开始");
+    }
+
+    // 3. 判断秒杀是否结束
+    if (seckillVoucher.getEndTime().isBefore(LocalDateTime.now())) {
+        return Result.fail("秒杀已结束");
+    }
+
+    // 4. 判断库存是否充足，扣减库存
+    if (seckillVoucher.getStock() < 1) {
+        return Result.fail("库存不足");
+    }
+    /** 👍
+     * 这里仅仅对一个用户加锁，增加锁的颗粒度，提高并发性能，而不是对所有用户加锁
+     * 由于每一个请求的 userId (Long包装类型)都是不同的对象，所以这里要用 toString() 方法将其转换为字符串，才能作为锁的对象
+     * 调用 intern() 方法，返回字符串常量池中的地址，
+     * 由于 intern 字符串池中的字符串是唯一的，所以这里可以确保对每个用户都只有一个锁对象
+     *
+     * 将synchronized 代码块包裹在方法外层，确保在事务提交之后再释放锁！
+     */
+    Long userId = UserHolder.getUser().getId();
+    synchronized (userId.toString().intern()) {
+        // 拿到代理对象，解决事务失效问题（注意这需要引入 aspectj 的依赖，并在启动类添加注解） 👍
+        VoucherOrderServiceImpl proxy = (VoucherOrderServiceImpl) AopContext.currentProxy();
+        return proxy.createVoucherOrder(voucherId);
+    }
+}
+
+@Transactional
+public Result createVoucherOrder(Long voucherId) {
+    long orderId;
+    Long userId = UserHolder.getUser().getId();
+
+    // 5. 确保一人一单：查询当前用户是否有过订单
+    VoucherOrder voucherOrder1 = voucherOrderMapper.selectOne(
+            new LambdaQueryWrapper<VoucherOrder>()
+                    .eq(VoucherOrder::getUserId, userId)
+                    .eq(VoucherOrder::getVoucherId, voucherId));
+
+    if (voucherOrder1 != null) {
+        return Result.fail("用户已购买过该优惠券");
+    }
+
+    seckillVoucherService.update(new LambdaUpdateWrapper<SeckillVoucher>()
+            .eq(SeckillVoucher::getVoucherId, voucherId)
+            .gt(SeckillVoucher::getStock, 0)
+            .setSql("stock = stock -1"));
+
+
+    // 5. 创建订单
+    VoucherOrder voucherOrder = new VoucherOrder();
+    voucherOrder.setUserId(UserHolder.getUser().getId());
+//        voucherOrder.setUserId(1L);
+    voucherOrder.setVoucherId(voucherId);
+    orderId = redisIdWorker.nextId("order");
+    voucherOrder.setId(orderId);
+    voucherOrder.setCreateTime(LocalDateTime.now());
+    voucherOrder.setUpdateTime(LocalDateTime.now());
+    save(voucherOrder);
+
+
+    return Result.ok(orderId);
+}
+```
+
+
+
+**实现细节：**
+
+1. 锁的范围尽量小。synchronized尽量锁代码块，而不是方法，锁的范围越大性能越低
+
+2. 锁的对象一定要是一个不变的值。我们不能直接锁 Long 类型的 userId，每请求一次都会创建一个新的 userId 对象，synchronized 要锁不变的值，所以我们要将 Long 类型的 userId 通过 toString()方法转成 String 类型的 userId，toString()方法底层（可以点击去看源码）是直接 new 一个新的String对象，显然还是在变，所以我们要使用 intern() 方法从常量池中寻找与当前 字符串值一致的字符串对象，这就能够保障一个用户 发送多次请求，每次请求的 userId 都是不变的，从而能够完成锁的效果（并行变串行）
+
+3. 我们要锁住整个事务，而不是锁住事务内部的代码。如果我们锁住事务内部的代码会导致其它线程能够进入事务，当我们事务还未提交，锁一旦释放，仍然会存在超卖问题
+
+4. Spring的@Transactional注解要想事务生效，必须使用动态代理。Service中一个方法中调用另一个方法，另一个方法使用了事务，此时会导致@Transactional失效，所以我们需要创建一个代理对象，使用代理对象来调用方法。
+
+   让代理对象生效的步骤：
+
+   ①引入AOP依赖，动态代理是AOP的常见实现之一
+
+   ```xml
+   <dependency>
+       <groupId>org.aspectj</groupId>
+       <artifactId>aspectjweaver</artifactId>
+   </dependency>
+   
+   ```
+
+   ②暴露动态代理对象，默认是关闭的 (启动类上面加注解)
+
+   ```java
+   @EnableAspectJAutoProxy(exposeProxy = true)
+   ```
+
+
+
+### 分布式锁
+
+但分布式场景下，synchronized锁形同虚设，这是由于<u>synchronized是本地锁，只能提供线程级别的同步，每个JVM中都有一把synchronized锁，不能跨 JVM 进行上锁</u>
+
+当一个线程进入被 synchronized 关键字修饰的方法或代码块时，它会尝试获取对象的内置锁（也称为监视器锁）。如果该锁没有被其他线程占用，则当前线程获得锁，可以继续执行代码；否则，当前线程将进入阻塞状态，直到获取到锁为止。而现在我们是创建了两个节点，也就意味着有两个JVM，所以synchronized会失效
+
+
+* 分布式锁：满足分布式系统或集群模式下多进程可见并且互斥的锁
+
+sychronized锁失效的原因是由于每一个JVM都有一个独立的锁监视器，用于监视当前JVM中的sychronized锁，所以无法保障多个集群下只有一个线程访问一个代码块。所以我们直接将使用一个分布锁，**在整个系统的全局中设置一个锁监视器，从而保障不同节点的JVM都能够识别，从而实现集群下只允许一个线程访问一个代码块**
+
+![image-20260316113750234](assets/image-20260316113750234.png)
+
+* **分布式锁的特点：**
+
+  * **多线程可见**。
+  * **互斥**。分布式锁必须能够确保在任何时刻只有一个节点能够获得锁，其他节点需要等待。
+  * **高可用**。分布式锁应该具备高可用性，即使在网络分区或节点故障的情况下，仍然能够正常工作。（容错性）当持有锁的节点发生故障或宕机时，系统需要能够自动释放该锁，以确保其他节点能够继续获取锁。
+  * **高性能**。分布式锁需要具备良好的性能，尽可能减少对共享资源的访问等待时间，以及减少锁竞争带来的开销。
+  * **安全性。**（可重入性）如果一个节点已经获得了锁，那么它可以继续请求获取该锁而不会造成死锁。（锁超时机制）为了避免某个节点因故障或其他原因无限期持有锁而影响系统正常运行，分布式锁通常应该设置超时机制，确保锁的自动释放
+
+* **分布式锁的常见实现方式**：
+
+  ![image-20260316113910724](assets/image-20260316113910724.png)
+
+  * **基于关系数据库**：可以利用数据库的事务特性和唯一索引来实现分布式锁。通过向数据库插入一条具有唯一约束的记录作为锁，其他进程在获取锁时会受到数据库的并发控制机制限制。
+
+  * **基于缓存**（如Redis）：使用分布式缓存服务（如Redis）提供的原子操作来实现分布式锁。通过将锁信息存储在缓存中，其他进程可以通过检查缓存中的锁状态来判断是否可以获取锁。
+
+    > 使用 TTL 机制保证锁的安全性，即便服务宕机，也能释放锁；再利用看门狗机制 解决锁到期 但服务没执行完的问题
+
+  * **基于ZooKeeper**：ZooKeeper是一个分布式协调服务，可以用于实现分布式锁。通过创建临时有序节点，每个请求都会尝试创建一个唯一的节点，并检查自己是否是最小节点，如果是，则表示获取到了锁。
+
+  * **基于分布式算法**：还可以利用一些分布式算法来实现分布式锁，例如Chubby、DLM（Distributed Lock Manager）等。这些算法通过在分布式系统中协调进程之间的通信和状态变化，实现分布式锁的功能。
+
+
+
+* **`setnx`指令的特点**：setnx只能设置key不存在的值，值不存在设置成功，返回 1 ；值存在设置失败，返回 0
+
+* **获取锁**：
+
+  方式一：
+
+  ```bash
+  # 添加锁
+  setnx [key] [value]
+  # 为锁设置过期时间，超时释放，避免死锁
+  expire [key] [time]
+  ```
+
+  **方式二**
+
+  (这种方式更加推荐，因为将上面两个指令变成一个指令，从而保障指令的原子性)
+
+  ```bash
+  # 添加锁
+  set [key] [value] nx ex [time]
+  ```
+
+* **释放锁**
+
+  手动释放：
+
+  ```bash
+  # 释放锁（除了使用del手动释放，还可超时释放）
+  del [key]
+  ```
+
+  超时释放
+
+* 
+
+
+
+
+
+**分布式锁解决超卖问题**
+
+![image-20260316121721330](assets/image-20260316121721330.png)
+
+> #### 自定义的初级版本：
+>
+> ```java
+> public class SimpleRedisLock implements Lock {
+> 
+>     /**
+>      * RedisTemplate
+>      */
+>     private StringRedisTemplate stringRedisTemplate;
+> 
+>     /**
+>      * 锁的名称(不同业务不同的锁)
+>      */
+>     private String name;
+> 
+>     public SimpleRedisLock(StringRedisTemplate stringRedisTemplate, String name) {
+>         this.stringRedisTemplate = stringRedisTemplate;
+>         this.name = name;
+>     }
+>     private static final String KEY_PREFIX = "lock:";
+> 
+> 
+>     /**
+>      * 获取锁
+>      *
+>      * @param timeoutSec 超时时间
+>      * @return
+>      */
+>     @Override
+>     public boolean tryLock(long timeoutSec) {
+>         // 获取线程标识
+>         String id = Thread.currentThread().getId() + "";
+>         // SET lock:name id EX timeoutSec NX
+>         Boolean result = stringRedisTemplate.opsForValue()
+>                 .setIfAbsent(KEY_PREFIX + name, id, timeoutSec, TimeUnit.SECONDS);
+>         // 存入线程id，用于将来释放锁的时候 判断当前线程是否有资格释放锁
+>         
+>         return Boolean.TRUE.equals(result);// 不使用自动拆箱，会有安全风险【如果它是null, 拆箱就会报空指针】👍
+>     }
+> 
+>     /**
+>      * 释放锁
+>      */
+>     @Override
+>     public void unlock() {
+>         stringRedisTemplate.delete("lock:" + name);
+>     }
+> }
+> 
+> ```
+>
+> 使用分布式锁：
+>
+> ```java
+> // 3、创建订单（使用分布式锁）
+> Long userId = ThreadLocalUtls.getUser().getId();
+> SimpleRedisLock lock = new SimpleRedisLock(stringRedisTemplate, "order:" + userId);
+> boolean isLock = lock.tryLock(1200);
+> if (!isLock) {
+>     // 索取锁失败，重试或者直接抛异常（这个业务是一人一单，所以直接返回失败信息）
+>     return Result.fail("一人只能下一单");
+> }
+> try {
+>     // 索取锁成功，创建代理对象，使用代理对象调用第三方事务方法， 防止事务失效
+>     IVoucherOrderService proxy = (IVoucherOrderService) AopContext.currentProxy();
+>     return proxy.createVoucherOrder(userId, voucherId);
+> } finally {
+>     lock.unlock();
+> }
+> 
+> ```
+>
+> 实现细节:
+>
+> try...finally...确保发生异常时锁能够释放，注意这给地方不要使用catch，A事务方法内部调用B事务方法，A事务方法不能够直接catch，否则会导致事务失效，详情可以参考这篇文章：【Java面试篇】Spring中@Transactional注解事务失效的常见场景
+> 
+
+> #### 优化：自定义锁如何解决并发问题
+>
+> （锁超时释放出现的超卖问题）
+>
+> ![image-20260316124406689](assets/image-20260316124406689.png)
+>
+> 当线程1获取锁后，由于业务阻塞，线程1的锁超时释放了，这时候线程2趁虚而入拿到了锁，然后此时线程1业务完成了，然后把线程2刚刚获取的锁给释放了，这时候线程3又趁虚而入拿到了锁（此时此刻同时有两个线程都在执行业务），这就导致又出现了超卖问题！（但是这个在小项目（并发数不高）中出现的概率比较低，在大型项目（并发数高）情况下是有一定概率的）
+>
+> 如何解决呢？我们为分布式锁添加一个线程标识，在释放锁时判断当前锁是否是自己的锁，是自己的就直接释放，不是自己的就不释放锁，从而解决多个线程同时获得锁的情况导致出现超卖
+>
+> ![image-20260316124944505](assets/image-20260316124944505.png)
+>
+> 实现细节
+>
+> 1. 线程ID加上一个UUID前缀，区分不同机器的、但ID相同的线程（集群下，有多个JVM，每个JVM都会维护一个递增的线程id，很有可能出现冲突，另一个JVM的线程释放了本JVM线程加的锁）
+>
+> 2. 释放的时候 判断 锁的线程标识 是否与 当前线程一致
+>
+>    如果一致，才释放锁
+>
+> ```java
+> import cn.hutool.core.lang.UUID;
+> import com.hmdp.utils.lock.Lock;
+> import org.springframework.data.redis.core.StringRedisTemplate;
+> import java.util.concurrent.TimeUnit;
+> /**
+>  * @author ghp
+>  * @title
+>  * @description
+>  */
+> public class SimpleRedisLock implements Lock {
+>     /**
+>      * RedisTemplate
+>      */
+>     private StringRedisTemplate stringRedisTemplate;
+> 
+>     /**
+>      * 锁的名称
+>      */
+>     private String name;
+>     /**
+>      * key前缀
+>      */
+>     public static final String KEY_PREFIX = "lock:";
+>     /**
+>      * ID前缀
+>      */
+>     public static final String ID_PREFIX = UUID.randomUUID().toString(true) + "-";// 传了true，能将UUID里面默认带的横线去掉
+> 
+>     public SimpleRedisLock(StringRedisTemplate stringRedisTemplate, String name) {
+>         this.stringRedisTemplate = stringRedisTemplate;
+>         this.name = name;
+>     }
+>     
+>     /**
+>      * 获取锁
+>      *
+>      * @param timeoutSec 超时时间
+>      * @return
+>      */
+>     @Override
+>     public boolean tryLock(long timeoutSec) {
+>         String threadId = ID_PREFIX + Thread.currentThread().getId() + "";
+>         // SET lock:name id EX timeoutSec NX
+>         Boolean result = stringRedisTemplate.opsForValue()
+>                 .setIfAbsent(KEY_PREFIX + name, threadId, timeoutSec, TimeUnit.SECONDS);
+>         return Boolean.TRUE.equals(result);
+>     }
+> 
+>     /**
+>      * 释放锁
+>      */
+>     @Override
+>     public void unlock() {
+>         // 判断 锁的线程标识 是否与 当前线程一致
+>         String currentThreadFlag = ID_PREFIX + Thread.currentThread().getId();
+>         String redisThreadFlag = stringRedisTemplate.opsForValue().get(KEY_PREFIX + name);
+>         if (currentThreadFlag != null && currentThreadFlag.equals(redisThreadFlag)) {
+>             // 一致，说明当前的锁就是当前线程的锁，可以直接释放
+>             stringRedisTemplate.delete(KEY_PREFIX + name);
+>         }
+>         // 不一致，不能释放
+>     }
+> }
+> 
+> ```
+>
+> 
+
+
+
+> #### 优化：自定义锁如何解决并发问题（如何保证 判断与释放操作 的原子性）
+>
+> 我们通过给锁添加一个线程标识，并且在释放锁时添加一个判断，从而防止锁超时释放产生的超卖问题，一定程度上解决了超卖问题，但是仍有可能发生超卖问题（出现超卖概率更低了）：当线程1获取锁，执行完业务然后<u>并且判断完当前锁是自己的锁</u>，但就在此时发生了阻塞【JVM 垃圾回收时的部分时期会阻塞所有线程（full gc）】，结果锁被超时释放了，线程2立马就趁虚而入了，获得锁执行业务，但就在此时线程1阻塞完成，<u>由于已经判断过锁，已经确定锁是自己的锁了，于是直接就删除了锁，结果删的是线程2的锁</u>，这就又导致线程3趁虚而入了，从而继续发生超卖问题
+> ![image-20260316144621153](assets/image-20260316144621153.png)
+>
+> **备注**：我们可以在判断删除锁的那行代码上打一个断点，然后user1发送一个请求，获取锁，手动把锁删了，模拟锁超时释放，然后使用user2发送一个请求，成功获取锁，从而模拟上诉过程，检验超卖问题
+>
+> 
+>
+> Redis提供了Lua脚本的功能，在一个脚本中编写多条Redis命令，确保多条命令执行时的原子性，Lua是一种编程语言
+>
+> [[Lua脚本]]
+>
+> 
+
+
+
+
+
+
+
+
+
+
+
+### 优化秒杀
+
+
+
+
+
+### Redis实现消息队列
+
+
+
+
+
+
 
 
 

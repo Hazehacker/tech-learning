@@ -1,4 +1,4 @@
-# 问题
+﻿# 问题
 
 
 
@@ -231,7 +231,7 @@
 
 ### docker安装案例
 
-> ![image-20250918200820802](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918200820802.png)
+> ![image-20250918200820802](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918200820802.png)
 >
 > 
 >
@@ -247,7 +247,7 @@
 
 #### Docker安装MySQL-docker原理
 
-![image-20250918202129100](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918202129100.png)
+![image-20250918202129100](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918202129100.png)
 
 ```
 docker run -d \
@@ -272,7 +272,7 @@ docker run -d \
 
 
 
-![image-20250918203855698](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918203855698.png)
+![image-20250918203855698](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918203855698.png)
 
 > 这个镜像不依赖于操作系统，这个镜像不仅可以在linux上用，还可以在其他系统上用
 >
@@ -290,7 +290,7 @@ docker run -d \
 
 * 如何获取的镜像？
 
-  ![image-20250918211648603](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918211648603.png)
+  ![image-20250918211648603](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918211648603.png)
 
   > 从docker/国内公司 维护的镜像仓库，就能获取到想要的镜像（或者公司也可以搭建自己的镜像仓库的私服(类似maven私服)）
   >
@@ -311,7 +311,7 @@ docker ps
 
 ```
 
-![image-20250918212657555](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918212657555.png)
+![image-20250918212657555](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918212657555.png)
 
 > 容器id：容器的唯一标识
 >
@@ -335,7 +335,7 @@ docker ps
 
   
 
-![image-20250918213652774](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918213652774.png)
+![image-20250918213652774](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918213652774.png)
 
 > 端口映射
 >
@@ -360,11 +360,11 @@ docker ps
 > docker inspect containerName
 > ```
 
-![image-20250918213716931](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918213716931.png)
+![image-20250918213716931](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918213716931.png)
 
 > 完整版命名↑  
 
-![image-20250918213821085](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918213821085.png)
+![image-20250918213821085](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918213821085.png)
 
 
 
@@ -708,7 +708,7 @@ docker ps
 
 https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 
-![image-20251107201515803](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251107201515803.png)
+![image-20251107201515803](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251107201515803.png)
 
 * 具体流程参照官网的操作文档即可
 
@@ -738,9 +738,9 @@ rootbzh66ECS-tencent1
 
 ## 常见命令
 
-![image-20250918214515290](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918214515290.png)
+![image-20250918214515290](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918214515290.png)
 
-![image-20250918214526382](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918214526382.png)
+![image-20250918214526382](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918214526382.png)
 
 1. 略
 
@@ -757,7 +757,7 @@ rootbzh66ECS-tencent1
    docker images
    ```
 
-   ![image-20250919075126750](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919075126750.png)
+   ![image-20250919075126750](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919075126750.png)
 
    > #### 删除镜像
    >
@@ -817,7 +817,7 @@ rootbzh66ECS-tencent1
 
    > bash代表进入nginx容器之后，要打开一个bash shell命令行进行交互
 
-   ![image-20250919081014585](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919081014585.png)
+   ![image-20250919081014585](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919081014585.png)
 
    退出容器
 
@@ -1031,9 +1031,9 @@ rootbzh66ECS-tencent1
 
 
 
->![image-20250919082111594](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919082111594.png)
+>![image-20250919082111594](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919082111594.png)
 >
->![image-20250919082051344](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919082051344.png)
+>![image-20250919082051344](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919082051344.png)
 >
 >* 所有镜像都是最小化的系统环境，它只具备运行所必须的环境
 >  容器内修改文件、拷贝文件很困难
@@ -1042,7 +1042,7 @@ rootbzh66ECS-tencent1
 
 
 
-![image-20250919082825246](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919082825246.png)
+![image-20250919082825246](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919082825246.png)
 
 * 数据卷是虚拟的，但是宿主机会自动在指定目录下创建对应的和数据卷绑定的目录，数据卷又和容器有关联；从而让容器和宿主机映射
 
@@ -1063,7 +1063,7 @@ rootbzh66ECS-tencent1
   
 
 
-![image-20250919083053718](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919083053718.png)
+![image-20250919083053718](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919083053718.png)
 
 > **创建容器的同时**才能挂载数据卷
 >
@@ -1090,11 +1090,11 @@ docker volume inspect 数据卷名字
 
 > 包括映射到的文件位置
 
-![image-20250919083611045](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919083611045.png)
+![image-20250919083611045](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919083611045.png)
 
-![image-20250919083851703](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919083851703.png)
+![image-20250919083851703](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919083851703.png)
 
-![image-20250919084243722](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919084243722.png)
+![image-20250919084243722](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919084243722.png)
 
 ### 本地目录挂载(自定义挂载位置)
 
@@ -1108,13 +1108,13 @@ docker volume inspect 数据卷名字
 >
 > 建议挂载到固定的、自己设置的目录
 
-![image-20250919090915062](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919090915062.png)
+![image-20250919090915062](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919090915062.png)
 
 
 
 案例
 
-> ![image-20250919091842250](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919091842250.png)
+> ![image-20250919091842250](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919091842250.png)
 >
 > ```
 > docker run -d \
@@ -1362,15 +1362,15 @@ docker volume inspect 数据卷名字
 
 
 
-![image-20251102211917127](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251102211917127.png)
+![image-20251102211917127](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251102211917127.png)
 
-![image-20251102212255331](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251102212255331.png)
+![image-20251102212255331](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251102212255331.png)
 
 > Layer结构能够解耦合，提升效率
 
 **使用dockerFile**
 
-![image-20251102212351656](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251102212351656.png)
+![image-20251102212351656](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251102212351656.png)
 
 > 相当于封装了我们人工部署JAR包的过程
 > 利用固定的指令来描述镜像的结构和构建过程，让docker依次构建镜像
@@ -1379,9 +1379,9 @@ docker volume inspect 数据卷名字
 
 *  案例
 
-  > ![image-20251102212942479](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251102212942479.png)
+  > ![image-20251102212942479](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251102212942479.png)
   >
-  > ![image-20251102230123809](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251102230123809.png)
+  > ![image-20251102230123809](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251102230123809.png)
   >
   > > Dockerfile放置的目录有讲究，Dockerfile目录所在位置是和文件有关联的，因为里面有个拷贝操作，所以要和被拷贝的那个jar包放一起
 
@@ -1420,7 +1420,7 @@ docker volume inspect 数据卷名字
 
 
 
-![image-20251103110535072](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103110535072.png)
+![image-20251103110535072](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103110535072.png)
 
 > 这种通过ip相互连接的方式不太好
 >
@@ -1428,13 +1428,13 @@ docker volume inspect 数据卷名字
 
 优化：自定义网络
 
-![image-20251103110941288](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103110941288.png)
+![image-20251103110941288](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103110941288.png)
 
 > 自定义网络之中的容器 可以通过容器名互相访问，不需要知道对方的ip地址
 
-![image-20251103143619735](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103143619735.png)
+![image-20251103143619735](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103143619735.png)
 
-![image-20251103143645710](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103143645710.png)
+![image-20251103143645710](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103143645710.png)
 
 
 
@@ -1485,7 +1485,7 @@ docker volume inspect 数据卷名字
 
 
 
-![image-20251103185802420](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103185802420.png)
+![image-20251103185802420](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103185802420.png)
 
 > 描述了项目内多个容器及其参数信息
 > 
@@ -1501,7 +1501,7 @@ docker volume inspect 数据卷名字
 
 
 
-![image-20251103191101801](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103191101801.png)
+![image-20251103191101801](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103191101801.png)
 
 > java应用不在需要我们 手动通过docker build构建成镜像，再创建运行容器
 >
@@ -1515,13 +1515,13 @@ docker volume inspect 数据卷名字
 * 按照这个路径
   docker-compose.yml要和Dockerfile、mysql、nginx、jar包放在一起
   
-  ![image-20251103200032863](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103200032863.png)
+  ![image-20251103200032863](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103200032863.png)
 
 
 
 * **使用docker compose命令构建**
 
-  ![image-20251103191745727](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103191745727.png)
+  ![image-20251103191745727](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103191745727.png)
 
   
 
@@ -1817,9 +1817,9 @@ docker volume inspect 数据卷名字
 
 编写Dockerfile文件
 
-![image-20251103145226478](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103145226478.png)
+![image-20251103145226478](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103145226478.png)
 
-> ![image-20251103145242763](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103145242763.png)
+> ![image-20251103145242763](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103145242763.png)
 >
 > 
 >
@@ -1954,7 +1954,7 @@ services:
       - "3306:3306"
     environment:
       TZ: Asia/Shanghai
-      MYSQL_ROOT_PASSWORD: Hazenixbzh66MySQLbulai
+      MYSQL_ROOT_PASSWORD: yourpassword
     volumes:
       - "./mysql/conf:/etc/mysql/conf.d"
       - "./mysql/data:/var/lib/mysql"
@@ -2039,7 +2039,7 @@ networks:
 
 > 真实项目部署中，数据库不会设置端口映射（避免mysql暴露到公网），都是通过容器名访问 所以后端的jdbc连接要按容器名配置
 
-* ![image-20251103210538233](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103210538233.png)
+* ![image-20251103210538233](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103210538233.png)
 
 
   由激活application-dev.yml改成激活application-prod.yml
@@ -2050,7 +2050,7 @@ networks:
 
 **编写Dockerfile文件**
 
-![image-20251103145226478](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103145226478.png)
+![image-20251103145226478](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103145226478.png)
 
 ```
 # 基础镜像
@@ -2290,7 +2290,7 @@ http {
 }
 ```
 
-> ![image-20251104134552877](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104134552877.png)
+> ![image-20251104134552877](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104134552877.png)
 > 表示如果请求的是云服务器的18080端口，就会进入nginx里面创建的这个server
 >
 > (这里listen的端口和docker-compose.yml文件中配置的端口保持一致[指冒号右边的端口号  即内部 Nginx 监听的端口]）
@@ -2461,11 +2461,11 @@ docker compose ps
 
 **给云服务器添加<u>入方向</u>规则**
 
-![image-20251104151936176](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104151936176.png)
+![image-20251104151936176](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104151936176.png)
 
 #### 为什么配置了 Docker Registry Mirrors 仍然走官方源？
 
-![image-20251111203943727](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251111203943727.png)
+![image-20251111203943727](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251111203943727.png)
 
 
 

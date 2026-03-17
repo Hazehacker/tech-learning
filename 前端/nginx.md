@@ -1,8 +1,8 @@
-
+﻿
 
 ## 反向代理的配置
 
-![image-20250919201236897](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201236897.png)
+![image-20250919201236897](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201236897.png)
 
 > proxy_pass转发请求
 
@@ -12,13 +12,13 @@
 
 
 
-![image-20250919201456788](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201456788.png)
+![image-20250919201456788](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201456788.png)
 
 > 还是基于反向代理，只不过分到多台服务器上
 
 
 
-![image-20250919201701207](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201701207.png)
+![image-20250919201701207](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201701207.png)
 
 
 

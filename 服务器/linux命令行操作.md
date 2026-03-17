@@ -1,12 +1,12 @@
-### linux简介
+﻿### linux简介
 
-![image-20250824085200042](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250824085200042.png)
+![image-20250824085200042](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250824085200042.png)
 
-![image-20250918123048570](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918123048570.png)
+![image-20250918123048570](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918123048570.png)
 
-![image-20250918123138483](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918123138483.png)
+![image-20250918123138483](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918123138483.png)
 
-![image-20250918123150872](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918123150872.png)
+![image-20250918123150872](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918123150872.png)
 
 
 
@@ -20,7 +20,7 @@
 
 > ## linux文件目录管理
 >
-> ![image-20250824085237528](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250824085237528.png)
+> ![image-20250824085237528](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250824085237528.png)
 >
 
 
@@ -33,7 +33,7 @@
 
 
 
-![image-20250824092504599](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250824092504599.png)
+![image-20250824092504599](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250824092504599.png)
 
 
 
@@ -42,41 +42,41 @@
 * 下载虚拟机
 * 
 
-> ![image-20250918123707386](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918123707386.png)
+> ![image-20250918123707386](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918123707386.png)
 >
-> ![image-20250918123906746](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918123906746.png)
+> ![image-20250918123906746](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918123906746.png)
 >
 > 
 > 
 
 * 虚拟机网络配置
-  ![image-20250918124335036](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918124335036.png)
+  ![image-20250918124335036](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918124335036.png)
 
 * 将准备好的CentOS7系统挂载到VMware当中
 
-  ![image-20250918125639132](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918125639132.png)
+  ![image-20250918125639132](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918125639132.png)
 
   > 双击运行这个文件后，软件中“我的计算机”下面就会多一个虚拟机
 
-  ![image-20250918125957523](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918125957523.png)
+  ![image-20250918125957523](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918125957523.png)
 
 * ip a 或 ip addr
   查看ip地址
 
-  ![image-20250918130603655](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918130603655.png)
+  ![image-20250918130603655](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918130603655.png)
 
   > 如果有网卡，但是没有ip地址；可能是因为启动过程中这块网卡没有正常激活到
   > 可以手动激活下
   >
-  > ![image-20250918130645450](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918130645450.png)
+  > ![image-20250918130645450](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918130645450.png)
   >
   > 运行这个脚本来手动激活
 
 * 选择挂起虚拟机；下次就可以快速启动，并且不会丢失配置
 
-  ![image-20250918130839568](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918130839568.png)
+  ![image-20250918130839568](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918130839568.png)
 
-> ![image-20250918131118404](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918131118404.png)
+> ![image-20250918131118404](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918131118404.png)
 
 
 
@@ -120,13 +120,13 @@
 
 ## 目录结构
 
-![image-20250828171016627](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828171016627.png)
+![image-20250828171016627](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828171016627.png)
 
-![image-20250828171041869](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828171041869.png)
+![image-20250828171041869](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828171041869.png)
 
-![image-20250918134655010](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918134655010.png)
+![image-20250918134655010](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918134655010.png)
 
-![image-20250828171404731](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828171404731.png)
+![image-20250828171404731](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828171404731.png)
 
 
 
@@ -158,7 +158,7 @@ mkdir newDir 新建文件夹
 
 
 
-![image-20250918135154845](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918135154845.png)
+![image-20250918135154845](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918135154845.png)
 
 
 
@@ -184,7 +184,7 @@ Tab键自动补全
 
 ## 目录相关命令
 
-![image-20250828171529505](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828171529505.png)
+![image-20250828171529505](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828171529505.png)
 
 
 
@@ -194,7 +194,7 @@ Tab键自动补全
 
 #### 定位与查看目录
 
-![image-20250828171707899](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828171707899.png)
+![image-20250828171707899](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828171707899.png)
 
 * 以列表形式展示根目录：ls -l，即 ll
 
@@ -212,7 +212,7 @@ Tab键自动补全
 
     > ll +路径  ——  展示指定文件夹下的目录
 
-![image-20250918140022086](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918140022086.png)
+![image-20250918140022086](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918140022086.png)
 
 
 
@@ -220,7 +220,7 @@ Tab键自动补全
 
 #### 切换目录与展示目录结构
 
-![image-20250828172439963](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828172439963.png)
+![image-20250828172439963](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828172439963.png)
 
 * 命令“cd”会直接回到用户的家目录(~，即/root或/home)
 
@@ -242,7 +242,7 @@ Tab键自动补全
 >
 > 开头没带/的是相对路径
 >
-> ![image-20250918140346000](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918140346000.png)
+> ![image-20250918140346000](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918140346000.png)
 
 
 
@@ -255,7 +255,7 @@ Tab键自动补全
 
 #### 创建和删除目录
 
-![image-20250828174140618](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828174140618.png)
+![image-20250828174140618](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828174140618.png)
 
 > 一次创建多级目录需要加入 -p
 
@@ -272,7 +272,7 @@ Tab键自动补全
 
 ### 创建、复制、移动、重命名、删除文件
 
-![image-20250828191634219](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828191634219.png)
+![image-20250828191634219](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828191634219.png)
 
 
 
@@ -284,7 +284,7 @@ Tab键自动补全
 * 复制文件或文件夹
 
   * cp a.txt b.txt new/
-    ![image-20250828192923442](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828192923442.png)
+    ![image-20250828192923442](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828192923442.png)
 
     
 
@@ -310,11 +310,11 @@ Tab键自动补全
   mv source dest
   ```
 
-  ![image-20250918153253210](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918153253210.png)
+  ![image-20250918153253210](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918153253210.png)
 
   * mv a.txt b.txt ../saves/
-    ![image-20250828194027837](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828194027837.png)
-    ![image-20250828194049018](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828194049018.png)
+    ![image-20250828194027837](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828194027837.png)
+    ![image-20250828194049018](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828194049018.png)
 
     > 如果是已存在的目录，就执行移动，否则就是从命名
 
@@ -331,13 +331,13 @@ Tab键自动补全
 
 > 使用通配符*可模糊查找
 
-![image-20250828200411853](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828200411853.png)
+![image-20250828200411853](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828200411853.png)
 
 
 
 * 根据名字搜索
   * 指定路径范围，使用-name配置文件名称
-    ![image-20250828200834880](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828200834880.png)
+    ![image-20250828200834880](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828200834880.png)
   * (可使用-type配置 f或d—指定只查找文件夹或文件)
 
 
@@ -346,12 +346,12 @@ Tab键自动补全
 
 * 查找大于100M的文件
 
-  * ![image-20250828201557453](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828201557453.png)
+  * ![image-20250828201557453](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828201557453.png)
 
-    ![image-20250828201535583](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828201535583.png)
+    ![image-20250828201535583](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828201535583.png)
 
 * 将/usr/中大于100M的文件拷贝到一个目录下
-  ![image-20250828202527713](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828202527713.png)
+  ![image-20250828202527713](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828202527713.png)
 
   > 使用 {} 表示查询到的内容
 
@@ -370,9 +370,9 @@ Tab键自动补全
 
 
 
-![image-20250828202800155](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250828202800155.png)
+![image-20250828202800155](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250828202800155.png)
 
-![image-20250918155506301](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918155506301.png)
+![image-20250918155506301](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918155506301.png)
 
 ```
 grep -i exception tlias.log
@@ -384,13 +384,13 @@ grep -i exception tlias.log
 
 ### 编辑文件
 
-![image-20250829105234994](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829105234994.png)
+![image-20250829105234994](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829105234994.png)
 
 > 或者用“yum install vim”安装
 
-![image-20250829105559345](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829105559345.png)
+![image-20250829105559345](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829105559345.png)
 
-![image-20250829105651326](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829105651326.png)
+![image-20250829105651326](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829105651326.png)
 
 * 删除(其实是剪切)
   * dd——删除光标所在行
@@ -406,11 +406,11 @@ grep -i exception tlias.log
 
 
 
-![image-20250829105718195](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829105718195.png)
+![image-20250829105718195](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829105718195.png)
 
 * **<u>主要使用i进入编辑模式（insert）</u>**
 
-![image-20250829105906677](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829105906677.png)
+![image-20250829105906677](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829105906677.png)
 
 > 小写的x
 
@@ -432,7 +432,7 @@ grep -i exception tlias.log
 * 回车
   * 执行命令
   * 退出底行模式
-* ![image-20250829133735673](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829133735673.png)
+* ![image-20250829133735673](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829133735673.png)
 
 
 
@@ -447,9 +447,9 @@ grep -i exception tlias.log
 
 ### 查看文件
 
-![](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829134408244.png) 
+![](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829134408244.png) 
 
-![image-20250829134654161](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829134654161.png)
+![image-20250829134654161](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829134654161.png)
 
 * 小文件
   * cat 文件路径
@@ -458,7 +458,7 @@ grep -i exception tlias.log
   * tail -50 a.txt
 * 实时监听文件末尾内容
   * tail - f a.txt
-    ![image-20250918142247178](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918142247178.png)
+    ![image-20250918142247178](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918142247178.png)
 * less查看文件
   * 方向键上下滚  动
   * “/关键词”进行搜索
@@ -473,18 +473,18 @@ grep -i exception tlias.log
 
 
 
- ![image-20250829142541980](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829142541980.png)
+ ![image-20250829142541980](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829142541980.png)
 
 > tar：对文件进行打包、解包、压缩、解压
 >
-> ![image-20250918150113854](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918150113854.png)
+> ![image-20250918150113854](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918150113854.png)
 >
 > > c：打包
 > > x：解包
 > >
 > > c和x二选一、不同时使用
 > >
-> > ![image-20250918150645639](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918150645639.png)
+> > ![image-20250918150645639](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918150645639.png)
 
 * **<u>打包操作</u>**
 
@@ -523,7 +523,7 @@ grep -i exception tlias.log
 
 * 解压操作用x d
 
-![image-20250829142836622](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829142836622.png)
+![image-20250829142836622](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829142836622.png)
 
 
 
@@ -541,7 +541,7 @@ grep -i exception tlias.log
 
   * > 大写C
 
-![image-20250829143854881](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829143854881.png)
+![image-20250829143854881](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829143854881.png)
 
 * 打包：将aaa目录、a.txt、b.txt打包成root.zip
   * zip -r root.zip aaa/ a.txt b.txt
@@ -554,7 +554,7 @@ grep -i exception tlias.log
 
 
 
-> ![image-20250829145803277](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250829145803277.png)
+> ![image-20250829145803277](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250829145803277.png)
 >
 > 
 >
@@ -570,7 +570,7 @@ grep -i exception tlias.log
 
 
 
-![image-20250918160113696](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918160113696.png)
+![image-20250918160113696](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918160113696.png)
 
 > rpm:redhat package manager 
 > 第二种：按照rpm的规范打包，然后用如平面命令安装
@@ -581,7 +581,7 @@ grep -i exception tlias.log
 
 #### 安装JDK
 
-![image-20250918160508067](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918160508067.png)
+![image-20250918160508067](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918160508067.png)
 
 1. 获取安装包
 
@@ -599,7 +599,7 @@ grep -i exception tlias.log
 
    profile后面没有"/"
 
-   > ![image-20250918162404853](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918162404853.png)
+   > ![image-20250918162404853](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918162404853.png)
    >
    > * 把当前的环境变量改成原来的环境变量加上java的环境变量
 
@@ -607,7 +607,7 @@ grep -i exception tlias.log
 
 5. 检查安装是否成功
 
-   ![image-20250918162606345](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918162606345.png)
+   ![image-20250918162606345](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918162606345.png)
    安装成功
 
 
@@ -643,7 +643,7 @@ grep -i exception tlias.log
 
 
 
-![image-20250918164747922](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918164747922.png)
+![image-20250918164747922](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918164747922.png)
 
 1. 卸载就版本
 
@@ -659,7 +659,7 @@ grep -i exception tlias.log
    >
    > “|”管道符：在前一个指令执行完的结果的基础上执行操作并打印结果
 
-   ![image-20250918165641106](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918165641106.png)
+   ![image-20250918165641106](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918165641106.png)
 
 2. 上传安装包
 
@@ -682,7 +682,7 @@ grep -i exception tlias.log
 
 > linux系统自带的低版本的安装包删掉
 
-![image-20250918165211142](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918165211142.png)
+![image-20250918165211142](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918165211142.png)
 
 
 
@@ -736,7 +736,7 @@ grep -i exception tlias.log
 
 > 如何解决linux防火墙阻止访问的问题
 
-![image-20250918172204242](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918172204242.png)
+![image-20250918172204242](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918172204242.png)
 
 
 
@@ -764,9 +764,9 @@ grep -i exception tlias.log
 
   * 图形化界面访问
 
-    ![image-20250918173029993](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918173029993.png)
+    ![image-20250918173029993](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918173029993.png)
 
-    ![image-20250918173118347](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918173118347.png)
+    ![image-20250918173118347](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918173118347.png)
     
 
 
@@ -777,7 +777,7 @@ grep -i exception tlias.log
 
 #### 安装Nginx
 
-![image-20250918185723901](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250918185723901.png)
+![image-20250918185723901](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250918185723901.png)
 
 * 安装nginx运行时需要的依赖
 

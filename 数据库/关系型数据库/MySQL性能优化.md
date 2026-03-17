@@ -1,4 +1,4 @@
-
+﻿
 
 
 # ==【MySQL性能优化】==
@@ -55,9 +55,9 @@
 
 监控中会有各种指标，可以实时查看接口的响应情况，
 
-> ![image-20251213144433160](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251213144433160.png)
+> ![image-20251213144433160](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251213144433160.png)
 >
-> ![image-20251213144556741](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251213144556741.png)
+> ![image-20251213144556741](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251213144556741.png)
 >
 > 
 
@@ -81,7 +81,7 @@ show variables like 'slow_query_log'
 
 **开启慢查询日志**：
 
-> ![image-20251201171319906](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201171319906.png)
+> ![image-20251201171319906](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201171319906.png)
 >
 > 重启mysql
 >
@@ -102,7 +102,7 @@ show variables like 'slow_query_log'
 tail -f localhost-slow.log
 ```
 
-![image-20251213145424801](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251213145424801.png)
+![image-20251213145424801](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251213145424801.png)
 
 > * Query_time：这条语句从开始进入解析器到执行完毕的总耗时（默认记录的是 **从接收客户端请求到返回结果的总时间**，包括多个阶段，而在服务器本地执行时只测“纯 SQL 执行”阶段。）
 >
@@ -134,7 +134,7 @@ tail -f localhost-slow.log
 
 
 
-![image-20251201183934183](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201183934183.png)
+![image-20251201183934183](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201183934183.png)
 
 > 查看系统的having_profiling参数，判断是否支持profile操作
 >
@@ -198,13 +198,13 @@ tail -f localhost-slow.log
 
 #### (**分析 SQL执行频率**)
 
-![image-20251201170512495](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201170512495.png)
+![image-20251201170512495](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201170512495.png)
 
 > 通过查看执行频率，判断当前数据库以哪种操作方式为主
 >
 > 这里Com后面跟七个下划线 
 
-![image-20251201170758480](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201170758480.png)
+![image-20251201170758480](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201170758480.png)
 
 
 
@@ -216,11 +216,11 @@ tail -f localhost-slow.log
 
 > **找到这条sql执行慢的原因**
 
-![image-20251201184221159](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201184221159.png)
+![image-20251201184221159](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201184221159.png)
 
 
 
-![image-20251201185342084](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201185342084.png)
+![image-20251201185342084](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201185342084.png)
 
 > id表示查询的序列号，id相同，执行顺序从上到下；id不同，值大的先执行
 >
@@ -232,7 +232,7 @@ tail -f localhost-slow.log
 
 
 
-![image-20251201185257485](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201185257485.png)
+![image-20251201185257485](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201185257485.png)
 
 
 
@@ -274,16 +274,25 @@ tail -f localhost-slow.log
 
 可以直接在数据库看到
 
-![image-20251213202345452](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251213202345452.png)
+![image-20251213202345452](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251213202345452.png)
 
 
 
 explain 分析SQL执行计划
 
 1. 避免使用 select * ，避免查询不必要的列、占用网络带宽、发生不必要的回表查询
-2. 考虑给where order by group by join 后面的字段添加索引
-3. 添加索引尽量使用联合索引，尽量通过覆盖索引来避免回表
-4. update 和 delete 后面 where 条件应该使用索引列，让查询加行锁而不是表锁
+2. 索引
+   1. 考虑给where order by group by join 后面的字段添加索引
+   2. 添加索引尽量使用联合索引，尽量通过覆盖索引来避免回表
+   3. update 和 delete 后面 where 条件应该使用索引列，让查询加行锁而不是表锁
+
+3. 多条件查询
+   1. 尽量避免在 where 子句中使用!=或<>操作符，否则将引擎放弃 使用索引而进行全表扫描 
+   2. 尽量避免在 where 子句中对字段进行 null 值判断，否则将导致 引擎放弃使用索引而进行全表 扫描
+
+4. 链表查询
+   1. 表关联查询的效率高于子查询, 所以尽量少用子查询, 用关联查询 替代. 
+
 5. 优化sql语句
    1. 插入数据
       批量插入数据而不是逐个插入，大数据量插入的时候手动管理事务  避免事务频繁开启和关闭
@@ -296,10 +305,6 @@ explain 分析SQL执行计划
    5. order by 优化
    6. group by 优化
    7. update 优化
-
-
-
-
 
 ### 1.优化sql语句
 
@@ -422,7 +427,7 @@ explain 分析SQL执行计划
 
 大数据量下，越往后，分页效率越低(limit 20,10    ->        limit 200000,10)
 
-![image-20251203140537152](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251203140537152.png)
+![image-20251203140537152](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251203140537152.png)
 
 优化方式：覆盖索引+子查询
 
@@ -1051,7 +1056,7 @@ update course set name = 'Kafka2' where id = 4;# 此时就会影响这条语句�
 
 **使用案例**
 
-![image-20251201192228797](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201192228797.png)
+![image-20251201192228797](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201192228797.png)
 
 > 由于sn这个字段没有索引，所以执行效率较低（21s）
 >
@@ -1070,7 +1075,6 @@ update course set name = 'Kafka2' where id = 4;# 此时就会影响这条语句�
 
 
 ## 分库分表
-
 
 
 

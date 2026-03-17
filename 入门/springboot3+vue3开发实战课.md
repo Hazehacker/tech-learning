@@ -1,4 +1,4 @@
-
+﻿
 
 将自己的nodejs的两个环境变量下移到最后，就能重新使用nvm
 
@@ -19,45 +19,45 @@
 
   
 
-![image-20250703165117238](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703165117238.png)
+![image-20250703165117238](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703165117238.png)
 
-![image-20250703165511183](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703165511183.png)
+![image-20250703165511183](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703165511183.png)
 
 * 指令启动”vue“工程
 
-![image-20250703165642291](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703165642291.png)
+![image-20250703165642291](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703165642291.png)
 
 第二个指令会下载相关依赖包
 
 出现这个界面说明成功了
 
-![image-20250703170038648](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703170038648.png)
+![image-20250703170038648](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703170038648.png)
 
-![image-20250703170107229](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703170107229.png)
+![image-20250703170107229](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703170107229.png)
 
 * 打开idea编辑项目
   会加载一会依赖
-  ![image-20250703170602092](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703170602092.png)
+  ![image-20250703170602092](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703170602092.png)
 
   
 
-  ![image-20250703170905928](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703170905928.png)
+  ![image-20250703170905928](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703170905928.png)
 
 * 进一步精简项目结构
-  ![image-20250703171554668](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703171554668.png)
+  ![image-20250703171554668](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703171554668.png)
   然后改一下HomeView.vue
-  ![image-20250703171639316](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703171639316.png)
+  ![image-20250703171639316](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703171639316.png)
   改名
   改路由
-  ![image-20250703192318497](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703192318497.png)
+  ![image-20250703192318497](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703192318497.png)
 
   精简成一行json
-  ![image-20250703193731930](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703193731930.png)
+  ![image-20250703193731930](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703193731930.png)
 
-  ![image-20250704094210374](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250704094210374.png)
+  ![image-20250704094210374](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250704094210374.png)
   删除无用的导包
 
-  ![image-20250703193325070](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703193325070.png)
+  ![image-20250703193325070](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703193325070.png)
   
 * main.js里面引入global.css（全局css文件，让全局生效）
 
@@ -88,12 +88,12 @@
 
 1. 使用ref
 
-![image-20250709123022249](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709123022249.png)
-![image-20250709123054163](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709123054163.png)
+![image-20250709123022249](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709123022249.png)
+![image-20250709123054163](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709123054163.png)
 
 2. 使用reactive
-   ![image-20250709123126752](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709123126752.png)
-   ![image-20250709123139313](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709123139313.png)
+   ![image-20250709123126752](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709123126752.png)
+   ![image-20250709123139313](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709123139313.png)
 
 
 
@@ -117,19 +117,19 @@
   <span style = "color:red" v-if="data.name === '佩奇'">小猪佩奇</span>
   ```
 
-  ![image-20250709124650413](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709124650413.png)
+  ![image-20250709124650413](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709124650413.png)
   v-else会自动匹配最近的v-if
 
 * **<u>v-for</u>**
   绑定数组数据
   自动渲染每一项数据
-  ![image-20250709131439178](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709131439178.png)
-  ![image-20250709131456162](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709131456162.png)
+  ![image-20250709131439178](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709131439178.png)
+  ![image-20250709131456162](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709131456162.png)
 
   
 
 * **<u>*@（v:on）——事件绑定*</u>**
-  ![image-20250709132344934](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709132344934.png)
+  ![image-20250709132344934](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709132344934.png)
   点击事件（一般在按钮或者div触发)、鼠标移入事件
 
 * :(v-bind:)——动态绑定
@@ -211,10 +211,10 @@
     })
     ```
 
-    ![image-20250709135239329](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709135239329.png)
+    ![image-20250709135239329](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709135239329.png)
 
 
-    ![image-20250709135852242](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709135852242.png)
+    ![image-20250709135852242](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709135852242.png)
     
     **import进去的内容放在global上面，防止覆盖**
     
@@ -253,11 +253,11 @@
 
 
 
-![image-20250709142854963](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709142854963.png)
+![image-20250709142854963](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709142854963.png)
 
 各个组件的代码见官网
 
-![image-20250709143112881](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709143112881.png)
+![image-20250709143112881](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709143112881.png)
 
 
 
@@ -265,12 +265,12 @@
 
 * ICON图标
 
-![image-20250709144446868](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709144446868.png)
+![image-20250709144446868](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709144446868.png)
 
 > top：用于微调（在图标上面加4px）
 
 * 在按钮或者输入框组件内使用图标，必须要导入
-  ![image-20250709145035561](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709145035561.png)
+  ![image-20250709145035561](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709145035561.png)
 
   ```javascript
   <el-button type="danger" :icon="Delete" circle/>
@@ -330,11 +330,11 @@
   import ElementPlus from 'unplugin-element-plus/vite'
   ```
 
-  ![image-20250709152657404](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709152657404.png)
+  ![image-20250709152657404](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709152657404.png)
 
 * 按需定制主题配置
-  ![image-20250709152635304](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709152635304.png)
-  ![image-20250709152902105](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709152902105.png)
+  ![image-20250709152635304](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709152635304.png)
+  ![image-20250709152902105](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709152902105.png)
 
 
 
@@ -350,8 +350,8 @@
 
 #### 文本框el-input
 
-![image-20250709161117356](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709161117356.png)
-![image-20250709161145694](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250709161145694.png)
+![image-20250709161117356](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709161117356.png)
+![image-20250709161145694](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250709161145694.png)
 
 * disable和readonly可以只显示文本、无法输入
 
@@ -380,16 +380,16 @@
   比如：options:[{id:1,name:'苹果'},{id:2,name:'香蕉'}]
   在options里面使用item.id/item.name访问
 * 下拉框纯文本写法
-* ![image-20250710150312004](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710150312004.png)
+* ![image-20250710150312004](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710150312004.png)
   这样即便两个选项label值一样，只要value值不一样，这两个选项就不一样
 * **需要绑定两组数据**
   **1.用v-model绑定选定的数据**
   **2.用v-for遍历另一组数据展示成选项**
   **【options一般从后端拿过来】**
 
-![image-20250710150457173](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710150457173.png)
+![image-20250710150457173](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710150457173.png)
 
-![image-20250710144729975](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710144729975.png)
+![image-20250710144729975](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710144729975.png)
 
 
 
@@ -399,7 +399,7 @@
 
 #### 单选框el-radio
 
-![image-20250710151651201](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710151651201.png)
+![image-20250710151651201](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710151651201.png)
 
 * 通过设置radioSex的初始值可以设置单选的默认值
 
@@ -409,7 +409,7 @@
 
 * 常用于页面内容切换
 
-![image-20250710154238569](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710154238569.png)
+![image-20250710154238569](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710154238569.png)
 
 #### 多选框
 
@@ -423,9 +423,9 @@
 
 
 
-![image-20250710164026498](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710164026498.png)
+![image-20250710164026498](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710164026498.png)
 
-![image-20250710163744882](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710163744882.png)
+![image-20250710163744882](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710163744882.png)
 
 
 
@@ -440,11 +440,11 @@
 * el-image使用网络图片地址是可以渲染(展示)图片的，但是使用本地的图片路径却无法渲染
   * <u>解决办法：先绑定，再使用</u>
 
-![image-20250710164932353](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710164932353.png)
+![image-20250710164932353](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710164932353.png)
 
 * preview-src-list——支持图片预览
 
-![image-20250710165935636](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710165935636.png)
+![image-20250710165935636](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710165935636.png)
 
 
 
@@ -454,7 +454,7 @@
 
 （走马灯）
 
-![image-20250710165753738](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710165753738.png)
+![image-20250710165753738](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710165753738.png)
 
 * 用法比较固定
 
@@ -463,15 +463,15 @@
 * 导入图片，设置
   imgs:[lun1,lun2,lun3]
 
-![image-20250710171346606](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710171346606.png)
+![image-20250710171346606](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710171346606.png)
 
-![image-20250710171353277](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710171353277.png)
-
-
+![image-20250710171353277](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710171353277.png)
 
 
 
-![image-20250710171403665](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710171403665.png)
+
+
+![image-20250710171403665](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710171403665.png)
 
 
 
@@ -491,7 +491,7 @@
 
 > format只能规定输入框的展示格式，不能规定数据的格式
 >
-> ![image-20250710173131673](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710173131673.png)
+> ![image-20250710173131673](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710173131673.png)
 
 > **一般情况同时设置format和value-format**
 
@@ -501,15 +501,15 @@
 
 * 日期范围
 
-![image-20250710192252979](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710192252979.png)
+![image-20250710192252979](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710192252979.png)
 
-![image-20250710192304710](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710192304710.png)
+![image-20250710192304710](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710192304710.png)
 
 
 
 > 空数组daterange用[null]表示
 
-![image-20250710200525680](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710200525680.png)
+![image-20250710200525680](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710200525680.png)
 
 
 
@@ -519,9 +519,9 @@
 
 #### 数据表格el-table
 
-![image-20250710200309233](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710200309233.png)
+![image-20250710200309233](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710200309233.png)
 
-![image-20250710200317906](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710200317906.png)
+![image-20250710200317906](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710200317906.png)
 
 
 
@@ -531,9 +531,9 @@
 >
 > <template #default="scope">拿到行对象的数据
 >
-> ![image-20250710203547866](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710203547866.png)
+> ![image-20250710203547866](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710203547866.png)
 >
-> ![image-20250710203118552](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710203118552.png)
+> ![image-20250710203118552](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710203118552.png)
 
 
 
@@ -544,12 +544,12 @@
 * layout属性不能少
 * 每页的个数发生变化触发handleSizeChange
   当前页发生就触发handleCurrentChange
-  ![image-20250710201007773](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710201007773.png)
+  ![image-20250710201007773](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710201007773.png)
 * 
 
-![image-20250710201509759](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710201509759.png)
+![image-20250710201509759](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710201509759.png)
 
-![image-20250710201518512](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710201518512.png)
+![image-20250710201518512](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710201518512.png)
 
 
 
@@ -559,11 +559,11 @@
 
 触发弹窗
 
-![image-20250710204927666](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710204927666.png)
+![image-20250710204927666](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710204927666.png)
 
-![image-20250710204951446](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710204951446.png)
+![image-20250710204951446](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710204951446.png)
 
-![image-20250710205004808](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710205004808.png)
+![image-20250710205004808](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710205004808.png)
 
 
 
@@ -577,7 +577,7 @@
 
 # 4. vue3集成Vue-Router实现路由跳转
 
-![image-20250710205239550](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710205239550.png)
+![image-20250710205239550](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710205239550.png)
 
 ### 官网学习https://router.vuejs.org/zh/guide/
 
@@ -592,14 +592,14 @@
   > 
   > ```
 
-  ![image-20250710212342052](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710212342052.png)
+  ![image-20250710212342052](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710212342052.png)
 
 * **编程式跳转**
   **需要导入router对象**
 
-  ![image-20250710212857861](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710212857861.png)
+  ![image-20250710212857861](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710212857861.png)
 
-  ![image-20250710212515969](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710212515969.png)
+  ![image-20250710212515969](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710212515969.png)
 
 > 使用push跳转之后还能回来
 > 使用replace跳转之后不能返回
@@ -610,7 +610,7 @@
 
 ### 如何定义一个新路由
 
-![image-20250710212100928](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710212100928.png)
+![image-20250710212100928](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710212100928.png)
 
 * 名字(name)不能重复
 
@@ -618,7 +618,7 @@
 
 ### 可以通过重定向的方式设置默认跳转路由
 
-![image-20250710213555906](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250710213555906.png)
+![image-20250710213555906](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250710213555906.png)
 
 
 
@@ -631,20 +631,20 @@
 
    通过router.currentRoute.value.query.id获取query对象、接收id
 
-   ![image-20250711093030233](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250711093030233.png)
+   ![image-20250711093030233](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250711093030233.png)
 
 2. 单独传一个对象
-   ![image-20250711093041142](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250711093041142.png)
+   ![image-20250711093041142](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250711093041142.png)
 
-![image-20250712131759635](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712131759635.png)
+![image-20250712131759635](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712131759635.png)
 
 ### 嵌套路由
 
-![image-20250711095514973](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250711095514973.png)
+![image-20250711095514973](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250711095514973.png)
 
 
 
-![image-20250711095718378](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250711095718378.png)
+![image-20250711095718378](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250711095718378.png)
 
 
 
@@ -656,17 +656,17 @@
 
 
 
-![image-20250712132231084](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712132231084.png)
+![image-20250712132231084](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712132231084.png)
 
-![image-20250712132138630](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712132138630.png)
-
-
+![image-20250712132138630](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712132138630.png)
 
 
 
 
 
-![image-20250712125954219](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712125954219.png)
+
+
+![image-20250712125954219](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712125954219.png)
 
 
 
@@ -676,11 +676,11 @@
 
 1. 定义404路由
 
-![image-20250712135613661](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712135613661.png)
+![image-20250712135613661](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712135613661.png)
 
 2. 编写404页面
 
-![image-20250712140329197](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712140329197.png)
+![image-20250712140329197](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712140329197.png)
 
 
 
@@ -690,7 +690,7 @@
 
 
 
-![image-20250712140750853](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712140750853.png)
+![image-20250712140750853](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712140750853.png)
 
 
 
@@ -702,19 +702,19 @@
 
 * #### 实现点击侧边栏跳转
 
-  ![image-20250712173521508](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712173521508.png)
+  ![image-20250712173521508](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712173521508.png)
 
-  ![image-20250712175017204](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712175017204.png)
+  ![image-20250712175017204](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712175017204.png)
 
-  > ![image-20250712184611300](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712184611300.png)
-
-
+  > ![image-20250712184611300](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712184611300.png)
 
 
 
 
 
-> ![image-20250712175648420](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712175648420.png)
+
+
+> ![image-20250712175648420](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712175648420.png)
 >
 > **一个页面只能成为一个页面的子页面**，否则无法正常跳转
 
@@ -722,15 +722,15 @@
 
 manager.vue
 
-![image-20250712214946770](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712214946770.png)
+![image-20250712214946770](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712214946770.png)
 
 data.vue
 
-![image-20250712215000340](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712215000340.png)
+![image-20250712215000340](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712215000340.png)
 
 > 全局定义一个card样式，随处可用
 >
-> ![image-20250712165948447](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250712165948447.png)
+> ![image-20250712165948447](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250712165948447.png)
 > 
 
 
@@ -760,13 +760,13 @@ data.vue
 
 
 1. 新建springboot3项目
-   ![image-20250807091716563](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250807091716563.png)
+   ![image-20250807091716563](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250807091716563.png)
 2. 精简项目结构
-   ![image-20250713213708187](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250713213708187.png)
-   ![image-20250714091904670](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714091904670.png)
-   ![image-20250715084547822](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715084547822.png)
+   ![image-20250713213708187](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713213708187.png)
+   ![image-20250714091904670](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714091904670.png)
+   ![image-20250715084547822](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715084547822.png)
 3. 设置编码
-   ![image-20250713214159204](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250713214159204.png)
+   ![image-20250713214159204](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713214159204.png)
 4. 右键pom.xml
    添加为maven项目
 
@@ -788,7 +788,7 @@ data.vue
 
    测试接口
 
-   ![image-20250714092410676](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714092410676.png)
+   ![image-20250714092410676](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714092410676.png)
 
    > @GetMapping表示浏览器get请求（浏览器url访问）
 
@@ -798,10 +798,10 @@ data.vue
 
    
 
-7. ![image-20250714094546129](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714094546129.png)
+7. ![image-20250714094546129](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714094546129.png)
    由于返回类型多种多样，所以做一个统一处理：“封装一个统一的类，告诉前端请求成功还是失败，并把数据跟随请求一起发给他”
 
-   ![image-20250714192514855](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714192514855.png)
+   ![image-20250714192514855](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714192514855.png)
    
 
 
@@ -813,17 +813,17 @@ data.vue
 
 > 另一版本
 >
-> ![](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913185137735.png)
+> ![](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913185137735.png)
 >
-> ![image-20250913191907276](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913191907276.png)
->
-> 
+> ![image-20250913191907276](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913191907276.png)
 >
 > 
 >
-> ![image-20250913191750568](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913191750568.png)
+> 
 >
-> ![image-20250913191618622](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913191618622.png)
+> ![image-20250913191750568](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913191750568.png)
+>
+> ![image-20250913191618622](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913191618622.png)
 >
 > 
 >
@@ -835,18 +835,18 @@ data.vue
 > 
 > 
 
-![image-20250715162809149](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715162809149.png)
+![image-20250715162809149](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715162809149.png)
 
 
 
 **自定义异常**
 
 **CustomException.java**
-![image-20250714194833065](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714194833065.png)
+![image-20250714194833065](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714194833065.png)
 
-![image-20250714195122023](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714195122023.png)
+![image-20250714195122023](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714195122023.png)
 
-![image-20250714195952389](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250714195952389.png)
+![image-20250714195952389](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250714195952389.png)
 
 ### (常见状态码)
 
@@ -878,7 +878,7 @@ data.vue
 >
 > 
 >
-> > ![image-20250919171912253](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919171912253.png)
+> > ![image-20250919171912253](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919171912253.png)
 > >
 > > ## 500 内部服务器错误
 > >
@@ -922,18 +922,18 @@ data.vue
 
 ##### 为什么一个main方法就能将web应用启动？
 
-> ![image-20250808092841582](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250808092841582.png)
+> ![image-20250808092841582](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250808092841582.png)
 >
 > 由于依赖传递，tomcat的相关依赖也被引入
 >
-> ![image-20250808092944485](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250808092944485.png)
+> ![image-20250808092944485](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250808092944485.png)
 >
 > 运行main方法之后会运行tomcat服务器，将项目部署到服务器上、然后运行起来
 > 
 
 #### (读取csv文件)
 
-> ![image-20250811105147584](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250811105147584.png)
+> ![image-20250811105147584](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250811105147584.png)
 >
 > ```java
 > public class UserController{
@@ -966,9 +966,9 @@ data.vue
 
 ##### 三层架构
 
-> ![image-20250811130917453](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250811130917453.png)
+> ![image-20250811130917453](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250811130917453.png)
 >
-> ![on](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250811130936475.png)
+> ![on](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250811130936475.png)
 >
 > * 接收请求 调用 响应结果
 > * 补全基础属性（如果有需要补充的话）
@@ -977,19 +977,19 @@ data.vue
 >
 > > controller层的RestController能将返回的Result对象转成json字符串
 >
-> ![](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250812083226715.png)
+> ![](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250812083226715.png)
 >
 > 
 >
-> ![image-20250812083538270](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250812083538270.png)
+> ![image-20250812083538270](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250812083538270.png)
 >
-> ![image-20250812083712899](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250812083712899.png)
+> ![image-20250812083712899](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250812083712899.png)
 >
 > #### 通过控制反转和依赖注入实现进一步的解耦合
 >
-> ![image-20250813153633460](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250813153633460.png)
+> ![image-20250813153633460](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250813153633460.png)
 >
-> ![image-20250813153914343](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250813153914343.png)
+> ![image-20250813153914343](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250813153914343.png)
 >
 > 程序运行时自动找到该类型的 对象，并赋值给这个成员变量
 >
@@ -1002,20 +1002,20 @@ data.vue
 
 ##### IOC和DI详解
 
-> ![image-20250813154604040](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250813154604040.png)
+> ![image-20250813154604040](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250813154604040.png)
 >
 > IOC容器里面的bean名字默认为  类名首字母小写  的形态
 >
-> ![image-20250814095820354](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814095820354.png) 
+> ![image-20250814095820354](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814095820354.png) 
 >
-> ![image-20250814100734701](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814100734701.png)
+> ![image-20250814100734701](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814100734701.png)
 >
 > 大多选择第一种或第二种
-> ![image-20250814101155160](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814101155160.png)
+> ![image-20250814101155160](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814101155160.png)
 >
 > 推荐第一种
 >
-> ![image-20250814101653051](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814101653051.png)
+> ![image-20250814101653051](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814101653051.png)
 >
 > 
 
@@ -1035,13 +1035,13 @@ data.vue
 
 ##### springboot项目配置文件
 
-![image-20250821111420515](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250821111420515.png)
+![image-20250821111420515](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250821111420515.png)
 
-![image-20250821111611763](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250821111611763.png)
+![image-20250821111611763](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250821111611763.png)
 
-![image-20250821111816069](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250821111816069.png)
+![image-20250821111816069](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250821111816069.png)
 
-![image-20250821112053159](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250821112053159.png)
+![image-20250821112053159](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250821112053159.png)
 
 ```
 spring:
@@ -1063,7 +1063,7 @@ mybatis:
   
 ```
 
-![image-20250821131603573](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250821131603573.png) 
+![image-20250821131603573](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250821131603573.png) 
 
 
 
@@ -1090,7 +1090,7 @@ mybatis:
   > 数据库里面表示字段一般用下划线的形式：department_id
 
 * xml模版(基本格式)
-  ![image-20250715085814053](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715085814053.png)
+  ![image-20250715085814053](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715085814053.png)
 
   ```
   <?xml version="1.0" encoding="UTF-8" ?>
@@ -1103,23 +1103,23 @@ mybatis:
   ```
 
   这两个mapper一一对应，**namespace填写对应的路径**
-  ![image-20250715131838194](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715131838194.png)
+  ![image-20250715131838194](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715131838194.png)
 
 * 点击小鸟就能在xml文件和对应的接口文件之间切换
 
-  ![image-20250715132008015](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715132008015.png)
+  ![image-20250715132008015](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715132008015.png)
 
-  ![image-20250715132112145](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715132112145.png)
+  ![image-20250715132112145](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715132112145.png)
 
 * 告诉springboot如何扫描mapper包【MapperScan注解】
-  ![image-20250715132345962](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715132345962.png)
+  ![image-20250715132345962](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715132345962.png)
 
   【？ 】**扫描mapper，注册为springboot里面的一个对象，运行的时候可以通过这个bean操作数据库**
 
 * Service层
   EmployeeService
 
-  ![image-20250715133029472](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715133029472.png)
+  ![image-20250715133029472](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715133029472.png)
   （Service    )标注为一个bean
 
 * controller层
@@ -1127,18 +1127,18 @@ mybatis:
   **从controller一步步往下写**
 
   EmployeeController
-  ![image-20250715162705608](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715162705608.png)
+  ![image-20250715162705608](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715162705608.png)
 
-  ![image-20250715141916044](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715141916044.png)
+  ![image-20250715141916044](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715141916044.png)
 
-  ![image-20250715141038667](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715141038667.png)
+  ![image-20250715141038667](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715141038667.png)
 
   【通过xml文件】
 
-  ![image-20250715141540889](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715141540889.png)
+  ![image-20250715141540889](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715141540889.png)
 
   【通过注解】
-  ![image-20250715180029735](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715180029735.png)
+  ![image-20250715180029735](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715180029735.png)
 
   > **简单的sql可以通过注解，如果有关联查询，建议在xml里面写**
 
@@ -1182,21 +1182,21 @@ mybatis:
 
 * <u>前端浏览器向服务器发起请求，mybatis操作mysql数据库，数据转成java对象，转成json对象显示在浏览器</u>
 
-> ![image-20250811130557242](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250811130557242.png)
+> ![image-20250811130557242](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250811130557242.png)
 >
 
 * 传参
   
   > 老式方法，了解
   >
-  > ![image-20250910135714589](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910135714589.png)
+  > ![image-20250910135714589](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910135714589.png)
   
   > 实用
   >
-  > ![image-20250910140758097](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910140758097.png)
-  > ![image-20250910190105191](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910190105191.png)
+  > ![image-20250910140758097](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910140758097.png)
+  > ![image-20250910190105191](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910190105191.png)
   >
-  > ![image-20250910192631695](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910192631695.png)
+  > ![image-20250910192631695](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910192631695.png)
   >
   > 路径传参：/{id}    @PathVariable
   > 
@@ -1204,45 +1204,45 @@ mybatis:
   
   【http://localhost:8080/employee/selectById/1】
   
-  ![image-20250715180435379](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715180435379.png)
+  ![image-20250715180435379](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715180435379.png)
 
   【http://localhost:8080/employee/selectById？1】
-  ![image-20250715180700570](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715180700570.png)
+  ![image-20250715180700570](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715180700570.png)
   
   
   （多个参数）
   
   【http://localhost:8080/employee/selectById/1/101】
-  ![image-20250715181059924](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715181059924.png)
+  ![image-20250715181059924](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715181059924.png)
   
   【http://localhost:8080/employee/selectById?id=1&num=101】
-  ![image-20250715181017416](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715181017416.png)
+  ![image-20250715181017416](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715181017416.png)
   
   > 设置第二个参数不一定要传
-  > ![image-20250715181227055](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715181227055.png)
+  > ![image-20250715181227055](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715181227055.png)
   
   
   
   **@RequestBody可以把前端传来的json字符串映射出java的对象、或者数组【即用于映射对象或数组】**
   
-  > ![image-20250910185728497](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910185728497.png)
+  > ![image-20250910185728497](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910185728497.png)
   >
-  > ![image-20250910190032374](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910190032374.png)
+  > ![image-20250910190032374](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910190032374.png)
   >
   > 
   >
-  > ![image-20250910190130051](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910190130051.png)
+  > ![image-20250910190130051](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910190130051.png)
   >
   > 
   >
   > 
   > 
   
-  ![image-20250902190956667](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902190956667.png)
+  ![image-20250902190956667](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902190956667.png)
   
-  ![image-20250715181744519](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715181744519.png)
+  ![image-20250715181744519](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715181744519.png)
   
-  ![image-20250715181815965](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715181815965.png)
+  ![image-20250715181815965](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715181815965.png)
   
 
 #### 分页查询
@@ -1269,13 +1269,13 @@ mybatis:
    
 
 2. 
-   ![image-20250715190614865](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715190614865.png)
+   ![image-20250715190614865](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715190614865.png)
 
-   ![image-20250715190757798](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715190757798.png)
+   ![image-20250715190757798](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715190757798.png)
 
    通过改变参数，就能查询不同pageSize情况下指定页数的数据
 
-   ![image-20250715192108950](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250715192108950.png)
+   ![image-20250715192108950](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250715192108950.png)
 
    
 
@@ -1302,13 +1302,13 @@ mybatis:
 
 #### restful风格
 
-![image-20250822080542076](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250822080542076.png)
+![image-20250822080542076](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250822080542076.png)
 
 *  具体对这些资源进行什么操作不用动词描述、通过请求资源描述
 
-![image-20250822080827958](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250822080827958.png)
+![image-20250822080827958](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250822080827958.png)
 
-![image-20250822080844559](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250822080844559.png)
+![image-20250822080844559](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250822080844559.png)
 
 > 浏览器中发起的请求都是Get请求
 
@@ -1322,10 +1322,10 @@ mybatis:
 
 > #### 这些接口可以使用接口测试工具（比如postman测试）
 >
-> ![image-20250902075354933](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902075354933.png)
+> ![image-20250902075354933](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902075354933.png)
 >
 >
-> ![image-20250902081442827](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902081442827.png)
+> ![image-20250902081442827](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902081442827.png)
 > |
 >
 > 
@@ -1333,10 +1333,10 @@ mybatis:
 
 
 
-> ![image-20250901104256546](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250901104256546.png)
+> ![image-20250901104256546](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250901104256546.png)
 > **@RequestBody：可以把前端传来的json字符串映射出java的对象、或者数组**
 >
-> ![image-20250901104607982](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250901104607982.png)
+> ![image-20250901104607982](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250901104607982.png)
 >
 > * 插入，用parameterType提供传入的参数类型
 >
@@ -1368,14 +1368,14 @@ npm i axios -S
 
 
 
-![image-20250902085135665](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902085135665.png)
+![image-20250902085135665](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902085135665.png)
 
 
 
 
 
 * 封装request.js；通过这个工具类帮助发送请求(添加统一的请求头；对返回做统一的处理)
-  ![image-20250902085703429](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902085703429.png)
+  ![image-20250902085703429](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902085703429.png)
 
   ```javascript
   import axios from "axios";
@@ -1483,13 +1483,13 @@ npm i axios -S
   export default request
   ```
 
-  > ![image-20250902111541662](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902111541662.png)
+  > ![image-20250902111541662](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902111541662.png)
   >
   > 此处设置了发起请求的原始路径
 
 * **它导入需要发起请求的vue文件**
 
-  ![image-20250902102011257](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902102011257.png)
+  ![image-20250902102011257](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902102011257.png)
 
   > 输入request回车一次就会出现这两个导入的选项
   > （选择第二个）
@@ -1688,7 +1688,7 @@ npm i axios -S
           });
       ```
 
-      ![image-20250902112401167](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902112401167.png)
+      ![image-20250902112401167](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902112401167.png)
 
       > console.log(res)可以将json数据较为清晰的打印出来
 
@@ -1724,17 +1724,17 @@ npm i axios -S
 
 
 1. 数据表格根据实际情况设计
-   ![image-20250902120416813](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902120416813.png)
+   ![image-20250902120416813](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902120416813.png)
 
    > show-overflow-tooltip将过多的文字变成省略号，鼠标移上去的时候显示
 
 2. 
-   ![image-20250902122058926](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902122058926.png)
+   ![image-20250902122058926](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902122058926.png)
 
    
 
 3. 
-   ![image-20250902122144244](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902122144244.png)
+   ![image-20250902122144244](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902122144244.png)
 
    
 
@@ -1744,7 +1744,7 @@ npm i axios -S
 
 * 配合分页查询，单纯的分页查询就相当于条件为空的动态条件查询
   * 动态模糊查询
-    ![image-20250902152425445](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902152425445.png)
+    ![image-20250902152425445](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902152425445.png)
 
 
 
@@ -1753,7 +1753,7 @@ npm i axios -S
 
 
 1. 新增弹窗部件，设置表单
-   ![image-20250902162512125](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902162512125.png)
+   ![image-20250902162512125](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902162512125.png)
 
    ```java
    <el-dialog v-model="data.formVisible" title="员工信息" width="500">
@@ -1865,7 +1865,7 @@ npm i axios -S
    
 
 3. 调用save函数完成修改（依据是否有id区分新增和修改操作）
-   ![image-20250902175429964](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902175429964.png)
+   ![image-20250902175429964](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902175429964.png)
 
 
 
@@ -1886,14 +1886,14 @@ npm i axios -S
 1. 前端
 
    1. 给表格增加批量删除的组件
-      ![image-20250903082525620](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903082525620.png)
+      ![image-20250903082525620](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903082525620.png)
 
    2. 实时监测被选中的行
 
-      ![image-20250903082607105](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903082607105.png)
+      ![image-20250903082607105](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903082607105.png)
 
    3. 批量删除函数
-      ![image-20250903082638431](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903082638431.png)
+      ![image-20250903082638431](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903082638431.png)
 
 
 
@@ -1917,13 +1917,13 @@ npm i axios -S
 
 ### 修改数据库和后端java类
 
-![image-20250903092313141](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903092313141.png)
+![image-20250903092313141](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903092313141.png)
 
 
 
 添加属性值以及getter、setter方法
 
-![image-20250903092758191](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903092758191.png)
+![image-20250903092758191](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903092758191.png)
 
 
 
@@ -1935,43 +1935,43 @@ npm i axios -S
 
 **更新添加表格栏目**
 
-![image-20250903093455491](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903093455491.png)
+![image-20250903093455491](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903093455491.png)
 
 > 
 
 **更新添加弹窗栏目**
 
-![image-20250903094359304](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903094359304.png)
+![image-20250903094359304](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903094359304.png)
 
 
 
 **【表单校验】—设置必填字段**
 
-![image-20250903100307105](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903100307105.png)
+![image-20250903100307105](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903100307105.png)
 
-> ![image-20250903100454628](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903100454628.png)
+> ![image-20250903100454628](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903100454628.png)
 >
 > 这个选项可以消除上一次进入对话框产生的痕迹
 > 
 
 1. 给表单增加一个ref参数、并绑定规则
 
-![image-20250903094627008](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903094627008.png)
+![image-20250903094627008](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903094627008.png)
 
 （pro属性让rules里面的username和这边的username对应起来）
 
-![image-20250903095920685](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903095920685.png)
+![image-20250903095920685](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903095920685.png)
 
-![image-20250903100000859](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903100000859.png)
+![image-20250903100000859](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903100000859.png)
 
 2. 引入ref
 
 
-   ![image-20250903100210019](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903100210019.png)![image-20250903094842865](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903094842865.png)
+   ![image-20250903100210019](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903100210019.png)![image-20250903094842865](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903094842865.png)
 
 3. 设置保存时校验必填属性是否填写
 
-   ![image-20250903095117771](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903095117771.png)
+   ![image-20250903095117771](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903095117771.png)
 
 
 
@@ -2016,7 +2016,7 @@ npm i axios -S
 >
 > 
 
-> ![image-20250903165424839](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903165424839.png)
+> ![image-20250903165424839](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903165424839.png)
 >
 > 注意这里表单项的v-model是绑定到data.form.username、而不是data.username
 >
@@ -2042,7 +2042,7 @@ npm i axios -S
 
 **添加路由**
 
-![image-20250903101425639](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903101425639.png)
+![image-20250903101425639](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903101425639.png)
 
 页面代码
 
@@ -2063,12 +2063,12 @@ npm i axios -S
 
 > 退出登录的同时要清理缓存，把之前后端给的用户信息清理掉
 >
-> ![image-20250904093134458](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904093134458.png)
+> ![image-20250904093134458](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904093134458.png)
 >
 > 
 > 
 >
-> ![image-20250904093920924](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904093920924.png)
+> ![image-20250904093920924](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904093920924.png)
 >
 > 
 > 
@@ -2096,7 +2096,7 @@ npm i axios -S
 
 
 * 最外层container->右侧box->box包登录表单
-  ![image-20250903145226221](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903145226221.png)
+  ![image-20250903145226221](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903145226221.png)
 
 
 
@@ -2109,19 +2109,19 @@ npm i axios -S
 
 * 获取后端的用户数据
 
-  ![image-20250903191923251](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903191923251.png)
+  ![image-20250903191923251](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903191923251.png)
 
-  ![image-20250903191742794](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903191742794.png)
+  ![image-20250903191742794](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903191742794.png)
 
 * 使用方式
-  * ![image-20250903192122933](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903192122933.png)
+  * ![image-20250903192122933](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903192122933.png)
 
 #### 注册接口
 
-* ![image-20250903204157978](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903204157978.png)
+* ![image-20250903204157978](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903204157978.png)
 
 
-  ![image-20250903204146637](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250903204146637.png)
+  ![image-20250903204146637](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250903204146637.png)
 
 
 
@@ -2135,7 +2135,7 @@ npm i axios -S
 
 #### hutool工具包
 
-> ![image-20250904205126560](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904205126560.png)
+> ![image-20250904205126560](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904205126560.png)
 >
 > hutool.cn——查看官方文档
 >
@@ -2201,10 +2201,10 @@ npm i axios -S
 **前端**
 
 * 增加选择部件
-  ![image-20250904095014126](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904095014126.png)
+  ![image-20250904095014126](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904095014126.png)
 
 * 设置默认选择管理员
-  ![image-20250904095032952](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904095032952.png)
+  ![image-20250904095032952](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904095032952.png)
 
   
 
@@ -2216,7 +2216,7 @@ npm i axios -S
 
 2. login中的Employee/Admin替换成基类（由于两者都是子类，所以可以用Account接收）
 
-   ![image-20250904103036433](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904103036433.png)
+   ![image-20250904103036433](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904103036433.png)
    
    ```java
    @PostMapping("/login")
@@ -2235,7 +2235,7 @@ npm i axios -S
    
    
    
-   ![image-20250919170333054](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919170333054.png)
+   ![image-20250919170333054](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919170333054.png)
    
    ```java
    
@@ -2270,7 +2270,7 @@ npm i axios -S
 
 #### 对数据表中的密码做加密处理
 
-* ![image-20250919202033133](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919202033133.png)
+* ![image-20250919202033133](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919202033133.png)
 
   
 
@@ -2278,8 +2278,8 @@ npm i axios -S
 
   
 
-* ![image-20250919202122519](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919202122519.png)
-  ![image-20250919202542806](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919202542806.png)
+* ![image-20250919202122519](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919202122519.png)
+  ![image-20250919202542806](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919202542806.png)
 
 * ```
   String processedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -2314,7 +2314,7 @@ cookie
 > 如果登录了，就允许访问对应的功能接口；如果没有登录，就返回一个错误信息
 >
 
-> ![image-20250915103838641](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915103838641.png)
+> ![image-20250915103838641](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915103838641.png)
 >
 > 使用统一拦截技术拦截前端发过来的所有接口请求并进行校验、判断这个用户是否登录过（是否有登录标记）
 >
@@ -2332,7 +2332,7 @@ cookie
 
 
 
-![image-20250915105008673](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915105008673.png)
+![image-20250915105008673](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915105008673.png)
 
 > cookie(存在浏览器本地)、session(存在服务器)
 > 令牌技术（企业开发用的比较多）
@@ -2346,22 +2346,22 @@ cookie
 
 **Cookie方案**
 
-![image-20250915120241243](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915120241243.png)
+![image-20250915120241243](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915120241243.png)
 
-![image-20250915120520187](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915120520187.png)
+![image-20250915120520187](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915120520187.png)
 
 > 响应头的Set-Cookie设置键值对
 >
 > 请求头中自带cookie，将cookie携带到服务器端
 >
-> ![image-20250915112339677](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915112339677.png)
+> ![image-20250915112339677](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915112339677.png)
 >
-> ![image-20250915112513785](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915112513785.png)
+> ![image-20250915112513785](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915112513785.png)
 
 **Session方案**
 
-  ![image-20250915130922891](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915130922891.png)
-![image-20250915130957553](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915130957553.png)
+  ![image-20250915130922891](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915130922891.png)
+![image-20250915130957553](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915130957553.png)
 
 > 底层基于cookie，只不过cookie当中储存的是服务端会话对象session的id值
 >
@@ -2434,10 +2434,10 @@ public class SessionController{
 
 ### **令牌方案-主流**
 
-![image-20250915131359029](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915131359029.png)
+![image-20250915131359029](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915131359029.png)
 
 
-![image-20250915133056698](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915133056698.png)
+![image-20250915133056698](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915133056698.png)
 
 > “=”等号在Base64编码中是一个补位符号
 > 令牌长度取决于原始内容的大小
@@ -2446,7 +2446,7 @@ public class SessionController{
 >
 > * Signature部分会将header、payload融入并加入指定密钥(自己设置的)，如果前面两部分发生改动、和第三部分对不上   就会校验失败，从而保证token的安全性，只有服务端生成的token才能被正常解析
 
-![image-20250915133517652](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915133517652.png)
+![image-20250915133517652](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915133517652.png)
 
 引入JTW工具包依赖
 
@@ -2495,14 +2495,14 @@ public void testParseJwt() throws Exception{
 } 
 ```
 
-![image-20250915154238316](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915154238316.png)
+![image-20250915154238316](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915154238316.png)
 
 ##### **【实战代码】**
 
-![image-20250915154425625](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915154425625.png)
+![image-20250915154425625](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915154425625.png)
 
 1. 定义(JWT令牌操作)工具类
-   ![image-20250915154721572](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915154721572.png)
+   ![image-20250915154721572](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915154721572.png)
 
    ```java
    
@@ -2529,7 +2529,7 @@ public void testParseJwt() throws Exception{
    
    ```
 
-   ![image-20250915154855234](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915154855234.png)
+   ![image-20250915154855234](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915154855234.png)
 
 2. 修改login接口的service层逻辑、添加生成JWT令牌的步骤
 
@@ -2595,27 +2595,27 @@ public void testParseJwt() throws Exception{
    }
    ```
 
-   ![image-20250915160715900](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915160715900.png)
+   ![image-20250915160715900](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915160715900.png)
 
    > 把token字符串存储，并在每一次请求中携带token，应该是前端做的事
 
-![image-20250915161312792](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915161312792.png)
+![image-20250915161312792](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915161312792.png)
 
 
 
 **<u>基于过滤器Filter实现jwt解析与比对</u>**
 
->  ![image-20250915162737278](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915162737278.png)
+>  ![image-20250915162737278](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915162737278.png)
 >
-> ![image-20250915162925309](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915162925309.png)
+> ![image-20250915162925309](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915162925309.png)
 >
 > 
 
-![image-20250915184551867](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915184551867.png)
+![image-20250915184551867](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915184551867.png)
 
-![image-20250915184821936](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915184821936.png)
+![image-20250915184821936](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915184821936.png)
 
-> ![image-20250915191742646](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915191742646.png)
+> ![image-20250915191742646](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915191742646.png)
 >
 > 导这个包的filter
 
@@ -2673,7 +2673,7 @@ public class TokenFilter implements Filter {
 
 > 校验流程
 >
-> ![image-20250915194546130](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915194546130.png)
+> ![image-20250915194546130](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915194546130.png)
 >
 >
 > 注册账号和登录账号的请求不需要校验令牌
@@ -2687,17 +2687,17 @@ public class TokenFilter implements Filter {
 
 ```
 
-![image-20250915185938959](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915185938959.png)
+![image-20250915185938959](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915185938959.png)
 
 > #### Filter详解
 >
->  ![image-20250915202113595](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915202113595.png)
+>  ![image-20250915202113595](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915202113595.png)
 >
-> ![image-20250915203209347](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915203209347.png)
+> ![image-20250915203209347](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915203209347.png)
 >
 > 
 >
-> ![image-20250915203153714](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915203153714.png)
+> ![image-20250915203153714](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915203153714.png)
 >
 > 
 > 
@@ -2713,20 +2713,20 @@ public class TokenFilter implements Filter {
 
 
 > 定义拦截器
-> ![image-20250915203710633](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915203710633.png)
+> ![image-20250915203710633](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915203710633.png)
 >
 > 注册拦截器
 >
-> ![image-20250915203828549](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915203828549.png)
+> ![image-20250915203828549](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915203828549.png)
 > （addInterceptors——添加拦截器)
 >
-> ![image-20250915205344816](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915205344816.png)
+> ![image-20250915205344816](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915205344816.png)
 >
 > 
 
 **实战**
 
-![image-20250915205740946](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915205740946.png)
+![image-20250915205740946](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915205740946.png)
 
 
 
@@ -2774,7 +2774,7 @@ public class TokenInterceptor implements HandlerInterceptor{
 
 
 
-![image-20250915204432435](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915204432435.png)
+![image-20250915204432435](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915204432435.png)
 
 
 
@@ -2807,10 +2807,10 @@ public class WebConfig implements WebMvcConfigurer{
 
 > #### 拦截器详解
 >
-> ![image-20250915211848490](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915211848490.png)
+> ![image-20250915211848490](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915211848490.png)
 > 
 
-![image-20250915212738950](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915212738950.png)
+![image-20250915212738950](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915212738950.png)
 
 * **先经过过滤器，后经过拦截器**
 * **拦截器是spring框架提供的技术，只会拦截对于spring当中资源的请求；**
@@ -2866,12 +2866,12 @@ public class WebConfig implements WebMvcConfigurer{
 
   * 定义一个事件，更新完发射这个事件
 
-    ![image-20250904132851489](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904132851489.png)
+    ![image-20250904132851489](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904132851489.png)
 
   * 在父级中接收这个事件
 
-    ![image-20250904131528287](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904131528287.png)
-    ![image-20250904132133866](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904132133866.png)
+    ![image-20250904131528287](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904131528287.png)
+    ![image-20250904132133866](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904132133866.png)
 
 
 
@@ -3052,16 +3052,16 @@ if(data.user.role === 'EMP'){
 
 
 * FileController文件
-  ![image-20250904203026313](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250904203026313.png)
+  ![image-20250904203026313](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250904203026313.png)
 
   
 
   > 由于java里面有一个file类，这里路径不能写file、会产生冲突
 
 * 
-  ![image-20250912204551367](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912204551367.png)
+  ![image-20250912204551367](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912204551367.png)
   
-  ![image-20250905122742403](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905122742403.png)
+  ![image-20250905122742403](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905122742403.png)
   
   
   
@@ -3101,11 +3101,11 @@ if(data.user.role === 'EMP'){
   
   > 除了时间戳，也可以使用jdk提供的UUID来保证文件名不重复
   >
-  > ![image-20250912210653944](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912210653944.png)
+  > ![image-20250912210653944](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912210653944.png)
 
 > #### 文件上传接口的测试方式
 >
-> ![image-20250912210938799](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912210938799.png)
+> ![image-20250912210938799](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912210938799.png)
 >
 > 
 > 
@@ -3114,7 +3114,7 @@ if(data.user.role === 'EMP'){
 
 > 可能会出现较大文件无法上传的情况，此时在配置文件里面配置
 >
-> ![image-20250912211449584](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912211449584.png)
+> ![image-20250912211449584](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912211449584.png)
 >
 > 
 
@@ -3136,7 +3136,7 @@ if(data.user.role === 'EMP'){
 
 * 把文件变成网络路径，接口把文件读出来
 
-  ![image-20250905123205770](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905123205770.png)
+  ![image-20250905123205770](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905123205770.png)
 
   > 【【不同文件的文件名不一样，下载到客户端的时候可能会有编码错误（比如中文文件名）】】
   > 所以一般提前加一个统一的编码方式
@@ -3189,7 +3189,7 @@ if(data.user.role === 'EMP'){
 
 * 头像组件
 
-  ![image-20250905141717201](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905141717201.png)
+  ![image-20250905141717201](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905141717201.png)
 
   **另一种能实现文件上传的前端组件**
   (form表单设置enctype属性)
@@ -3222,7 +3222,7 @@ if(data.user.role === 'EMP'){
         </el-form-item>
   ```
 
-  ![image-20250905141903061](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905141903061.png)
+  ![image-20250905141903061](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905141903061.png)
 
   ```css
     .avatar-uploader{
@@ -3263,7 +3263,7 @@ if(data.user.role === 'EMP'){
 
 * 更新前端父级页面展示、后端数据
 
-  ![image-20250905141733731](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905141733731.png)
+  ![image-20250905141733731](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905141733731.png)
   
 
   ```
@@ -3337,7 +3337,7 @@ if(data.user.role === 'EMP'){
 
 ### 新建**数据库表article**
 
-![image-20250905183644849](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250905183644849.png)
+![image-20250905183644849](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250905183644849.png)
 
 
 
@@ -3365,13 +3365,13 @@ if(data.user.role === 'EMP'){
 
 * 批量删除数据--deleteBatch
 
-  ![image-20250913140913896](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913140913896.png)
-  ![image-20250913141206600](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913141206600.png)
+  ![image-20250913140913896](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913140913896.png)
+  ![image-20250913141206600](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913141206600.png)
 
   controller层
-  ![image-20250902191537815](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902191537815.png)
+  ![image-20250902191537815](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902191537815.png)
   service层
-  ![image-20250902191517479](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250902191517479.png)
+  ![image-20250902191517479](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250902191517479.png)
 
   
 
@@ -3662,7 +3662,7 @@ public class SomethingController {
 
 ##### 修改员工信息（有员工经历的情况）
 
-> ![image-20250913163254313](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913163254313.png)
+> ![image-20250913163254313](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913163254313.png)
 >
 > 
 
@@ -3725,7 +3725,7 @@ xml层省略
 
 ##### 需要手动封装resultMap的情况
 
-![image-20250913155643570](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913155643570.png)
+![image-20250913155643570](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913155643570.png)
 
 
 
@@ -4054,8 +4054,8 @@ xml层省略
 
 使用**关联查询**，并给后端中的employee加上departmentName属性，这样查询之后返回给tabledata的对象组里面就包含有departmentName
 
-* ![image-20250907080743140](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250907080743140.png)
-* ![image-20250907080825005](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250907080825005.png)
+* ![image-20250907080743140](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250907080743140.png)
+* ![image-20250907080825005](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250907080825005.png)
 
 
 
@@ -4146,7 +4146,7 @@ xml层省略
       }
   ```
 
-  ![image-20250908100003185](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908100003185.png)
+  ![image-20250908100003185](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908100003185.png)
 
 * 引入POI依赖
 
@@ -4165,7 +4165,7 @@ xml层省略
 
   
 
-![image-20250908095845778](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908095845778.png)
+![image-20250908095845778](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908095845778.png)
 
 
 
@@ -4217,7 +4217,7 @@ xml层省略
       }
   ```
 
-  ![image-20250908104901953](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908104901953.png)
+  ![image-20250908104901953](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908104901953.png)
 
 * 前端
 
@@ -4313,7 +4313,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 
   > 必须先准备好DOM，再初始化echarts示例
   >
-  > ![image-20250908112548348](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908112548348.png)
+  > ![image-20250908112548348](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908112548348.png)
 
   > xAxis：横轴
   > series：纵轴
@@ -4351,7 +4351,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 > },
 > ```
 >
-> ![image-20250908115805451](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908115805451.png)
+> ![image-20250908115805451](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908115805451.png)
 >
 > 修改后
 >
@@ -4361,7 +4361,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 > },
 > ```
 >
-> ![image-20250908115945289](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908115945289.png)
+> ![image-20250908115945289](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908115945289.png)
 > 
 >
 > 
@@ -4456,7 +4456,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 
   > 必须先准备好DOM，再初始化echarts示例
   >
-  > ![image-20250908112548348](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908112548348.png)
+  > ![image-20250908112548348](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908112548348.png)
 
 > smooth:true
 > 将曲线设置为光滑化处理
@@ -4470,7 +4470,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 
 
 * 后端把横轴和纵轴的数据包装之后返回给前端
-  ![image-20250908133409768](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250908133409768.png)
+  ![image-20250908133409768](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250908133409768.png)
 
   **接口**
 
@@ -4515,7 +4515,7 @@ https://echarts.apache.org/handbook/zh/get-started/
   
   ```
   
-  ![image-20250909124748816](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250909124748816.png)
+  ![image-20250909124748816](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250909124748816.png)
   
   
   
@@ -4568,7 +4568,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 
 ##### 职位统计
 
-![image-20250915075953489](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915075953489.png)
+![image-20250915075953489](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915075953489.png)
 
 
 
@@ -4583,7 +4583,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 > select job,count(*) from emp group by job
 > ```
 >
-> ![image-20250915080324130](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915080324130.png)
+> ![image-20250915080324130](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915080324130.png)
 >
 > > case函数
 > >
@@ -4615,7 +4615,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 >     from emp group by job;
 > ```
 >
-> ![image-20250915081152792](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915081152792.png)
+> ![image-20250915081152792](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915081152792.png)
 >
 > 
 >
@@ -4643,7 +4643,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 >     }
 > ```
 >
-> ![image-20250915092139984](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250915092139984.png)
+> ![image-20250915092139984](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250915092139984.png)
 
 
 
@@ -4684,7 +4684,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 * 后端把横轴和纵轴的数据包装之后返回给前端
   接口
 
-  ![image-20250909213103757](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250909213103757.png)
+  ![image-20250909213103757](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250909213103757.png)
 
   ```java
   /*
@@ -4734,7 +4734,7 @@ https://echarts.apache.org/handbook/zh/get-started/
 
   **返回的数据结构：**
 
-  ![image-20250910081056860](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910081056860.png)
+  ![image-20250910081056860](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910081056860.png)
 
   
 
@@ -4776,7 +4776,7 @@ https://echarts.apache.org/handbook/zh/get-started/
    }
    ```
 
-   ![image-20250909131917919](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250909131917919.png)
+   ![image-20250909131917919](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250909131917919.png)
 
    ```javascript
      series:[
@@ -4889,7 +4889,7 @@ Ningx代理访问后端Tomcat服务器
 * 作用
   避免后端接口直接暴露给前端，不安全
 
-* ![image-20250910131958733](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910131958733.png)
+* ![image-20250910131958733](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910131958733.png)
 
   > 前端只需要访问代理服务器，不需要关心后端那些服务器的端口号；这样就能隐藏后端的细节、更加安全
   >
@@ -4904,13 +4904,13 @@ Ningx代理访问后端Tomcat服务器
 
 
 
-> ![image-20250910125908427](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910125908427.png)
+> ![image-20250910125908427](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910125908427.png)
 >
 > 
 
 1. 安装nginx并启动
 
-   ![image-20250910130735325](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910130735325.png)
+   ![image-20250910130735325](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910130735325.png)
    
 2. 测试访问：http://localhost:90
 
@@ -4918,14 +4918,14 @@ Ningx代理访问后端Tomcat服务器
 
 
 
-> ![image-20250910132912938](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910132912938.png)
+> ![image-20250910132912938](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910132912938.png)
 >
 > 
 >
 > 监听端口号为90
 > rewrite用来进行路径重写（这里使用了正则表达式）
 >
-> ![image-20250910133230295](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250910133230295.png)
+> ![image-20250910133230295](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250910133230295.png)
 > 
 
 

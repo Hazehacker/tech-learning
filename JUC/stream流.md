@@ -1,4 +1,4 @@
-
+﻿
 
 
 
@@ -131,17 +131,17 @@ list.stream().filter(name -> name.length() == 3).filter(name -> name.length() ==
 
   for写法
 
-  ![image-20251009160401647](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251009160401647.png)
+  ![image-20251009160401647](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251009160401647.png)
 
   stream写法
 
-  ![image-20251009160519360](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251009160519360.png)
+  ![image-20251009160519360](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251009160519360.png)
 
 
 
 * 将一个对象数据转换成 长字符串
 
-  ![image-20251010093740443](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251010093740443.png)
+  ![image-20251010093740443](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251010093740443.png)
 
   ```
   List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());

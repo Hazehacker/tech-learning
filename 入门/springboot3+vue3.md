@@ -1,4 +1,4 @@
-**大量思考需求的程序实现，实在想不到就参考别人的设计**
+﻿**大量思考需求的程序实现，实在想不到就参考别人的设计**
 
 **拆解需求的能力**
 
@@ -24,7 +24,7 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 分布式 微服务开发——springcloud
 
-![image-20250326103859094](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326103859094.png)
+![image-20250326103859094](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326103859094.png)
 
 
 
@@ -107,9 +107,9 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
   * Springboot家族技术 
 
-    ![image-20250326105126435](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326105126435.png)
+    ![image-20250326105126435](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326105126435.png)
 
-  * ![image-20250326105310379](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326105310379.png)
+  * ![image-20250326105310379](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326105310379.png)
     从中选择需要的技术使用
 
 
@@ -124,13 +124,13 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 * 思想演化
 
-  * ![image-20250326105510386](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326105510386.png)
+  * ![image-20250326105510386](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326105510386.png)
 
     
 
 * Spring是用来管对象的技术
 
-  ![image-20250326110523877](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326110523877.png)
+  ![image-20250326110523877](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326110523877.png)
 
   AOP：面向切面编程（一种编程思想 ，是一种设计概念）能在不惊动原始程序的基础上增强功能
   Aspects：AOP思想的实现
@@ -153,18 +153,18 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 * IOC(控制反转)的概念
 
-  * ![image-20250326114230766](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326114230766.png)
+  * ![image-20250326114230766](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326114230766.png)
 
   * 
-    ![image-20250326114348327](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326114348327.png)
+    ![image-20250326114348327](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326114348327.png)
 
     交给IOC容器创建管理对象
 
     绑定Service和Dao的依赖关系，
     绑关系的过程叫做依赖注入
 
-  * ![image-20250326120107988](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326120107988.png)
-    ![image-20250326120355302](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326120355302.png)
+  * ![image-20250326120107988](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326120107988.png)
+    ![image-20250326120355302](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326120355302.png)
 
 
 
@@ -176,17 +176,17 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 * IOC入门案例思路分析
 
-​		![image-20250326120653095](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250326120653095.png)
+​		![image-20250326120653095](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250326120653095.png)
 
 1. 引入spring相关依赖（pom.xml）
-   ![image-20250328105642830](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328105642830.png)
+   ![image-20250328105642830](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328105642830.png)
 2. 创建applicationContext.xml文件，配置spring坐标，标注bean（id表示对象名字，class表示对象类型）
-   ![image-20250328105655623](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328105655623.png)
-3. ![image-20250328105723299](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328105723299.png)
+   ![image-20250328105655623](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328105655623.png)
+3. ![image-20250328105723299](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328105723299.png)
 4. zaimain函数中实现一个能获取IOC容器的对象，获取容器（使用.getBean()获取）
-   ![image-20250328105421149](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328105421149.png)
+   ![image-20250328105421149](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328105421149.png)
 
-​	![	](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328105737447.png)
+​	![	](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328105737447.png)
 
 
 
@@ -196,18 +196,18 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 * DI入门案例
 
-  1. ![image-20250328110641473](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328110641473.png)
+  1. ![image-20250328110641473](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328110641473.png)
 
-  2. ![image-20250328110719525](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328110719525.png)
+  2. ![image-20250328110719525](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328110719525.png)
      set方法由容器调用
 
-  3. ![image-20250328110742430](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328110742430.png)
+  3. ![image-20250328110742430](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328110742430.png)
 
      ```
      name = "bookDao"和 ref = "bookDao"    中这两个Dao不一样
      ```
 
-     ![image-20250328110937039](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328110937039.png)
+     ![image-20250328110937039](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328110937039.png)
 
 
 
@@ -217,7 +217,7 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
   1. 基本配置
 
-     ![image-20250328111059791](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328111059791.png)
+     ![image-20250328111059791](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328111059791.png)
 
      
 
@@ -226,16 +226,16 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
   2. 别名配置
 
-     ![image-20250328111416271](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328111416271.png)
+     ![image-20250328111416271](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328111416271.png)
 
      > 还是建议使用id，
 
   3. spring默认给我们创建的bean是一个单例（因为不是单例的话，会出现用一次造一个的情况，耗费空间）
      创建非单例——使用配置
 
-     ![image-20250328111711762](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328111711762.png)
+     ![image-20250328111711762](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328111711762.png)
 
-  4. ![image-20250328111940433](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328111940433.png)
+  4. ![image-20250328111940433](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328111940433.png)
 
 
 
@@ -251,23 +251,23 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 
 
 
- 1. ![image-20250328112739695](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328112739695.png)
+ 1. ![image-20250328112739695](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328112739695.png)
 
     
 
     
     
 
- 2. ![image-20250328113205844](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328113205844.png)
+ 2. ![image-20250328113205844](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328113205844.png)
 
     配置工厂还不够，还需要标注工厂里面造对象的方法
-    ![image-20250328113345611](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328113345611.png)
+    ![image-20250328113345611](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328113345611.png)
 
     
 
     3. 先把实例工厂对象找出来， 
 
-       ![image-20250328113817909](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328113817909.png)
+       ![image-20250328113817909](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328113817909.png)
 
        
 
@@ -278,7 +278,7 @@ SSM框架——spring + spring MVC + Mybatis + Mybatis-plus
 * bean生命周期
 
   1. 概念
-     ![image-20250328115010858](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250328115010858.png)
+     ![image-20250328115010858](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250328115010858.png)
 
   2. 怎么控制  
 

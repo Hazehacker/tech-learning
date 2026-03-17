@@ -1,4 +1,4 @@
-
+﻿
 
 ## MQ使用场景
 
@@ -108,7 +108,7 @@
 
 ## MQ技术选型
 
-![image-20251117101753532](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117101753532.png)
+![image-20251117101753532](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117101753532.png)
 
 > Rabbit社区活跃
 >
@@ -136,9 +136,9 @@
 
 
 
-![image-20251117095144242](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117095144242.png)
+![image-20251117095144242](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117095144242.png)
 
-![image-20251117095356174](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117095356174.png)
+![image-20251117095356174](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117095356174.png)
 
 
 
@@ -477,7 +477,7 @@ SpringAMQP提供了三个功能：
 
 #### 快速入门
 
-![image-20251214092059334](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251214092059334.png)
+![image-20251214092059334](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251214092059334.png)
 
 
 
@@ -500,7 +500,7 @@ SpringAMQP提供了三个功能：
 ```yaml
 spring:
   rabbitmq:
-    host: 47.100.37.166 # 你的rabbitmq所在主机ip
+    host: x.x.x.x # 你的rabbitmq所在主机ip
     port: 5672 # 端口（15672是控制台端口，这里是5672）
     virtual-host: /hmall # 虚拟主机
     username: hmall # 用户名
@@ -523,7 +523,7 @@ spring:
 > ```yaml
 > spring:
 >   rabbitmq:
->     host: 47.100.37.166 
+>     host: x.x.x.x 
 >     port: 5672 
 >     virtual-host: /eats
 >     username: root 
@@ -1075,7 +1075,7 @@ public class DirectConfig {
 
 基于@Bean的方式声明队列和交换机比较麻烦，Spring还提供了基于`@RabbitListener`注解方式来声明。
 
-![image-20251214132221192](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251214132221192.png)
+![image-20251214132221192](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251214132221192.png)
 
 例如，我们同样声明Direct模式的交换机和队列：
 

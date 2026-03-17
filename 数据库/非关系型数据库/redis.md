@@ -9,7 +9,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 #### 缓存-介绍
 
-![image-20251114212710574](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114212710574.png)
+![image-20251114212710574](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114212710574.png)
 
 **重点：读写性能高**
 
@@ -19,7 +19,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 >
 > 
 
-![image-20251114213103333](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114213103333.png)
+![image-20251114213103333](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114213103333.png)
 
 
 
@@ -180,13 +180,13 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 ### 初始redis
 
-![image-20250927085052877](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927085052877.png)
+![image-20250927085052877](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927085052877.png)
 
 > 实际场景中不会这样直接拆分
 >
 > #### 一般采取key+json的结构
 >
-> ![image-20250929172844194](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929172844194.png)
+> ![image-20250929172844194](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929172844194.png)
 >
 > 
 >
@@ -204,7 +204,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 * 对比
 
-  ![image-20250929174024289](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929174024289.png)
+  ![image-20250929174024289](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929174024289.png)
 
   
 
@@ -213,15 +213,15 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
   > NoSQL：键值对形式，对于key、value的约束小
   > 还可以采用JSON格式存储，字段约束松散、数据结构没有严格要求，字段修改影响小
 
-  ![image-20250929174225663](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929174225663.png)
+  ![image-20250929174225663](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929174225663.png)
 
-  ![image-20250929174354058](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929174354058.png)
+  ![image-20250929174354058](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929174354058.png)
 
   > 表与表之间可以构建联系、可以构建物理外键
   >
   > 表与表之间没有物理外键的功能，通过json方式维护，数据库本身不会维护，但是程序员可以自己写逻辑外键
 
-  ![image-20250929174728330](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929174728330.png)
+  ![image-20250929174728330](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929174728330.png)
 
   > 各种SQL库查询语句语法固定：sql语句
   > 各个NoSQL库查询语句语法不固定，不同库不同语法
@@ -230,12 +230,12 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
   > ACID：原子性，隔离性，一致性，持久性
   >
-  > ![image-20250929175019665](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929175019665.png)
+  > ![image-20250929175019665](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929175019665.png)
   > NoSQL数据库要么没有事务、要么就难以满足事务的强一致性，无法全部满足ACID
   >
   > 
 
-  ![image-20250929175142004](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929175142004.png)
+  ![image-20250929175142004](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929175142004.png)
 
   
 
@@ -254,7 +254,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 
 
-![image-20250929175958873](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929175958873.png)
+![image-20250929175958873](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929175958873.png)
 
 > 主要是因为基于内存，所以即使单线程、也很快
 >
@@ -288,10 +288,10 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 ##### 下载与安装
 
-> ![image-20250929180131646](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250929180131646.png)
+> ![image-20250929180131646](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250929180131646.png)
 > 
 
-![image-20250927085329141](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927085329141.png)
+![image-20250927085329141](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927085329141.png)
 
 '''
 
@@ -299,7 +299,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 >
 > 需要在配置文件中手动配置密码
 > 搜索pass
-> ![image-20250927095314954](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927095314954.png)
+> ![image-20250927095314954](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927095314954.png)
 
 > redis没有用户的概念，连接服务端不需要提供用户名，直接用密码即可
 
@@ -375,9 +375,9 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 ### 数据类型
 
-![image-20250927095648485](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927095648485.png)
+![image-20250927095648485](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927095648485.png)
 
-![image-20250927095802906](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927095802906.png)
+![image-20250927095802906](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927095802906.png)
 
 
 
@@ -463,13 +463,13 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 ### 常用命令
 
-![image-20250927100356877](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927100356877.png)
+![image-20250927100356877](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927100356877.png)
 
 > 过期时间的应用场景：手机验证码
 >
 > 
 
-![image-20250927103648275](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927103648275.png)
+![image-20250927103648275](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927103648275.png)
 
 > ```
 > hset 100 name xiaoming
@@ -478,9 +478,9 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 >
 > 
 
- ![image-20250927104257308](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927104257308.png)																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															
+ ![image-20250927104257308](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927104257308.png)																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															
 
-![image-20250927112110799](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927112110799.png)
+![image-20250927112110799](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927112110799.png)
 
 
 
@@ -488,7 +488,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 >
 > 
 
-![image-20250927112527822](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927112527822.png)
+![image-20250927112527822](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927112527822.png)
 
 
 
@@ -496,7 +496,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 
 
-![image-20250927113152006](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927113152006.png)
+![image-20250927113152006](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927113152006.png)
 
 > ```
 > keys *
@@ -557,9 +557,9 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 
 
-![image-20250927114106334](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927114106334.png)
+![image-20250927114106334](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927114106334.png)
 
-> ![image-20251116204406611](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116204406611.png)
+> ![image-20251116204406611](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116204406611.png)
 >
 > 
 > 
@@ -574,23 +574,23 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 
 
-![image-20251116211446019](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116211446019.png)
+![image-20251116211446019](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116211446019.png)
 
-![image-20251116211636350](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116211636350.png)
-
-
+![image-20251116211636350](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116211636350.png)
 
 
 
-![image-20250927114712105](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927114712105.png)
-
-![image-20250927114720943](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927114720943.png)
 
 
+![image-20250927114712105](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927114712105.png)
 
-> ![image-20250927115232089](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927115232089.png)
+![image-20250927114720943](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927114720943.png)
+
+
+
+> ![image-20250927115232089](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927115232089.png)
 >
-> ![image-20250927115432056](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927115432056.png)
+> ![image-20250927115432056](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927115432056.png)
 >
 > **<u>编写配置类</u>**
 >
@@ -629,7 +629,7 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
   zSetOperations
   **示例**
 
-  ![image-20250927163230257](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250927163230257.png)
+  ![image-20250927163230257](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250927163230257.png)
 
   ```
           System.out.println(redisTemplate);
@@ -703,19 +703,19 @@ https://blog.csdn.net/qq_66345100/article/details/131986713
 
 
 
-![image-20250928095625923](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250928095625923.png)
+![image-20250928095625923](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250928095625923.png)
 
 
 
 * 
 
-  ![image-20250928095645831](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250928095645831.png)
+  ![image-20250928095645831](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250928095645831.png)
 
-  ![image-20250928095711648](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250928095711648.png)
+  ![image-20250928095711648](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250928095711648.png)
 
-  ![image-20250928100418016](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250928100418016.png)
+  ![image-20250928100418016](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250928100418016.png)
 
-  ![image-20250928100517337](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250928100517337.png)
+  ![image-20250928100517337](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250928100517337.png)
 
 
 
@@ -919,7 +919,7 @@ public class RedisConfiguration {
 
 ```
 
-![image-20251117080516655](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117080516655.png)
+![image-20251117080516655](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117080516655.png)
 
 > 也可以用GenericJackson2JsonRedisSerializer
 
@@ -939,7 +939,7 @@ public class RedisConfiguration {
 
 
 
-> ![image-20251115083756787](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251115083756787.png)
+> ![image-20251115083756787](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251115083756787.png)
 >
 > cacheManage里面设置了默认的过期时间
 
@@ -947,11 +947,11 @@ public class RedisConfiguration {
 
 #### 配置StringRedisTemplate
 
-![image-20251117081035164](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117081035164.png)
+![image-20251117081035164](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117081035164.png)
 
-![image-20251117081325492](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117081325492.png)
+![image-20251117081325492](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117081325492.png)
 
-> ![image-20251117081439669](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117081439669.png)
+> ![image-20251117081439669](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117081439669.png)
 >
 > 
 
@@ -1262,10 +1262,10 @@ private void unlock(String key){
 
 
 
-![image-20251002105006720](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002105006720.png)
+![image-20251002105006720](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002105006720.png)
 
-![image-20251002105138695](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002105138695.png)
-![image-20251002105340471](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002105340471.png)
+![image-20251002105138695](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002105138695.png)
+![image-20251002105340471](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002105340471.png)
 
 
 
@@ -1289,10 +1289,10 @@ private void unlock(String key){
   **将方法返回值存到指定的key中**
 
   > 使用spEL语法动态生成key
-  > ![image-20251002110123344](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002110123344.png)
+  > ![image-20251002110123344](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002110123344.png)
   >
   > 案例
-  > ![image-20251002110403894](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002110403894.png)
+  > ![image-20251002110403894](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002110403894.png)
   >
   > > 加了这个注解之后、需要手动加上主键回填，底层基于aop实现
   > > 执行完方法之后加入redis数据库，框架自动将方法返回值作为value存进去
@@ -1303,12 +1303,12 @@ private void unlock(String key){
 
   **动态算一个key出来，然后自动查询redis里面有没有这个key，如果没有，执行完方法会创建**
 
-  > ![image-20251002112001513](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002112001513.png)
+  > ![image-20251002112001513](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002112001513.png)
   > 案例
   >
   > 动态算一个key出来，然后自动查询redis里面有没有这个key
   >
-  > ![image-20251002112550206](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002112550206.png)
+  > ![image-20251002112550206](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002112550206.png)
   >
   >
   > 底层基于动态代理技术，自动创建一个代理对象，先查询redis，redis里面没有才执行controller方法的逻辑
@@ -1317,23 +1317,23 @@ private void unlock(String key){
 
   **执行完该方法之后，删除指定的key**
 
-  > ![image-20251002112739648](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002112739648.png)
+  > ![image-20251002112739648](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002112739648.png)
   >
-  > ![image-20251002113146004](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002113146004.png)
+  > ![image-20251002113146004](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002113146004.png)
   >
   > 
 
-* ![image-20251002113312571](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002113312571.png)
+* ![image-20251002113312571](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002113312571.png)
 
   > 备注：管理端新增的时候可以用@CachePut新增缓存
 
-  > ![image-20251002113547641](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002113547641.png)
+  > ![image-20251002113547641](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002113547641.png)
   >
-  > ![image-20251002113708586](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002113708586.png)
+  > ![image-20251002113708586](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002113708586.png)
   >
-  > ![image-20251002114022955](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002114022955.png)
+  > ![image-20251002114022955](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002114022955.png)
   >
-  > ![image-20251002130858848](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251002130858848.png)
+  > ![image-20251002130858848](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251002130858848.png)
   >
   > **通过@CacheEvict(cacheNames = "setmealCache",allEntries = true)删除setmealCache目录下的所有缓存**
 
@@ -1844,7 +1844,7 @@ private void unlock(String key){
 
 
 
-![image-20251114120327970](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114120327970.png)
+![image-20251114120327970](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114120327970.png)
 
 
 
@@ -1852,7 +1852,7 @@ private void unlock(String key){
 
 **发送短信验证码**
 
-![image-20251114095637748](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114095637748.png)
+![image-20251114095637748](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114095637748.png)
 
 **service层**
 
@@ -1888,7 +1888,7 @@ private void unlock(String key){
 
 **短信验证码登录注册**
 
-![image-20251114095730227](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114095730227.png)
+![image-20251114095730227](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114095730227.png)
 
 > 校验验证码那步、手机要也需要校验
 
@@ -1927,7 +1927,7 @@ public Result login(LoginFormDTO loginForm, HttpSession session) {
 
 **校验登录状态**
 
-![image-20251114095753178](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114095753178.png)
+![image-20251114095753178](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114095753178.png)
 
 > 从请求携带的session里面获取session id
 
@@ -1949,7 +1949,7 @@ public Result login(LoginFormDTO loginForm, HttpSession session) {
 
 ### **基于Redis实现<u>共享session</u>登录**
 
-![image-20251114120354497](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114120354497.png)
+![image-20251114120354497](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114120354497.png)
 
 > 实际场景不用这个方案做登录功能 ，我们这里用于学习redis
 
@@ -1989,7 +1989,7 @@ key：选用
 
 ### 添加Redis缓存
 
-![image-20251114214451811](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114214451811.png)
+![image-20251114214451811](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114214451811.png)
 
 
 
@@ -2616,7 +2616,7 @@ public class UserService {
 
 > 似乎更常用
 
-![image-20251116154707127](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116154707127.png)
+![image-20251116154707127](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116154707127.png)
 
 
 
@@ -2625,7 +2625,7 @@ public class UserService {
 
 
 
-![image-20251116200627298](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116200627298.png)
+![image-20251116200627298](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116200627298.png)
 
 
 
@@ -2633,7 +2633,7 @@ public class UserService {
 >
 > 使用自定义的互斥锁
 >
-> ![image-20251116200734509](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116200734509.png)
+> ![image-20251116200734509](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116200734509.png)
 > 可以利用setnx
 >
 > 往往需要加有效期，防止一直不释放
@@ -2676,11 +2676,11 @@ public Result queryById(Long id) throws InterruptedException {
 
 
 
-![image-20251116160637866](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116160637866.png)
+![image-20251116160637866](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116160637866.png)
 
 
 
-![image-20251117090827882](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117090827882.png)
+![image-20251117090827882](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117090827882.png)
 
 总结：只要Redis中获取到数据，就返回这个数据用着。如果发现缓存过期，尝试去获取锁，获取到锁的线程只是通知重建线程去更新数据，而没有获取到锁的线程继续返回旧数据
 
@@ -2694,7 +2694,7 @@ public Result queryById(Long id) throws InterruptedException {
 
 （逻辑过期需要数据预热 ↓）
 
-![image-20251117092520877](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117092520877.png)
+![image-20251117092520877](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117092520877.png)
 
 ```
 /**
@@ -2722,7 +2722,7 @@ private void saveShop2Redis(Long id, Long expireSeconds){
 
 
 
-![image-20251117165609246](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117165609246.png)
+![image-20251117165609246](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117165609246.png)
 
 ```
 @Override
@@ -2745,7 +2745,7 @@ public Result queryById(Long id) throws InterruptedException {
 
 
 
-![image-20251116160649696](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116160649696.png) 
+![image-20251116160649696](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116160649696.png) 
 
 > 【一致性好、性能较差】【一致性差、性能较好】
 >
@@ -2763,7 +2763,7 @@ public Result queryById(Long id) throws InterruptedException {
 
 #### 缓存穿透-解决方案
 
-![image-20251116150434800](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116150434800.png)
+![image-20251116150434800](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116150434800.png)
 
 > 缓存   ”“
 
@@ -2789,11 +2789,11 @@ public Result queryById(Long id) throws InterruptedException {
   * 额外的内存消耗(可以通过设置过期时间弥补)
   * 可能造成短期的不一致
 
-![image-20251116151023420](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116151023420.png)
+![image-20251116151023420](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116151023420.png)
 
 
 
-![image-20251117163241956](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251117163241956.png)
+![image-20251117163241956](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251117163241956.png)
 
 ```
 @Override
@@ -2831,7 +2831,7 @@ public Result queryById(Long id) throws InterruptedException {
 
 * 使用sentinal对热点数据限流
 
-![image-20251116152747098](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251116152747098.png)
+![image-20251116152747098](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251116152747098.png)
 
 
 
@@ -3301,7 +3301,7 @@ sychronized锁失效的原因是由于每一个JVM都有一个独立的锁监视
 
 
 
-
+#### 尝试自定义分布式锁
 
 **分布式锁解决超卖问题**
 
@@ -3484,11 +3484,340 @@ sychronized锁失效的原因是由于每一个JVM都有一个独立的锁监视
 >
 > 
 >
-> Redis提供了Lua脚本的功能，在一个脚本中编写多条Redis命令，确保多条命令执行时的原子性，Lua是一种编程语言
+
+Redis提供了Lua脚本的功能，在一个脚本中编写多条Redis命令，确保多条命令执行时的原子性，Lua是一种编程语言
+
+[[Lua脚本]]
+
+那么我们该如何保障 **判断锁** 和 **释放锁** 这连段代码的原子性呢？答案是使用Lua脚本
+
+那么Lua脚本是如何确保原子性的呢？Redis使用（支持）相同的Lua解释器，来运行所有的命令。Redis还保证脚本以原子方式执行：在执行脚本时，不会执行其他脚本或Redis命令。这个语义类似于MULTI（开启事务）/EXEC（触发事务，一并执行事务中的所有命令）。从所有其他客户端的角度来看，脚本的效果要么仍然不可见，要么已经完成。
+
+**注意**：虽然Redis在单个Lua脚本的执行期间会暂停其他脚本和Redis命令，以确保脚本的执行是原子的，但如果Lua脚本本身出错，那么无法完全保证原子性。也就是说Lua脚本中的Redis指令出错，会发生回滚以确保原子性，但Lua脚本本身出错就无法保障原子性
+
+
+
+![image-20260317090253993](assets/image-20260317090922206.png)
+
+释放锁的业务流程是这样的：
+
+1. 获取锁中的线程标示
+2. 判断是否与指定的标示（当前线程标示）一致
+3. 如果一致则释放锁（删除）
+4. 如果不一致则什么都不做
+
+
+
+Lua脚本如下⬇️
+
+```lua
+-- 锁的key
+local key = KEYS[1]
+-- 当前线程标识
+local threadId = ARGV[1]
+
+-- 获取锁中的线程标识
+local id = redis.call('get', key)
+-- 比较线程标识与锁中的标识是否一致
+if(id == threadId) then
+    -- 释放锁 del key
+    return redis.call('del', key)
+end
+return 0
+```
+
+![image-20260317091825766](assets/image-20260317091825766.png)
+
+**注意**：在IDEA中编写Lua脚本，需要先下载一个Lua脚本插件**`EmmyLua`**
+
+编写Java代码，使用Lua实现释放锁
+
+![image-20260317092226727](assets/image-20260317092226727.png)
+
+```java
+import cn.hutool.core.lang.UUID;
+import com.hmdp.utils.lock.Lock;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @author ghp
+ * @title
+ * @description
+ */
+public class SimpleRedisLock implements Lock {
+
+    /**
+     * RedisTemplate
+     */
+    private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 锁的名称
+     */
+    private String name;
+    /**
+     * key前缀
+     */
+    private static final String KEY_PREFIX = "lock:";
+    /**
+     * ID前缀
+     */
+    private static final String ID_PREFIX = UUID.randomUUID().toString(true) + "-";
+
+    public SimpleRedisLock(StringRedisTemplate stringRedisTemplate, String name) {
+        this.stringRedisTemplate = stringRedisTemplate;
+        this.name = name;
+    }
+
+
+    /**
+     * 获取锁
+     *
+     * @param timeoutSec 超时时间
+     * @return
+     */
+    @Override
+    public boolean tryLock(long timeoutSec) {
+        String threadId = ID_PREFIX + Thread.currentThread().getId() + "";
+        // SET lock:name id EX timeoutSec NX
+        Boolean result = stringRedisTemplate.opsForValue()
+                .setIfAbsent(KEY_PREFIX + name, threadId, timeoutSec, TimeUnit.SECONDS);
+        return Boolean.TRUE.equals(result);
+    }
+
+    /**
+     * 加载Lua脚本
+     */
+    private static final DefaultRedisScript<Long> UNLOCK_SCRIPT;
+
+    static {
+        // 初始化的时候就读取好，每次执行unlock都读取的话效率低
+        UNLOCK_SCRIPT = new DefaultRedisScript<>();
+        UNLOCK_SCRIPT.setLocation(new ClassPathResource("lua/unlock.lua"));// 去当前包的 resources/lua/unlock.lua找
+        UNLOCK_SCRIPT.setResultType(Long.class);// 需要设置返回值类型
+    }
+
+    /**
+     * 释放锁
+     */
+    @Override
+    public void unlock() {
+        // 执行lua脚本
+        stringRedisTemplate.execute(
+                UNLOCK_SCRIPT,
+                Collections.singletonList(KEY_PREFIX + name),
+                ID_PREFIX + Thread.currentThread().getId()
+        );// 执行的时候传入参数（key args）
+    }
+}
+
+```
+
+
+
+现在我们的分布式锁满足了：
+
+1. **多线程可见**，将锁放到Redis中，所有的JVM都可以同时看到
+2. **互斥**，set ex nx指令互斥
+3. **高可用**，层层优化，即使是特别极端的情况下照样可以防止超卖
+4. **高性能**，Redis的IO速度很快，Lua脚本的性能也很快
+5. **安全性**，这个不用多说了，通过给锁加线程标识+Lua封装Redis指令充分保障了线程安全，不那么容易出现并发安全问题，同时采用超时释放避免死锁
+
+
+
+==Set nx 实现的问题==
+
+> 经过优化1和优化2，我们实现的分布式锁已经达到生产可用级别了，但是还不够完善，比如：
 >
-> [[Lua脚本]]
+> 1. 分布式锁**不可重入**：不可重入是指**同一线程不能重复获取同一把锁**。比如，方法A中调用方法B，方法A需要获取分布式锁，方法B同样需要获取分布式锁，线程1进入方法A获取了一次锁，进入方法B又获取一次锁，由于锁不可重入，所以就会导致死锁
+>
+> 2. 分布式锁**不可重试**：**获取锁只尝试一次就返回false，没有重试机制**，这会导致数据丢失，比如线程1获取锁，然后要将数据写入数据库，但是当前的锁被线程2占用了，线程1直接就结束了而不去重试，这就导致数据发生了丢失
+>
+> 3. 分布式锁**超时释放**：**超时释放机机制虽然一定程度避免了死锁发生的概率，但是如果业务执行耗时过长，期间锁就释放了，这样存在安全隐患**。锁的有效期过短，容易出现业务没执行完就被释放，锁的有效期过长，容易出现死锁，所以这是一个大难题！
+>
+>    我们可以设置一个较短的有效期，但是加上一个 心跳机制 和 自动续期：在锁被获取后，可以使用心跳机制并自动续期锁的持有时间。通过定期发送心跳请求，显示地告知其他线程或系统锁还在使用中，同时更新锁的过期时间。如果某个线程持有锁的时间超过了预设的有效时间，其他线程可以尝试重新获取锁。
+>
+> 4. **主从一致性问题**：如果Redis提供了主从集群，主从同步存在延迟，当主节点宕机时，如果从节点同步主节点中的锁数据，
+
+我们如果想要更进一步优化分布式锁，当然是可以的，但是没必要，除非是迫不得已，我们完全可以直接使用已经造好的轮子，比如：Redisson。Redssion是一个十分成熟的Redis框架，功能也很多，比如：**分布式锁和同步器、分布式对象、分布式集合、分布式服务**，各种Redis实现分布式的解决方案。简而言之**Redisson就是一个使用Redis解决分布式问题的方案的集合**，当然它不仅仅是解决分布式相关问题，还包含其它的一些问题。
+
+所以说分布式锁的究极优化就是使用别人造好的轮子
+
+#### Redisson
+
+![image-20260317095557744](assets/image-20260317095557744.png)
+
+https://redisson.pro/docs/
+
+
+
+1.引入依赖
+
+```xml
+<!--redisson-->
+<dependency>
+    <groupId>org.redisson</groupId>
+    <artifactId>redisson</artifactId>
+    <version>3.13.6</version>
+</dependency>
+```
+
+2.配置Redisson客户端
+
+```java
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+@Configuration
+public class RedissonConfig {
+    @Value("${spring.redis.host}")
+    private String host;
+    @Value("${spring.redis.port}")
+    private String port;
+    @Value("${spring.redis.password}")
+    private String password;
+
+    /**
+     * 创建Redisson配置对象，然后交给IOC管理
+     *
+     * @return
+     */
+    @Bean
+    public RedissonClient redissonClient() {
+        // 获取Redisson配置对象
+        Config config = new Config();
+        // 添加redis地址，这里添加的是单节点地址，也可以通过 config.userClusterServers()添加集群地址
+        config.useSingleServer().setAddress("redis://" + this.host + ":" + this.port)
+                .setPassword(this.password);
+        // 获取RedisClient对象，并交给IOC进行管理
+        return Redisson.create(config);
+    }
+}
+
+```
+
+> **提示**：此外还有一种引入方式，可以引入 redission 的 starter 依赖，然后在yml文件中配置Redisson，但是不推荐这种方式，因为他会替换掉 Spring官方 提供的这套对 Redisson 的配置
+
+3.我们只需要修改一下使用锁的地方，其它的业务代码都不需要改
+
+```java
+// 3、创建订单（使用分布式锁）
+// 获取锁，指定锁的名称
+Long userId = ThreadLocalUtls.getUser().getId();
+RLock lock = redissonClient.getLock(RedisConstants.LOCK_ORDER_KEY + userId);
+// 尝试获取锁，参数分别是：获取锁的最大等待时间（期间会重试），锁自动释放时间，时间单位
+boolean isLock = lock.tryLock(1, 10, TimeUnit.SECONDS);
+if(isLock){
+    try{
+        System.out.println("执行业务")
+    }finally{
+        lock.unlock();
+    }
+}
+
+```
+
+* `tryLock`方法介绍
+  * `tryLock()`：它会使用默认的超时时间和等待机制。具体的超时时间是由 Redisson 配置文件或者自定义配置决定的。
+  * `tryLock(long time, TimeUnit unit)`：它会在指定的时间内尝试获取锁（等待time后重试），如果获取成功则返回 true，表示获取到了锁；如果在指定时间内（Redisson内部默认指定的）未能获取到锁，则返回 false。
+  * `tryLock(long waitTime, long leaseTime, TimeUnit unit)`：指定等待时间为watiTime，如果超过 leaseTime 后还没有获取锁就直接返回失败
+
+总的来讲自上而下，tryLock的灵活性逐渐提高，无参tryLock时，`waitTime`的默认值是-1，代表不等待，`leaseTime`的默认值是30，`unit`默认值是 seconds ，也就是锁超过30秒还没有释放就自动释放
+
+**==Redisson分布式锁原理：==**
+
+* **如何解决可重入问题**：利用hash结构记录线程id和重入次数。
+* **如何解决可重试问题**：利用信号量和PubSub功能实现等待、唤醒，获取锁失败的重试机制。
+* **如何解决超时续约问题**：利用watchDog，每隔一段时间（releaseTime / 3），重置超时时间。
+* **如何解决主从一致性问题**：利用Redisson的multiLock，多个独立的Redis节点，必须在所有节点都获取重入锁，才算获取锁成功
+
+缺陷：运维成本高、实现复杂
+
+
+
+
+
+#### Redisson可重入原理
+
+> 使用的是 hash 结构，不是String结构，不是使用setnx指令（setnx 不能实现可重入）
+
+![image-20260317102208755](assets/image-20260317102208755.png)
+
+
+
+Redisson内部释放锁，并不是直接执行`del`命令将锁给删除，而是将锁以`hash`数据结构的形式存储在Redis中，每次获取锁，都将`value`的值+1，每次释放锁，都将value的值-1，只有锁的value值归0时才会真正的释放锁，从而确保锁的可重入性
+
+> 底层也是使用到了 Lua 脚本，确保获取锁和释放锁的原子性
+>
+> **判断锁是否存在**、**添加锁的有效期**、**添加线程标识**这些的操作全部封装到了一个Lua脚本
+
+
+
+**tryLock() 源码：**
+
+> ![image-20260317105911849](assets/image-20260317105911849.png)
+>
+> ![image-20260317105936451](assets/image-20260317105936451.png)
+>
+> ![image-20260317105946913](assets/image-20260317105946913.png)
+>
+> ![image-20260317110211645](assets/image-20260317110450196.png)
+>
+> ![image-20260317110332869](assets/image-20260317110332869.png)
 >
 > 
+>
+> 
+
+**unlock() 源码**
+
+![image-20260317110828971](assets/image-20260317110828971.png)
+
+![image-20260317110856661](assets/image-20260317110856661.png)
+
+![image-20260317111000525](assets/image-20260317111000525.png)
+
+
+
+
+
+#### 看门狗机制
+
+![image-20260317111906986](assets/image-20260317111906986.png)
+
+获取锁成功，返回 null ，获取锁失败，返回剩余有效期
+
+> 这个方法的返回值接下来一层层往上传
+
+![image-20260317120046875](assets/image-20260317120046875.png)
+
+> ⬆️看门狗锁续期机制（过程中不断重置锁的有效期 => **通过递归+延时实现的定时任务**），确保锁释放只会是因为 业务完成，而不是锁过期(且业务没完成) 而被释放
+
+
+
+![image-20260317112354508](assets/image-20260317112354508.png)
+
+![image-20260317112830381](assets/image-20260317113428855.png)
+
+![image-20260317114750091](assets/image-20260317114750091.png)
+
+> 巧妙的使用了发布订阅机制(等锁释放了再尝试)，而不是一直  `while(true){ tryAcquire() }`（浪费CPU）
+
+![image-20260317115025644](assets/image-20260317115025644.png)
+
+
+
+
+
+
 
 
 

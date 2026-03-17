@@ -1,4 +1,4 @@
-![image-20251015193253313](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251015193253313.png)
+﻿![image-20251015193253313](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251015193253313.png)
 
 
 
@@ -18,7 +18,7 @@
 
 ## 启动
 
-![image-20251020112245961](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251020112245961.png)
+![image-20251020112245961](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251020112245961.png)
 
 
 
@@ -135,7 +135,7 @@
   >       uri: mongodb://awei:123456@192.168.220.128:27017/firstDb
   > ```
   >
-  > ![image-20251020113906279](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251020113906279.png)
+  > ![image-20251020113906279](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251020113906279.png)
 
   第三方服务配置
 

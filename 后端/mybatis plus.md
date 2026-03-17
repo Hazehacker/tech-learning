@@ -1,4 +1,4 @@
-
+﻿
 
 > 具体场景中是否使用mybatis plus、怎么使用，还是得看团队规范
 
@@ -137,7 +137,7 @@
 
 ## Service接口
 
-![image-20251026133721117](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251026133721117.png)
+![image-20251026133721117](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251026133721117.png)
 
 * 使用中
   我们的接口需要继承IService接口
@@ -154,7 +154,7 @@
 
 
 
-![image-20251026132805227](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251026132805227.png)
+![image-20251026132805227](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251026132805227.png)
 
 * 提供了封装好的批处理方法
 * saveOrUpdate增或改，会判断是否存在当前id，智能选择修改或更新
@@ -189,7 +189,7 @@ userService.save(user);
 
 * 增删改查用户
 
-  ![image-20251026134854727](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251026134854727.png)
+  ![image-20251026134854727](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251026134854727.png)
 
   **新增用户**
 
@@ -323,7 +323,7 @@ userService.save(user);
 
 * Lambda查询
 
-  ![image-20251026152759977](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251026152759977.png)
+  ![image-20251026152759977](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251026152759977.png)
 
   查询用户列表接口
 

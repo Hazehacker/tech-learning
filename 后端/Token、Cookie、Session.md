@@ -1,4 +1,4 @@
-
+﻿
 
 > 共同目标：维持用户的登录状态
 
@@ -16,12 +16,12 @@
 
     > 位于 请求头
     >
-    > ![image-20251114134847096](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114134847096.png)
+    > ![image-20251114134847096](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114134847096.png)
     >
     >
-    > ![image-20251114191458171](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114191458171.png)
+    > ![image-20251114191458171](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114191458171.png)
 
-    ![image-20251114133512634](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114133512634.png)
+    ![image-20251114133512634](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114133512634.png)
     
 
 * 缺点
@@ -62,12 +62,12 @@
   >
   > 
   >
-  > ![image-20251114192057250](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114192057250.png)
+  > ![image-20251114192057250](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114192057250.png)
   > 
 
 * 浏览器的下次访问会自动携带cookie给服务器、服务器可以获取到里面的session ID，直到过期
 
-  > ![image-20251114191607880](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114191607880.png)
+  > ![image-20251114191607880](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114191607880.png)
   >
   > 
 
@@ -114,7 +114,7 @@
 
   * 所以在服务端架设一个中心化的存储服务(比如redis)来专门存储会话数据
 
-![image-20251114190705406](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114190705406.png)
+![image-20251114190705406](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114190705406.png)
 
 
 
@@ -124,7 +124,7 @@
   * 依然需要依赖cookie
     有跨域限制（H5、安卓端、苹果端、小程序有自己的端口和域名），这时候前端再请求后端就会有跨域问题(cookie在跨域情况下无法传递)，需要在后端设置允许跨域、前端设置允许跨域的cookie传递
 
-![image-20251114192840623](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114192840623.png)
+![image-20251114192840623](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114192840623.png)
 
 
 
@@ -172,9 +172,9 @@
 
 * 服务器生成JWT令牌，发送给浏览器
 
-  > ![image-20251114192942772](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114192942772.png)
+  > ![image-20251114192942772](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114192942772.png)
   >
-  > ![image-20251114192958945](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251114192958945.png)
+  > ![image-20251114192958945](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251114192958945.png)
   > 
 
 * 浏览器以cookie 或 storage的方式存储

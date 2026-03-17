@@ -1,4 +1,4 @@
-1.介绍
+﻿1.介绍
 
 约定>配置
 纯注解零配置开发方式
@@ -14,7 +14,7 @@
 
 > 避免springMVC、xml等繁琐的配置
 
-![image-20250629200310183](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250629200310183.png)
+![image-20250629200310183](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250629200310183.png)
 
 * 2——不需要单独安装tomcat服务器
 * 支持各种微服务主键
@@ -27,7 +27,7 @@
 
 
 > 小案例
-> ![image-20250629200512268](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250629200512268.png)
+> ![image-20250629200512268](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250629200512268.png)
 >
 > 
 >
@@ -110,7 +110,7 @@
 
 ### 3.类映射成表格
 
-![image-20250702094843448](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702094843448.png)
+![image-20250702094843448](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702094843448.png)
 
 * ```java
   @Id
@@ -136,7 +136,7 @@
   定义客户端的访问路径
   (localhost:8080/user/**)
 
-* ![image-20250702113336738](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702113336738.png)
+* ![image-20250702113336738](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702113336738.png)
 
   ```java
   @PostMapping
@@ -147,7 +147,7 @@
 
   自动识别前端请求类型然后匹配对应函数
 
-* ![image-20250702115133579](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702115133579.png)
+* ![image-20250702115133579](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702115133579.png)
 
   
 
@@ -156,11 +156,11 @@
 
   可以用UserDto来接收客户端请求的参数
   调用@RequestBody注解将传进来的文本转成对象
-  ![image-20250702100503181](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702100503181.png)
+  ![image-20250702100503181](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702100503181.png)
 
-  ![image-20250702100450520](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702100450520.png)
+  ![image-20250702100450520](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702100450520.png)
 
-* ![image-20250702103044504](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702103044504.png)
+* ![image-20250702103044504](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702103044504.png)
   在接口里面调用业务逻辑中的IUserService接口里面的<u>*addUser()方法*</u>，（这个方法在IUserService中定义，UserService中被具体实现)
 
 
@@ -179,9 +179,9 @@
 
   这个注解会把xxService配置成spring的一个bean9
   标志成spring bean之后就能在xxController中自动装配进去
-  ![image-20250702101402580](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702101402580.png)
+  ![image-20250702101402580](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702101402580.png)
 
-* ![image-20250702110551135](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702110551135.png)
+* ![image-20250702110551135](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702110551135.png)
   [service实现了addUser方法，在里面调用xxRepository.fanfa()操作数据库]
 
   save方法会自动判别增加还是修改（有id就增加，没有id就修改）
@@ -223,21 +223,21 @@
 
 ### 7.pom.xml
 
-![image-20250702111338854](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702111338854.png)
+![image-20250702111338854](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702111338854.png)
 
 * 用法
-  ![image-20250702111640819](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702111640819.png)
+  ![image-20250702111640819](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702111640819.png)
 
   在需要验证参数的地方要加上“@Validated”注解
-  ![image-20250702111740864](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702111740864.png)
+  ![image-20250702111740864](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702111740864.png)
 
 ---
 
-![image-20250703143824136](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703143824136.png)
+![image-20250703143824136](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703143824136.png)
 
 ---
 
-![image-20250703153607950](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703153607950.png)
+![image-20250703153607950](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703153607950.png)
 
 
 
@@ -251,9 +251,9 @@
 
 
 
-![image-20250703144104704](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703144104704.png)
+![image-20250703144104704](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703144104704.png)
 
-![image-20250703144137860](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703144137860.png)
+![image-20250703144137860](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703144137860.png)
 
 * 官方文档这个位置里面包含了一堆starters
 
@@ -263,7 +263,7 @@ https://docs.spring.io/spring-boot/reference/using/build-systems.html#
 
 
 
-![image-20250703145258102](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703145258102.png)
+![image-20250703145258102](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703145258102.png)
 
 *   安全官方文档这个位置包含了所以可配置的项
 
@@ -276,10 +276,10 @@ https://docs.spring.io/spring-boot/appendix/application-properties/index.html
 ----
 
 1. 开发web的场景启动器
-   ![用](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703144328254.png)
+   ![用](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703144328254.png)
 
    > 不用声明version，因为版本已经被管理好了
-   > ![image-20250703144658914](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250703144658914.png)
+   > ![image-20250703144658914](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250703144658914.png)
 
 2. 
 
@@ -293,11 +293,11 @@ https://docs.spring.io/spring-boot/appendix/application-properties/index.html
 
 ### 8.exception包
 
-![image-20250702113131177](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702113131177.png)
+![image-20250702113131177](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702113131177.png)
 
-![image-20250702113118948](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702113118948.png)
+![image-20250702113118948](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702113118948.png)
 
-* ![image-20250702112718081](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250702112718081.png)
+* ![image-20250702112718081](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250702112718081.png)
   用来注明给什么异常做统一处理
   Exception.class表示所有异常的父类
 

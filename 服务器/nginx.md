@@ -1,4 +1,4 @@
-## 作用
+﻿## 作用
 
 * 
 
@@ -10,10 +10,10 @@
 
 * 图解 
 
-  ![image-20251104134446391](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104134446391.png)
+  ![image-20251104134446391](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104134446391.png)
 
 
-  ![image-20251104134410222](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104134410222.png)
+  ![image-20251104134410222](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104134410222.png)
 
 * 
 
@@ -239,12 +239,12 @@
 
 * 作用
 
-  ![image-20251104104549133](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104104549133.png)
+  ![image-20251104104549133](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104104549133.png)
 
-  ![image-20251104105037531](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104105037531.png)
+  ![image-20251104105037531](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104105037531.png)
   前端请求路径全部发向nginx，然后由nginx做转发
 
-  ![image-20251104105203589](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251104105203589.png)
+  ![image-20251104105203589](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251104105203589.png)
 
 
 
@@ -256,7 +256,7 @@
 
 
 
-![image-20250919201236897](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201236897.png)
+![image-20250919201236897](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201236897.png)
 
 > proxy_pass转发请求，将所有前缀是/api/的换成
 >
@@ -301,13 +301,13 @@
 
 
 
-![image-20250919201456788](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201456788.png)
+![image-20250919201456788](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201456788.png)
 
 > 还是基于反向代理，只不过分到多台服务器上
 
 
 
-![image-20250919201701207](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250919201701207.png)
+![image-20250919201701207](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250919201701207.png)
 
 
 
@@ -321,7 +321,7 @@
 
   * 配置代理
 
-    ![image-20251103162359409](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251103162359409.png)
+    ![image-20251103162359409](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251103162359409.png)
 
     > 为管理端和用户端分别设置代理，监听的(云服务器)端口分别是18080和18081（因为这个项目的管理端应用端口是18080、用户端应用端口是18081(不是5173)）
 

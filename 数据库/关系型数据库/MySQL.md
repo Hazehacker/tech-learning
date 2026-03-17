@@ -1,4 +1,4 @@
-
+﻿
 
 [toc]
 
@@ -14,15 +14,15 @@
 
 
 
-> ![image-20250814105950907](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814105950907.png)
+> ![image-20250814105950907](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814105950907.png)
 >
 > 
 
 ### 数据库相关
 
-![image-20250814110851375](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814110851375.png)
+![image-20250814110851375](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814110851375.png)
 
-> ![image-20250814110949990](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814110949990.png)
+> ![image-20250814110949990](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814110949990.png)
 
 表名设为tableX
 
@@ -30,7 +30,7 @@
 
 ### DDL-表结构-创建表
 
-![image-20250814112641354](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814112641354.png)
+![image-20250814112641354](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814112641354.png)
 
 ```
 create table tablename(
@@ -40,15 +40,15 @@ create table tablename(
 )[comment 表注释]
 ```
 
-![image-20250814113947229](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814113947229.png)
+![image-20250814113947229](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814113947229.png)
 
-![image-20250814131023569](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814131023569.png)
+![image-20250814131023569](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814131023569.png)
 
 <u>**数值类型**</u>
 
-![image-20250814131133481](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814131133481.png) 
+![image-20250814131133481](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814131133481.png) 
 
-![image-20250814132010260](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814132010260.png)
+![image-20250814132010260](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132010260.png)
 
 > <u>**年龄——tinyint unsigned**</u>
 >
@@ -56,16 +56,16 @@ create table tablename(
 
 
 
-![image-20250814132549132](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814132549132.png)
+![image-20250814132549132](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132549132.png)
 
-> ![image-20250814132857277](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814132857277.png)
+> ![image-20250814132857277](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132857277.png)
 > username——varchar(50)
 >
 > idcard——char(18)
 >
 > phone——char(11)
 
-![image-20250814132809860](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814132809860.png)
+![image-20250814132809860](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132809860.png)
 
 > <u>**birthday————date**</u>
 >
@@ -99,7 +99,7 @@ drop table [if exists] 表名;								 -- 删除表
 
 ### DQL-数据-查询
 
-![image-20250814190100925](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814190100925.png)
+![image-20250814190100925](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814190100925.png)
 
 
 
@@ -136,7 +136,7 @@ select name as '姓名',entry_date as '入职日期' from emp;
 select distinct 字段列表 from 表名;
 ```
 
-> ![image-20250815090549979](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250815090549979.png)
+> ![image-20250815090549979](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250815090549979.png)
 >
 > 推荐使用第一种：性能更高
 >
@@ -159,7 +159,7 @@ select * from tableX where id = 1;
 select * from tableX where name = '青戈' and password = '1234';
 ```
 
-![image-20250815091331163](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250815091331163.png)
+![image-20250815091331163](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250815091331163.png)
 
 
 
@@ -171,7 +171,7 @@ select * from tableX where name = '青戈' and password = '1234';
 > 查询有职位的员工信息
 > select * from emp where job is not null;
 >
-> ![image-20250815092000690](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250815092000690.png)
+> ![image-20250815092000690](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250815092000690.png)
 >
 > 
 >
@@ -226,7 +226,7 @@ select * from tableX order by id desc;//按照id倒序排序（id越大、排越
 
 #### 分组查询【一般用于统计个数】
 
-![image-20250816095628260](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250816095628260.png)
+![image-20250816095628260](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816095628260.png)
 
 ```
 SELECT * FROM employee GROUP BY sex HAVING sex = '男';
@@ -258,9 +258,9 @@ select sum(salary) from emp;
 
 
 
-![ ](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250816104039465.png)
+![ ](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104039465.png)
 
-![image-20250816104144391](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250816104144391.png)
+![image-20250816104144391](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104144391.png)
 
 ```
 -- 统计男性和女性员工数量
@@ -272,7 +272,7 @@ select job,count(*) from emp where entry_date <= '2015-01-01' group by job havin
 
 ```
 
-![image-20250816103847533](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250816103847533.png)
+![image-20250816103847533](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816103847533.png)
 
 
 
@@ -289,7 +289,7 @@ select job,count(*) from emp where entry_date <= '2015-01-01' group by job havin
 
 #### 排序查询
 
-![image-20250816104341280](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250816104341280.png)
+![image-20250816104341280](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104341280.png)
 
 > 排序默认升序排序
 
@@ -358,13 +358,13 @@ select *from emp limit 10,5;
 
 
 
-![image-20250912113540609](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912113540609.png)
+![image-20250912113540609](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912113540609.png)
 
-![image-20250912113552400](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912113552400.png)
+![image-20250912113552400](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912113552400.png)
 
 **内连接**
 
-![image-20250912115755473](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912115755473.png)
+![image-20250912115755473](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912115755473.png)
 
 > 内连接查询两个表达的交集部分
 
@@ -388,7 +388,7 @@ select *from emp limit 10,5;
 
 > 给表起别名（了解）
 >
-> ![image-20250912115808229](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912115808229.png)
+> ![image-20250912115808229](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912115808229.png)
 >
 > ```
 > select emp.id ,emp.name ,dept.name from emp as e inner join dept as d on e.dept_id = d.id;
@@ -398,7 +398,7 @@ select *from emp limit 10,5;
 
 **外连接**
 
-![image-20250912125539189](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912125539189.png)
+![image-20250912125539189](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912125539189.png)
 
 > 左外连接完全包含左表的字段
 
@@ -407,7 +407,7 @@ select *from emp limit 10,5;
 
 **子查询**
 
-![image-20250912131201813](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912131201813.png)
+![image-20250912131201813](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912131201813.png)
 
  
 
@@ -421,17 +421,17 @@ select *from emp limit 10,5;
 > select * from emp where entry_date > (select entry_date from emp where name = '阮小五')
 > ```
 >
-> ![image-20250912135419554](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912135419554.png)
+> ![image-20250912135419554](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912135419554.png)
 >
-> ![image-20250912135714281](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912135714281.png)
+> ![image-20250912135714281](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912135714281.png)
 
 > select * from emp where dept_id = (select id from dept where name = '教研部') and entry_time > '2011_05_01'
 >
-> ![image-20250912141308470](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912141308470.png)
+> ![image-20250912141308470](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912141308470.png)
 >
-> ![image-20250912142022878](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912142022878.png)
+> ![image-20250912142022878](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912142022878.png)
 >
-> ![image-20250912142619833](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250912142619833.png)
+> ![image-20250912142619833](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912142619833.png)
 >
 > 
 
@@ -446,7 +446,7 @@ SELECT employee.*,department.name as departmentName left join department on empl
 //逻辑外键
 ```
 
-![image-20250713210205847](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250713210205847.png)
+![image-20250713210205847](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713210205847.png)
 
 > yid是tableX表里面的一个属性（关联两表），tableY.id是tableY表里面的id属性
 
@@ -456,7 +456,7 @@ SELECT employee.*,department.name as departmentName left join department on empl
 
 
 
-> ![image-20250913151551115](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913151551115.png)
+> ![image-20250913151551115](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913151551115.png)
 >
 > 如果两张表中存在两个字段名字一样，可以像这样给字段取个别名
 >
@@ -482,7 +482,7 @@ SELECT employee.*,department.name as departmentName left join department on empl
 
 > data manipulation language
 >
-> ![image-20250814183607944](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814183607944.png)
+> ![image-20250814183607944](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814183607944.png)
 
 ### DML-insert-插入
 
@@ -505,7 +505,7 @@ insert into emp(username,password,name,gender,phone) values ('宋江')
 
 > 如果要 插入当前时间，不要写死，使用mysql里面的now()函数
 
-![image-20250814184957715](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814184957715.png)
+![image-20250814184957715](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814184957715.png)
 
 > 双引号也可以，推荐用单引号
 
@@ -517,13 +517,13 @@ insert into emp(username,password,name,gender,phone) values ('宋江')
 update 表名 set 字段1 = 数据1,字段2 = 数据2... where id = x;
 ```
 
-![image-20250814185212027](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814185212027.png)
+![image-20250814185212027](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814185212027.png)
 
 #### 优化-动态sql
 
 > 只更新有改动的字段
 
-![image-20250913171333275](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913171333275.png)
+![image-20250913171333275](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913171333275.png)
 
 ```
 update emp set 
@@ -583,7 +583,7 @@ where id=#{id}
 >
 > 2. 自动删除掉更新字段后多余的逗号
 >
->    ![image-20250913173342465](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250913173342465.png)
+>    ![image-20250913173342465](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913173342465.png)
 >
 >    比如如果最后一个字段没有被录入，整个sql语句就会多一个逗号，此时set标签会自动删除这个逗号
 >
@@ -605,7 +605,7 @@ where id=#{id}
 delete from 表名 where id = x;
 ```
 
-![image-20250814185619788](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250814185619788.png)
+![image-20250814185619788](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814185619788.png)
 
 
 
@@ -617,7 +617,7 @@ delete from 表名 where id = x;
 
 #### 设置某一字段为唯一索引
 
-![image-20250713211613912](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20250713211613912.png)
+![image-20250713211613912](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713211613912.png)
 
 * 即不能出现相同的值
 
@@ -631,7 +631,7 @@ delete from 表名 where id = x;
 
 #### 字符串函数
 
-![image-20251123202156357](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123202156357.png)
+![image-20251123202156357](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123202156357.png)
 
 ```
 select concat('%','张三','%')
@@ -647,7 +647,7 @@ select lower('Hello')
 
 
 
-![image-20251123203100066](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123203100066.png)
+![image-20251123203100066](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123203100066.png)
 
 ```
 update emp set workno = lpad(workno,5,'0')
@@ -657,7 +657,7 @@ update emp set workno = lpad(workno,5,'0')
 
 #### 数值函数
 
-![image-20251123203359209](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123203359209.png)
+![image-20251123203359209](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123203359209.png)
 
 
 
@@ -665,13 +665,13 @@ update emp set workno = lpad(workno,5,'0')
 
 
 
-![image-20251123204132705](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123204132705.png)
+![image-20251123204132705](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123204132705.png)
 
 
 
 
 
-![image-20251123204920585](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123204920585.png)
+![image-20251123204920585](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123204920585.png)
 
 ```
 select name, DATEDIFF(CURDATE(), entrydate) AS 'entrydays' from emp where ORDER BY entrydays
@@ -693,7 +693,7 @@ select name, DATEDIFF(CURDATE(), entrydate) AS 'entrydays' from emp where ORDER 
 
 #### ==流程函数==
 
-![image-20251123205025340](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123205025340.png)
+![image-20251123205025340](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123205025340.png)
 
 ```
 IF(条件表达式, 'OK', 'Error') //此处：如果条件表达式 为true，返回OK，否则返回Error
@@ -706,7 +706,7 @@ IFNULL(null, 'ERROR')
 
 
 
-![image-20251123214019928](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123214019928.png)
+![image-20251123214019928](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123214019928.png)
 
 ```
 select name, workaddress from emp
@@ -895,7 +895,7 @@ mysql -u 用户名 -p < your_file.sql
 
 ```bash
 # 把文件内容通过标准输入灌进去，同时指定数据库
-docker exec -i mysql mysql -uroot -pHazenixbzh66MySQLbulai seata < seata-tc.sql
+docker exec -i mysql mysql -uroot -pyourpassword seata < seata-tc.sql
 ```
 
 
@@ -924,7 +924,7 @@ docker cp mysql-container:/database_name.sql /root/database_name.sql
 
 # 约束
 
-![image-20251123215143153](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123215143153.png)
+![image-20251123215143153](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123215143153.png)
 
  **约束作用于表中字段， 可以再创建表/修改表的时候添加约束**
 
@@ -934,7 +934,7 @@ docker cp mysql-container:/database_name.sql /root/database_name.sql
 
 #### 约束演示
 
-![image-20251123215806833](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123215806833.png)
+![image-20251123215806833](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123215806833.png)
 
 ```
 create table user {
@@ -970,7 +970,7 @@ create table user {
 
 
 
-![image-20251123221754781](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123221754781.png)
+![image-20251123221754781](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123221754781.png)
 
 
 
@@ -978,7 +978,7 @@ create table user {
 
 ## 事务四大特性
 
-![image-20251123222935905](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251123222935905.png)
+![image-20251123222935905](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251123222935905.png)
 
 
 
@@ -998,17 +998,17 @@ create table user {
 
 ## 并发事务问题
 
-![image-20251124080443346](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251124080443346.png)
+![image-20251124080443346](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251124080443346.png)
 
-![image-20251124080622471](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251124080622471.png)
+![image-20251124080622471](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251124080622471.png)
 
-![image-20251124080815422](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251124080815422.png)
+![image-20251124080815422](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251124080815422.png)
 
 > 这条数据在读取的时间间隔中被另一个事务更新了
 
 
 
-![image-20251124080955816](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251124080955816.png)
+![image-20251124080955816](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251124080955816.png)
 
 > 这个场景的前提是已经解决了不可重复读，即读取时不会读取其他事物改变后的结果
 >
@@ -1028,7 +1028,7 @@ create table user {
 
 
 
-![image-20251124081404292](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251124081404292.png)
+![image-20251124081404292](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251124081404292.png)
 
 * 读未提交：三种并发事务问题都可能出现
 * **读已提交**：解决了脏读问题
@@ -1110,11 +1110,11 @@ create table user {
 
 * 前端结构
 
-  ![image-20251109085034354](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251109085034354.png)
+  ![image-20251109085034354](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251109085034354.png)
 
 * 返回的DTO
 
-  ![image-20251109084925120](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251109084925120.png)
+  ![image-20251109084925120](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251109084925120.png)
 
 
 
@@ -1351,7 +1351,7 @@ sql编写（返回List<TradeExpenseResponseDTO>）
 
 
 
-![image-20251126164359785](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251126164359785.png)
+![image-20251126164359785](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251126164359785.png)
 
 存储引擎控制MySQL中数据存储和提取的方式，服务器会通过API和存储引擎来进行通讯
 
@@ -1359,7 +1359,7 @@ sql编写（返回List<TradeExpenseResponseDTO>）
 
 > **索引是在存储引擎层实现的，这意味着不同的存储引擎的索引结构不一样**
 
-![image-20251126164626126](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251126164626126.png)
+![image-20251126164626126](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251126164626126.png)
 
 
 
@@ -1427,7 +1427,7 @@ SHOW ENGINES;
   Page：页
   Row：行
 
-  ![image-20251126183248745](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251126183248745.png)
+  ![image-20251126183248745](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251126183248745.png)
 
 * 
 
@@ -1467,7 +1467,7 @@ SHOW ENGINES;
 
 
 
-![image-20251126191926652](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251126191926652.png)
+![image-20251126191926652](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251126191926652.png)
 
 
 
@@ -1477,7 +1477,7 @@ SHOW ENGINES;
 
 
 
-![image-20251126192112693](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251126192112693.png)
+![image-20251126192112693](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251126192112693.png)
 
 InnoDB：存储业务系统对于事务、数据完整性要求较高的核心数据
 
@@ -1507,9 +1507,9 @@ MyISAM：存储业务系统的非核心事务
 
 ## 概述
 
-![image-20251201080038944](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201080038944.png)
+![image-20251201080038944](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201080038944.png)
 
-![image-20251201080316094](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201080316094.png)
+![image-20251201080316094](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201080316094.png)
 
 无索引：全全表扫描
 
@@ -1642,29 +1642,29 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201080623275](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201080623275.png)
+![image-20251201080623275](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201080623275.png)
 
 > 只有memory支持Hash索引
 
-![image-20251201080848236](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201080848236.png)
+![image-20251201080848236](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201080848236.png)
 
 
 
-![image-20251201081015075](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201081015075.png)
+![image-20251201081015075](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201081015075.png)
 
 
 
-![image-20251201081323979](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201081323979.png)
+![image-20251201081323979](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201081323979.png)
 
-![image-20251201081930799](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201081930799.png)
+![image-20251201081930799](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201081930799.png)
 
 
 
 **B+树**
 
-![image-20251201082335846](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201082335846.png)
+![image-20251201082335846](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201082335846.png)
 
-![image-20251201082407388](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201082407388.png)
+![image-20251201082407388](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201082407388.png)
 
 
 
@@ -1672,9 +1672,9 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201155243985](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201155243985.png)
+![image-20251201155243985](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201155243985.png)
 
-![image-20251201155431590](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201155431590.png)
+![image-20251201155431590](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201155431590.png)
 
 > 等值匹配：根据这个key计算hash值，然后根据hash值到链表中查找对应的元素
 >
@@ -1684,32 +1684,32 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201155831656](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201155831656.png)
+![image-20251201155831656](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201155831656.png)
 
 ## 索引分类
 
-![image-20251201160302359](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201160302359.png)
+![image-20251201160302359](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201160302359.png)
 
 
 
-![image-20251201160552859](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201160552859.png)
+![image-20251201160552859](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201160552859.png)
 
 > 二级索引（也叫辅助索引/非聚集索引）
 
 
 
-![image-20251201161531551](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201161531551.png)
+![image-20251201161531551](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201161531551.png)
 
 > 字符串之间也能进行大小比较
 
 查询案例（回表查询）
 
-> ![image-20251201162037026](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201162037026.png)
+> ![image-20251201162037026](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201162037026.png)
 >
 > 
 
 
-![image-20251201163058130](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201163058130.png)
+![image-20251201163058130](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201163058130.png)
 
 > 即使存储两千多万的数据，也只有三层
 
@@ -1721,13 +1721,13 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201164823560](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201164823560.png)
+![image-20251201164823560](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201164823560.png)
 
 
 
 案例
 
-> ![image-20251201165052765](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201165052765.png)
+> ![image-20251201165052765](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201165052765.png)
 >
 > ```
 > CREATE INDEX idx_username ON tb_user(name);
@@ -1788,7 +1788,7 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201183934183](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201183934183.png)
+![image-20251201183934183](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201183934183.png)
 
 > 查看系统的having_profiling参数，判断是否支持profile操作
 >
@@ -1852,13 +1852,13 @@ MyISAM：存储业务系统的非核心事务
 
 #### **分析 SQL执行频率**
 
-![image-20251201170512495](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201170512495.png)
+![image-20251201170512495](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201170512495.png)
 
 > 通过查看执行频率，判断当前数据库以哪种操作方式为主
 >
 > 这里Com后面跟七个下划线 
 
-![image-20251201170758480](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201170758480.png)
+![image-20251201170758480](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201170758480.png)
 
 
 
@@ -1866,11 +1866,11 @@ MyISAM：存储业务系统的非核心事务
 
 #### **查看explain执行计划**
 
-![image-20251201184221159](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201184221159.png)
+![image-20251201184221159](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201184221159.png)
 
 
 
-![image-20251201185342084](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201185342084.png)
+![image-20251201185342084](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201185342084.png)
 
 > id表示查询的序列号，id相同，执行顺序从上到下；id不同，值大的先执行
 >
@@ -1882,7 +1882,7 @@ MyISAM：存储业务系统的非核心事务
 
 
 
-![image-20251201185257485](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201185257485.png)
+![image-20251201185257485](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201185257485.png)
 
 
 
@@ -1908,7 +1908,7 @@ MyISAM：存储业务系统的非核心事务
 
 **使用案例**
 
-![image-20251201192228797](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201192228797.png)
+![image-20251201192228797](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201192228797.png)
 
 > 由于sn这个字段没有索引，所以执行效率较低（21s）
 >
@@ -1922,7 +1922,7 @@ MyISAM：存储业务系统的非核心事务
 
 > 研究where之后的部分
 
-![image-20251201201032215](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251201201032215.png)
+![image-20251201201032215](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251201201032215.png)
 
 > 索引最左边的字段必须存在（但是不一定要放在where条件的最左边(可交换)）
 
@@ -2042,7 +2042,7 @@ explain select * from tb_user where profession is null;
 > 第二条sql语句查询所返回的字段没有超出覆盖索引的范畴，不需要回表查询
 > 第三条sql查询所返回的字段超出了覆盖索引的范畴，需要回表查询
 >
-> ![image-20251202100149739](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202100149739.png)
+> ![image-20251202100149739](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202100149739.png)
 
 
 
@@ -2050,7 +2050,7 @@ explain select * from tb_user where profession is null;
 
 应用：对sql进行优化
 
-> ![image-20251202100447478](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202100447478.png)
+> ![image-20251202100447478](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202100447478.png)
 >
 > 建立username、password联合索引
 
@@ -2060,7 +2060,7 @@ explain select * from tb_user where profession is null;
 
 降低索引占用空间，提高磁盘效率
 
-![image-20251202100651995](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202100651995.png)
+![image-20251202100651995](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202100651995.png)
 
 > 判断选择截取前几个
 >
@@ -2073,7 +2073,7 @@ explain select * from tb_user where profession is null;
 >
 > 
 >
-> ![image-20251202102859181](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202102859181.png)
+> ![image-20251202102859181](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202102859181.png)
 >
 > 创建email取前五个字符的 前缀索引(只针对前五个字符创建索引)
 >
@@ -2081,7 +2081,7 @@ explain select * from tb_user where profession is null;
 > CREATE INDEX idx_email_5 on tb_user(email(5));
 > ```
 >
-> ![image-20251202103610532](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202103610532.png)
+> ![image-20251202103610532](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202103610532.png)
 >
 > 
 
@@ -2091,7 +2091,7 @@ explain select * from tb_user where profession is null;
 
 #### 单列索引&联合索引的选择
 
-![image-20251202103914309](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202103914309.png)
+![image-20251202103914309](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202103914309.png)
 
 > 也就是说，上面这个sql语句中涉及到的两个索引 只被用到了一个
 
@@ -2099,7 +2099,7 @@ explain select * from tb_user where profession is null;
 
 
 
-![image-20251202104646418](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202104646418.png)
+![image-20251202104646418](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202104646418.png)
 
 创建联合索引的时候还需要考虑字段顺序
 
@@ -2117,7 +2117,7 @@ explain select * from tb_user where profession is null;
 
 ## 索引设计原则
 
-![image-20251202104843551](C:\Users\毕哲晖\AppData\Roaming\Typora\typora-user-images\image-20251202104843551.png)
+![image-20251202104843551](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20251202104843551.png)
 
 
 

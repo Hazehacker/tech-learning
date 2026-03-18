@@ -3879,13 +3879,75 @@ Java应用获取分布式锁之后（锁存储在主节点），开始主从同�
 
 
 
+之前秒杀业务的流程：
+
+![image-20230714234322845](https://i-blog.csdnimg.cn/blog_migrate/cd3822b8d2e364878aa8a01049f0494f.png)
+
+同步是比较耗费时间的，我们直接将同步变成异步，从而大幅提高秒杀业务的性能，具体如何做呢？我们可以将一部分的工作交给Redis，并且不能直接去调用Redis，而是通过开启一个独立的子线程去异步执行，从而大大提高效率
+
+![image-20230714235045104](https://i-blog.csdnimg.cn/blog_migrate/377a6ef84b1eb696b14d6c18f8664de8.png)
+
+![image-20230714235156141](https://i-blog.csdnimg.cn/blog_migrate/a4a7688d796a63910fff346fe89df5be.png)
+
+
+
+![image-20230714235116800](https://i-blog.csdnimg.cn/blog_migrate/d128e7d5eb55b15501bf9f31b5c33fc6.png)
+
+```lua
+-- 1. 参数列表
+-- 1.1. 优惠券id
+local voucherId = ARGV[1]
+-- 1.2 用户id
+local userId = ARGV[2]
+
+-- 2. 数据key
+-- 2.1 库存key
+local stockKey = 'seckill'
+-- 2.2 订单key
+local orderKey = 'order:' .. userId
+
+-- 3. 处理业务
+-- 3.1 判断库存是否充足 get stockKey
+if tonumber(stringRedisTemplate.opsForValue().get(stockKey)) <= 0 then
+    -- 库存不足，返回1
+end
+-- 3.2 判断用户是否下单
+if (redis.call('sismember', orderKey, userId) == 1)  then
+    -- 3.3用户已经下单，返回2
+    return 2
+end 
+
+-- 3.4 扣减库存
+redis.call('incrby', stockKey, -1)
+redis.call('sadd', orderKey, userId)
+return 0
+```
 
 
 
 
 
+![image-20230716153526146](https://i-blog.csdnimg.cn/blog_migrate/4999c1b8ca6a031e8da454fa1727a72d.png)
+
+> ![image-20260317213759569](assets/image-20260317213759569.png)
+>
+> ![image-20260317213739980](assets/image-20260317213739980.png)
+
+细节
+
+1. 库存判断放到Redis中，我们应该使用哪一种数据结构存储订单的库存呢？**可以直接使用 String 类型的数据结构，Redis的IO操作是单线程的，所以能够充分保障线程安全**。
+2. 一人一单的判断也是由Redis完成的，所以我们需要在Redis中存储订单信息，而订单是唯一的，所以我们可以使用 `Set` 类型的数据结构
+3. lua脚本中，接收的参数都是String类型的，String类型的数据无法进行比较，**我们需要利用 tonumber 函数将 String 转成 Number**
+4. `stringRedisTemplate.execute`这个方法，第二个参数是应该List集合，标识传入Lua脚本中的的 key，如果我们没有传key，那么直接使用 `Collections.emptyList()`，而不是直接使用 null，是因为在 stringRedisTemplate.execute 方法内部可能对参数进行了处理，如果传递 null 可能引发NPE异常
+5. 异步线程无法从 ThreadLocal 中获取userId，我们需要从 voucherOrder 中获取 userId
+6. `AopContext.currentProxy()` 底层也是利用 ThreadLocal 获取的，所以异步线程中也无法使用。解决方案有两种，第一种是将代理对象和订单一起放入阻塞队列中，第二种是将代理对象的作用域提升，变成一个成员变量（我采用了第二种方式）
 
 
+
+方案缺陷：
+
+* jdk 阻塞队列使用的是jvm内存，如果阻塞队列太大，会导致内存溢出，如果阻塞队列较小，不足以容纳所有订单信息
+* 后端宕机/OMM等异常，会导致队列内的任务丢失，一旦丢失就不会再执行，也就是说会导致超卖
 
 
 
@@ -3893,9 +3955,171 @@ Java应用获取分布式锁之后（锁存储在主节点），开始主从同�
 
 ### Redis实现消息队列
 
+![image-20260317214429814](assets/image-20260317214429814.png)
+
+![image-20260317214505403](assets/image-20260317214505403.png)
 
 
 
+* **`list`结构**：基于List结构模拟消息队列（BRPOP+BLPOP实现阻塞队列）
+
+  * **生产消息**：BRPUSH key value [value ...] 将一个或多个元素推入到指定列表的头部。如果列表不存在，BRPUSH命令会自动创建一个新的列表
+  * **消费消息**：BRPOP key [key ...] timeout 从指定的一个或多个列表中弹出最后一个元素。如果 list 列表为空，BRPOP命令会导致客户端阻塞，直到有数据可用或超过指定的超时时间
+
+  **优点**：不受限于JVM内存上限、可以持久化、消息有序性；
+  **缺点**：无法避免数据丢失、只支持单消费者
+
+  > 获取到消息之后就会从队列中移除，不能保证消息一定会被后端成功消费
+
+* **`pubsub`**：发布订阅模式，基本的点对点消息模型（redis2.0引入）；
+  消费者可以订阅一个或多个channel，生产者向对应channel发送消息后，所有订阅者都能收到相关消息
+
+  * 生产消息：
+
+    ```bash
+    # 用于向指定频道发布一条消息
+    PUBLISH channel message 
+    ```
+
+  * 消费消息：
+
+    ```bash
+    # 订阅一个或多个频道
+    SUBSCRIBE channel [channel]
+    # 用于取消订阅一个或多个频道
+    UNSUBSCRIBE [channel [channel ...]]
+    # 用于订阅一个或多个符合给定模式的频道，接收消息
+    PSUBSCRIBE pattern [pattern ...]
+    # 用于取消订阅一个或多个符合给定模式的频道
+    PUNSUBSCRIBE [pattern [pattern ...]]
+    ```
+
+  **优点**：支持多生产、多消费；
+  **缺点**：不支持持久化、无法避免数据丢失，消息堆积有上限（消费者会缓存消息），超出会丢失消息
+
+* **`stream`**：比较完善的消息队列模型（ Redis5.0 引入）
+
+  stream是一种数据类型，专门为消息队列设计的，相较于前面两种方式能够更加完美实现一个消息队列
+
+  * **生产消息**：用于向指定的Stream流中添加一个消息
+
+    ![image-20260318134114860](assets/image-20260318134114860.png)
+
+    ```bash
+    XADD key *|ID value [value ...]
+    
+    # 创建名为 users 的队列，并向其中发送一个消息，内容是：{name=jack,age=21}，并且使用Redis自动生成ID
+    127.0.0.1:6379> XADD users * name jack age 21
+    "1644805700523-0"
+    
+    ```
+
+    key就是消息队列，key不存(*)在会自动创建（默认），ID是消息表示，value是消息的内容
+
+  * **消费消息**：
+
+    ![image-20260318133901041](assets/image-20260318133901041.png)
+
+    ```shell
+    XREAD [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID ID
+    
+    # 读取XREAD中的第一条消息
+    XREAD COUNT 1 STREAMS users 0
+    # 阻塞1秒钟后从XREAD中读取的最新消息
+    XREAD COUNT 1 BLOCK 1000 STREAMS users $
+    ```
+
+    **注意**：当我们指定起始ID为`$`时代表读取最后一条消息（读取最新的消息）ID为`0`时代表读最开始的一条消息（读取最旧的消息），如果我们处理一条消息的过程中，又有超过1条以上的消息到达队列，则下次获取时也只能获取到最新的一条，<u>会出现漏读消息的问题</u>
+
+  **优点**：消息可回溯、一个消息可以被多个消费者消费、可以阻塞读取；
+  **缺点**：有消息漏读的风险
+
+
+
+
+
+上面我们介绍的消费方式都是**单消费方式**，容易发生消息堆积导致消息丢失，所以我们需要改用消费者组的模式
+
+* **消费者组**（Consumer Group）：将多个消费者划分到一个组中，监听同一队列
+* **消费者组的特点：**
+  * **消息分流**：队列中的<u>消息会分流给组内的不同消费者</u>，而不是重复消费，<u>从而加快消息处理的速度</u>
+  * **消息标识**：消费者组会维护一个标示，记录最后一个被处理的消息，哪怕消费者宕机重启，还会从标示之后读取消息。确保每一个消息都会被消费
+  * **消息确认**：消费者获取消息后，消息处于pending（待处理）状态，并存入一个pending-list。当处理完成后需要通过 XACK 来确认消息，标记消息为已处理，才会从pending-list移除。
+
+![image-20260318135312893](assets/image-20260318135312893.png)
+
+```shell
+# 创建消费者组
+XGROUP CREATE key groupName ID 
+# 删除指定的消费者组
+XGROUP DESTORY key groupName
+# 给指定的消费者组添加消费者
+XGROUP CREATECONSUMER key groupName consumerName
+# 删除消费者组中指定消费者
+XGROUP DELCONSUMER key groupName consumerName
+# 从消费者组中读取消息
+XREADGROUP GROUP
+```
+
+
+
+`stream` 类型消息队列的 `XREADGROUP` 命令特点：
+
+- 消息可回溯
+- 可以多消费者争抢消息，加快消费速度
+- 可以阻塞读取
+- 没有消息漏读的风险
+- 有消息确认机制，保证消息至少被消费一次
+
+![image-20260318132452624](assets/image-20260318132452624.png)
+
+
+
+
+
+## 达人探店
+
+
+
+### 发布探店笔记
+
+![image-20260318140936186](assets/image-20260318140936186-1773814177650-1.png)
+
+
+
+
+
+### 点赞
+
+![image-20260318143315427](assets/image-20260318143315427.png)
+
+现在存在一个问题，一个用户可以无限点赞，这显然是不合理的，所以我们需要对点赞功能进行一个优化，实现一人只能点赞一次。
+
+对于点赞这种高频变化的数据，如果我们使用MySQL是十分不理智的，因为MySQL慢、并且并发请求MySQL会影响其它重要业务，容易影响整个系统的性能，继而降低了用户体验。那么如何我们要使用Redis，那么我们又该选择哪种数据结构才更加合理呢
+
+<u>这里推荐使用`Set`，因为Set类型的数据结构具有</u>
+
+1. **不重复**，符合业务的特点，一个用户只能点赞一次
+2. **高性能**，Set集合内部实现了高效的数据结构(Hash表)
+3. **灵活性**，Set集合可以实现一对多，一个用户可以点赞多个博客，符合实际的业务逻辑
+
+
+
+![image-20260318143700106](assets/image-20260318143700106.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 点赞排行榜
 
 
 

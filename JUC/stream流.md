@@ -268,3 +268,55 @@ public class Test {
 
 
 
+# 应用收集
+
+
+
+```java
+@Override
+public Result followCommons(Long followUserId) {
+    // 如果redis中没有对应的key，就查数据库
+    isKeyExist("follow:" + UserHolder.getUser().getId(), UserHolder.getUser().getId());
+    isKeyExist("follow:" + followUserId, followUserId);
+
+    // 1. 求交集
+    Set<String> intersect = stringRedisTemplate.opsForSet().intersect("follow:" + UserHolder.getUser().getId(), "follow:" + followUserId);
+    List<Long> userIds = intersect.stream().map(Long::valueOf).collect(Collectors.toList());
+    List<UserDTO> userDTOS = userServiceImpl.listByIds(userIds).stream().map(
+            user -> BeanUtil.copyProperties(user, UserDTO.class)
+    ).collect(Collectors.toList());
+    // 2. 返回结果
+    return Result.ok(userDTOS);
+}
+```
+
+
+
+```java
+// 查询作者的所有粉丝
+List<Long> followUserIds = followService.list(new LambdaQueryWrapper<Follow>()
+        .eq(Follow::getFollowUserId, user.getId())).stream().map(follow -> follow.getUserId).collect(Collectors.toList());
+
+// 查询作者的所有粉丝
+List<Long> followUserIds = followService.list(new LambdaQueryWrapper<Follow>()
+        .eq(Follow::getFollowUserId, user.getId())).stream().map(Follow::getUserId).collect(Collectors.toList());
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

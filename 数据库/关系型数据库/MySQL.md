@@ -28,82 +28,207 @@
 
 
 
-### DDL-表结构-创建表
+## SQL
 
-![image-20250814112641354](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814112641354.png)
+### 通用语法与分类
 
+1). SQL语句可以单行或多行书写，以分号结尾。
+
+2). SQL语句可以使用空格/缩进来增强语句的可读性。
+
+3). MySQL数据库的SQL语句不区分大小写，**关键字建议使用大写**
+
+4). 注释： 
+
+* 单行注释：`-- 注释内容` 或 `# 注释内容` 
+* 多行注释：`/* 注释内容 */ `
+
+![img](https://i-blog.csdnimg.cn/direct/f58e295a9f6c4f6980f66c0f89f73896.png)
+
+
+
+
+
+### DDL
+
+* 用于创建数据库、表、字段
+
+> Data Definition Language
+
+
+
+#### 数据库操作
+
+```sql
+# 查询所有数据库
+show databases;
+# 查询当前数据库
+select DATABASE();
+# 创建数据库
+create DATABASE [IF NOT EXISTS] 数据库名 [DEFAULT CHARSET 字符集] [COLLATE 排序规则];
+# 删除数据库
+DROP DATABASE [IF EXISTS] 数据库名;
+# 使用数据库
+USE 数据库名;
 ```
+
+
+
+#### 创建表
+
+```sql
 create table tablename(
 	字段1 字段类型 [约束] [comment 字段1注释]
-	字段1 字段类型 [约束] [comment 字段1注释]
+	字段2 字段类型 [约束] [comment 字段2注释]
 	......
 )[comment 表注释]
 ```
 
-![image-20250814113947229](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814113947229.png)
-
-![image-20250814131023569](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814131023569.png)
-
-<u>**数值类型**</u>
-
-![image-20250814131133481](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814131133481.png) 
-
-![image-20250814132010260](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132010260.png)
-
-> <u>**年龄——tinyint unsigned**</u>
->
-> <u>**ID——int unsigned**</u>
 
 
 
-![image-20250814132549132](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132549132.png)
 
-> ![image-20250814132857277](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132857277.png)
-> username——varchar(50)
->
-> idcard——char(18)
->
-> phone——char(11)
 
-![image-20250814132809860](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814132809860.png)
 
-> <u>**birthday————date**</u>
->
-> <u>**operateTime——datetime**</u>
 
-### DLL-表结构-查询、修改、删除
 
-```
-show tables;											-- 查询当前数据库所有表
-desc 表名;											   -- 查询表结构
-show create table 表名;										 -- 查询建表语句
+#### 表结构-查询、修改、删除
 
-alter table 表名 add 字段名 类型(长度) [comment 注释] [约束]; -- 添加字段
-alter table 表名 modify 字段名 新数据类型(长度);			  -- 修改字段类型
-alter table 表名 change [comment 注释][约束];				  -- 修改字段名与字段类型
-alter table 表名 drop column 字段名;						   -- 删除字段
-alter table 表名 rename to 新表名;						   -- 修改表名
-
-drop table [if exists] 表名;								 -- 删除表
+```sql
+# 查询当前数据库所有表
+show tables;
+# 查询表结构
+desc 表名;
+# 查询建表语句
+show create table 表名;
+# 添加字段
+alter table 表名 add 字段名 类型(长度) [comment 注释] [约束]; 
+# 修改字段类
+alter table 表名 modify 字段名 新数据类型(长度);
+# 修改字段
+alter table 表名 change [comment 注释][约束];	
+# 删除字段
+alter table 表名 drop column 字段名;
+# 删除表名
+alter table 表名 rename to 新表名;
+# 删除表
+drop table [if exists] 表名;
 ```
 
 
 
+#### 数据类型
+
+
+
+##### 1. 数值类型 (Numeric Types)
+
+| 类型              | 大小 (字节) | 有符号 (SIGNED) 范围                                | 无符号 (UNSIGNED) 范围                                  | 描述              |
+| ----------------- | ----------- | --------------------------------------------------- | ------------------------------------------------------- | ----------------- |
+| **TINYINT**       | 1           | -128 到 127                                         | 0 到 255                                                | 小整数值          |
+| **SMALLINT**      | 2           | -32,768 到 32,767                                   | 0 到 65,535                                             | 大整数值          |
+| **MEDIUMINT**     | 3           | -8,388,608 到 8,388,607                             | 0 到 16,777,215                                         | 大整数值          |
+| **INT / INTEGER** | 4           | -2,147,483,648 到 2,147,483,647                     | 0 到 4,294,967,295                                      | 大整数值          |
+| **BIGINT**        | 8           |                                                     |                                                         | 极大整数值        |
+| **FLOAT**         | 4           | -3.402823466E+38 到 3.402823466E+38                 | 0 和 1.175494351E-38 到 3.402823466E+38                 | 单精度浮点数      |
+| **DOUBLE**        | 8           | -1.7976931348623157E+308 到 1.7976931348623157E+308 | 0 和 2.2250738585072014E-308 到 1.7976931348623157E+308 | 双精度浮点数      |
+| **DECIMAL**       | 可变        | 依赖于 M(精度) 和 D(标度)                           | 依赖于 M(精度) 和 D(标度)                               | 精确定点数 (小数) |
+
+> **注**：`DECIMAL` 类型的大小取决于定义的精度（M）和标度（D），通常每 9 位数字占用 4 个字节。
+
+
+
+##### 2. 字符串类型 (String Types)
+
+| 类型           | 最大大小         | 描述           | 特性说明                                                     |
+| -------------- | ---------------- | -------------- | ------------------------------------------------------------ |
+| **CHAR**       | 0 - 255 bytes    | 定长字符串     | 指定长度后，无论实际内容多长，均占用固定空间（不足补空格）。检索速度快。 |
+| **VARCHAR**    | 0 - 65,535 bytes | 变长字符串     | 指定长度为最大限制，实际占用空间 = 内容长度 + 1或2字节(长度前缀)。节省空间。 |
+| **TINYBLOB**   | 0 - 255 bytes    | 二进制数据     | 不超过 255 字节的二进制数据                                  |
+| **TINYTEXT**   | 0 - 255 bytes    | 短文本         | 短文本字符串                                                 |
+| **BLOB**       | 0 - 65,535 bytes | 二进制长文本   | 二进制形式的长文本数据                                       |
+| **TEXT**       | 0 - 65,535 bytes | 长文本         | 长文本数据                                                   |
+| **MEDIUMBLOB** | ~16 MB           | 二进制中等文本 | 二进制形式的中等长度文本数据                                 |
+| **MEDIUMTEXT** | ~16 MB           | 中等长度文本   | 中等长度文本数据                                             |
+| **LONGBLOB**   | ~4 GB            | 二进制极大文本 | 二进制形式的极大文本数据                                     |
+| **LONGTEXT**   | ~4 GB            | 极大文本       | 极大文本数据                                                 |
+
+> **性能提示**：`CHAR` 由于是定长，处理速度通常比 `VARCHAR` 快，因为不需要计算长度；但 `VARCHAR` 在存储变长数据时更节省空间。
+
+
+
+##### 3. 日期时间类型 (Date and Time Types)
+
+| 类型          | 大小 (字节) | 范围                                               | 默认格式            | 描述                                |
+| ------------- | ----------- | -------------------------------------------------- | ------------------- | ----------------------------------- |
+| **DATE**      | 3           | 1000-01-01 至 9999-12-31                           | YYYY-MM-DD          | 日期值                              |
+| **TIME**      | 3           | -838:59:59 至 838:59:59                            | HH:MM:SS            | 时间值或持续时间                    |
+| **YEAR**      | 1           | 1901 至 2155                                       | YYYY                | 年份值                              |
+| **DATETIME**  | 8           | 1000-01-01 00:00:00 至 9999-12-31 23:59:59         | YYYY-MM-DD HH:MM:SS | 混合日期和时间值 (与时区无关)       |
+| **TIMESTAMP** | 4           | 1970-01-01 00:00:01 UTC 至 2038-01-19 03:14:07 UTC | YYYY-MM-DD HH:MM:SS | 时间戳 (受时区影响，超出范围会报错) |
+
+> **注意**：`TIMESTAMP` 受限于 32 位整数，将在 **2038年** 出现溢出问题（2038年问题），而 `DATETIME` 范围更广且不受时区转换影响（存储的是什么就是什么）。
 
 
 
 
 
 
-> data query language
 
 ### DQL-数据-查询
 
-![image-20250814190100925](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814190100925.png)
+> Data Query Language
 
 
 
-#### 基本查询-查询某个表所有数据
+#### 基本语法
+
+```sql
+SELECT 字段列表
+ 
+FROM 表名列表
+ 
+WHERE 条件列表
+ 
+GROUP BY 分组字段列表
+ 
+HAVING 分组后条件列表
+ 
+ORDER BY 排序字段列表
+ 
+LIMIT 分页参数SELECT 字段列表
+ 
+FROM 表名列表
+ 
+WHERE 条件列表
+ 
+GROUP BY 分组字段列表
+ 
+HAVING 分组后条件列表
+ 
+ORDER BY 排序字段列表
+ 
+LIMIT 分页参数
+```
+
+
+
+```sql
+# 查询多个字段
+SELECT 字段1, 字段2, 字段3 ... FROM 表名 ;
+# 字段设置别名
+SELECT 字段1 [ AS 别名1 ] , 字段2 [ AS 别名2 ] ... FROM 表名;
+SELECT 字段1 [ 别名1 ] , 字段2 [ 别名2 ] ... FROM 表名;
+# 去除重复记录
+SELECT DISTINCT 字段列表 FROM 表名;
+select DISTINCT workaddress '工作地址' from empp;
+```
+
+注意 : * 号代表查询所有字段，在实际开发中尽量少用（不直观、影响效率）
+
+
+
+
 
 
 
@@ -121,7 +246,7 @@ select avg(salary) from emp;//查询平均薪资
 
 
 
-```
+```sql
 -- 查询多个字段
 select 字段1,字段2,字段3 from 表名;
 
@@ -154,58 +279,114 @@ select distinct 字段列表 from 表名;
 
 #### 条件查询
 
-```
-select * from tableX where id = 1;
-select * from tableX where name = '青戈' and password = '1234';
-```
-
-![image-20250815091331163](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250815091331163.png)
-
-
-
-> 查询没有分配职位的员工信息
-> select * from emp where job is null;
->
-> 
->
-> 查询有职位的员工信息
-> select * from emp where job is not null;
->
-> ![image-20250815092000690](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250815092000690.png)
->
-> 
->
-> 查询职位是  2 （讲师），3 （学工主管），4 （教研主管）的员工信息
-> select * from emp where job=2 or job=3 or job=4;
->
-> select * from emp where job in (2,3,4);
->
-> 
->
-> 
-
-
-
-
-
-
-
-##### 模糊查询
-
-_：单个字符；%：任意个字符
-
-```
-select * from tableX where name like '%哥哥%';//全部模糊
-select * from tableX where name like '%哥哥';//前缀模糊
-select * from tableX where name like '哥哥%';//后缀模糊
+```sql
+SELECT 字段列表 FROM 表名 WHERE 条件列表;
 ```
 
-> 查询姓名为两个字符的员工信息
-> select * from emp where name like '__';
+**条件运算符整理：**
+
+| 运算符                | 功能描述       | 示例/说明                                                    |
+| --------------------- | -------------- | ------------------------------------------------------------ |
+| `>`                   | 大于           | `age > 18`                                                   |
+| `>=`                  | 大于等于       | `score >= 60`                                                |
+| `<`                   | 小于           | `price < 100`                                                |
+| `<=`                  | 小于等于       | `level <= 5`                                                 |
+| `=`                   | 等于           | `status = 'active'`                                          |
+| `<>` 或 `!=`          | 不等于         | `id <> 1` 或 `id != 1`                                       |
+| `BETWEEN ... AND ...` | 在某个范围之内 | `age BETWEEN 10 AND 20`  *(包含边界值 10 和 20)*             |
+| `IN(...)`             | 在列表中的值   | `city IN ('Beijing', 'Shanghai')`  *(多选一，等价于 `OR` 连接)* |
+| `LIKE`                | 模糊匹配       | `name LIKE 'A%'`  *`_` 匹配单个字符*  *`%` 匹配任意个字符*   |
+| `IS NULL`             | 是 NULL        | `email IS NULL`  *(注意：不能用 `= NULL`)*                   |
+
+| 运算符 | 别名 | 功能描述  | 逻辑规则                               |
+| ------ | ---- | --------- | -------------------------------------- |
+| `AND`  | `&&` | 并且      | 多个条件同时成立时，结果才为真。       |
+| `OR`   | `||` | 或者      | 多个条件中任意一个成立时，结果即为真。 |
+| `NOT`  | `!`  | 非 / 不是 | 对条件取反，真变假，假变真。           |
+
+
+
+```sql
+select * from emp where idcard IS NOT NULL;
+select * from emp where gender = '女' and age < 25;
+select * from emp where name = '__'; # 查询姓名为两个字的员工信息
+select * from emp where idcard = '%x';
+-- 查询性别为男，且年龄在20-40 岁 (含)以内的前5个员工信息，对查询的结果按年龄升序排序， 年龄相同按入职时间升序排序。
+select * from emp where gender = '男' and (age between 20 and 40) ORDER BY age, entrydate limit 5;
+```
+
+> ##### 模糊查询
+>
+> _：单个字符；%：任意个字符
+>
+> ```sql
+> select * from tableX where name like '%哥哥%';// 全部模糊
+> select * from tableX where name like '%哥哥';// 前缀模糊
+> select * from tableX where name like '哥哥%';// 后缀模糊
+> select * from emp where name like '__';// 查询姓名为两个字符的员工信息
+> ```
 >
 > 
+
+
+
+
+
+
+
+
+
+#### 聚合函数
+
+其作用是将一列数据作为一个整体，进行纵向计算
+
+常见的聚合函数：
+
+| 函数名    | 功能描述 | 典型用法示例            | 注意事项                                                     |
+| --------- | -------- | ----------------------- | ------------------------------------------------------------ |
+| `COUNT()` | 统计数量 | `COUNT(*)`, `COUNT(id)` | `COUNT(*)` 统计所有行（含NULL）； `COUNT(列名)` 仅统计该列非NULL的行数。 |
+| `MAX()`   | 最大值   | `MAX(salary)`           | 忽略 NULL 值，适用于数值、字符串或日期类型。                 |
+| `MIN()`   | 最小值   | `MIN(age)`              | 忽略 NULL 值，适用于数值、字符串或日期类型。                 |
+| `AVG()`   | 平均值   | `AVG(score)`            | 忽略 NULL 值，仅适用于数值类型。                             |
+| `SUM()`   | 求和     | `SUM(amount)`           | 忽略 NULL 值，仅适用于数值类型。                             |
+
+> **提示**：
+>
+> - 注意 : NULL值是不参与所有聚合函数运算的，除了 `COUNT(*)` 外，其他聚合函数在计算时都会自动**忽略 `NULL` 值**。
+> - 如果没有匹配的行，`COUNT()` 返回 0，而 `SUM()`, `AVG()`, `MAX()`, `MIN()` 通常返回 `NULL`。
+
+```sql
+SELECT 聚合函数(字段列表) FROM 表名;
+```
+
+
+
+> 案例
+>
+> ```sql
+> -- 统计该企业员工数量
+> select count(*) from emp;
+>  
+> -- 统计该企业员工的平均年龄
+> select AVG(age) from emp;
+>  
+> -- 统计该企业员工的最大年龄
+> select MAX(age) from emp;
+>  
+> -- 统计该企业员工的最小年龄
+> select MIN(age) from emp;
+>  
+> -- 统计西安地区员工的年龄之和
+> select SUM(age) from emp where wordaddress = '西安';
+> ```
 >
 > 
+
+
+
+
+
+
 
 
 
@@ -215,7 +396,7 @@ select * from tableX where name like '哥哥%';//后缀模糊
 
 新增查询
 
-```
+```sql
 select * from tableX order by id desc;//按照id倒序排序（id越大、排越前面）
 ```
 
@@ -224,60 +405,60 @@ select * from tableX order by id desc;//按照id倒序排序（id越大、排越
 
 
 
-#### 分组查询【一般用于统计个数】
+#### 分组查询
 
-![image-20250816095628260](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816095628260.png)
+> 【一般用于统计个数】
 
-```
-SELECT * FROM employee GROUP BY sex HAVING sex = '男';
-SELECT count(*) FROM employee GROUP BY sex HAVING sex = '男';
-//统计数量
-
--- 统计企业员工数量
-	-- 1. count(字段)——统计某个字段的条目数量(如果是null，就不会被统计进去)
-	select count(id) from emp;
-	-- 2. count(*)	——统计这张表的总条目
-	select count(*) from emp;
-	-- 3. count(常量)
-	select count(1) from emp;
-
--- 统计员工平均薪资
-select avg(salary) from emp;
-
--- 统计该企业员工的最低薪资
-select min(salary) from emp;
-
--- 统计该企业员工的最高薪资
-select max(salary) from emp
-
--- 每月给员工发放的薪资总额
-select sum(salary) from emp;
+```sql
+SELECT 字段列表 FROM 表名 [WHERE 条件] GROUP BY 分组字段名 [ HAVING 分组后过滤条件 ];
 ```
 
-> 统计数量优先考虑使用count*
+##### where与having区别
+
+- 执行时机不同： where是分组之前进行过滤，不满足where条件，不参与分组；而having是分组之后对结果进行过滤。
+- 判断条件不同： <u>where不能对聚合函数进行判断，而having可以</u>
+
+注意事项 :
+
+- 分组之后，**查询的字段一般为聚合函数和分组字段**，查询其他字段无任何意义。
+- **执行顺序 : where > 聚合函数 > having**
+- 支持多字段分组 , 具体语法为 : group by columnA, columnB
+
+> ![image-20260319175018341](assets/image-20260319175018341.png)
+>
+> 
 
 
 
-![ ](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104039465.png)
+> **案例**
+>
+> ```sql
+> -- 根据性别分组, 统计男性员工和女性员工的数量
+> select gender, count(*) from emp GROUP BY gender;
+> -- 根据性别分组， 统计男性员工  和  女性员工的平均年龄
+> select AVG(age) from emp GRUOP BY gender;
+> 
+> -- 查询年龄小于45的员工, 并根据工作地址分组, 获取员工数量大于等于3的工作地址
+> select workaddress, count(*) from emp where age < 45 GRUOP BY workaddress HAVING count(*) >= 3;
+> -- 【统计各个工作地址上班的男性及女性员工的数量】
+> select workaddress, gender, count(*) from emp GROUP BY gender, workaddressl
+> -- 【统计员工表中,年龄小于60岁的, 男性员工和女性员工的人数】
+> select gender, count(*) from emp where age < 60 GRUOP BY gender;
+> ```
+>
+> 
 
-![image-20250816104144391](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104144391.png)
-
-```
--- 统计男性和女性员工数量
-select gender from emp group by gender;
-
--- 先查询入职时间在'2015-01-01'（包含）以前的员工，并对结果根据职位分组，获取员工数量大于2的职位
-select job,count(*) from emp where entry_date <= '2015-01-01' group by job having count(*)>2;
-
-
-```
-
-![image-20250816103847533](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816103847533.png)
 
 
 
-> HAVING后面跟条件
-> 分组之后，select后的字段不能随意熟悉鹅，能写的一般是 分组字段+聚合函数
+
+
+
+
+
+
+
+
 
 
 
@@ -289,23 +470,34 @@ select job,count(*) from emp where entry_date <= '2015-01-01' group by job havin
 
 #### 排序查询
 
-![image-20250816104341280](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250816104341280.png)
+排序在日常开发中是非常常见的一个操作，有升序排序 (ASC)，也有降序排序 (DESC)
 
-> 排序默认升序排序
+* 默认排序方式为升序，如果要求是升序 , 可以不指定排序方式ASC ;
 
+* 如果是多字段排序， 当第一个字段值相同时，才会根据第二个字段进行排序 ;
+
+```sql
+SELECT 字段列表 FROM 表名 ORDER BY 字段1 排序方式，字段2 排序方式2；
 ```
--- 根据入职时间，对员工进行升序排序- asc
-select * from emp order by entry_date asc;
-select * from emp order by entry_date;
 
 
--- 根据入职时间，对员工进行降序排序- desc
-select * from emp order by entry_date desc;
 
--- 根据入职时间，对员工进行升序排序，入职时间相同、再按照更新时间进行降序排序
-select * from emp order by entry_date,update_time desc;
+> 案例
+>
+> ```sql
+> -- 根据年龄对公司的员工进行升序排序
+> select * from emp order by age;
+> select * from emp order by age ASC; -- ASC 可以省略
+> -- 根据入职时间,对员工进行降序排序
+> select * from emp order by entrydate DESC;
+> 
+> -- 根据年龄对公司的员工进行升序排序,年龄相同, 再按照入职时间进行降序排序
+> select * from emp order by age ASC, entrydate DESC;
+> ```
+>
+> 
 
-```
+
 
 
 
@@ -313,36 +505,31 @@ select * from emp order by entry_date,update_time desc;
 
 #### 分页查询
 
-```
-select * from tableX limit 0,3;//（第一行开始，显示三行）
+```sql
+SELECT 字段列表 FROM 表名 LIMIT 起始索引, 查询记录数;
 ```
 
-> 第一个参数表示起始索引，第二个是显示多少个数据条目
+- 注：
+  - 起始索引从0开始，**起始索引 = （查询页码 - 1） * 每页显示记录数**。
+  - 分页查询是数据库的**方言**，不同的数据库有不同的实现， MySQL中是 LIMIT。
+  - <u>如果查询的是第一页数据，起始索引可以省略</u>，直接简写为 limit 10。
 
-> 如果起始索引是0，可以省略
+
+
+> 案例
+>
+> ```sql
+> -- 查询第1页员工数据 , 每页展示10条记录
+> select * from emp limit 10;
+> -- 【查询第2页员工数据 , 每页展示10条记录】   --------> (页码-1)*页展示记录数
+> select *from emp limit 10, 10;
+> ```
 >
 > 
 
-```
--- 从其实索引0开始查询员工数据，每页展示5条记录
-select *from emp limit 0,5;
-select *from emp limit 5;
-
--- 查询第1页员工数据，每页展示5条记录
-select *from emp limit 0,5;
-
--- 查询第2页员工数据，每页展示5条记录
-select *from emp limit 5,5;
-
--- 查询第3页员工数据，每页展示5条记录
-select *from emp limit 10,5;
 
 
 
-
-```
-
-> 起始索引 = （查询页码-1）* 每页显示记录数
 
 
 
@@ -358,13 +545,48 @@ select *from emp limit 10,5;
 
 
 
-![image-20250912113540609](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912113540609.png)
+> 准备两张表
+>
+> ![image-20260319180324140](assets/image-20260319180324140.png)![image-20260319180328922](assets/image-20260319180328922.png)
+>
+> 
 
-![image-20250912113552400](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912113552400.png)
 
-**内连接**
 
-![image-20250912115755473](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912115755473.png)
+#### 多表查询
+
+```sql
+select 字段列表 FROM 表名1, 表名2...
+```
+
+
+
+> 案例
+>
+> ```sql
+> select * FROM emp, dept; # 会返回两张表的所有字段，以及所有数据
+> # 对于这条sql语句，如果emp表有17条数据，dept表5条数据，结果集就会有 17*5=85条数据【第一张表的每一条数据都会和第二张表的数据作匹配，一条数据就会有5行】
+> ```
+>
+> 这个现象叫做笛卡尔积 ⬇️
+
+* 笛卡尔积：笛卡尔积是指在数学中，两个集合（A集合 和 B集合）的所有组合情况
+
+![image-20260319181115431](assets/image-20260319181115431.png)
+
+ =>多表查询的目的，就是根据业务需求
+
+
+
+
+
+
+
+
+
+#### 内连接
+
+
 
 > 内连接查询两个表达的交集部分
 
@@ -388,7 +610,7 @@ select *from emp limit 10,5;
 
 > 给表起别名（了解）
 >
-> ![image-20250912115808229](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912115808229.png)
+> 
 >
 > ```
 > select emp.id ,emp.name ,dept.name from emp as e inner join dept as d on e.dept_id = d.id;
@@ -396,18 +618,22 @@ select *from emp limit 10,5;
 >
 > 
 
-**外连接**
 
-![image-20250912125539189](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912125539189.png)
+
+#### 外连接
+
+
 
 > 左外连接完全包含左表的字段
 
 > 查询员工表所有员工的姓名，和对应的部门名称
 > select emp.name,dept.name from emp left join dept on emp.dept_id = dept.id
 
-**子查询**
 
-![image-20250912131201813](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912131201813.png)
+
+#### 子查询
+
+
 
  
 
@@ -446,19 +672,19 @@ SELECT employee.*,department.name as departmentName left join department on empl
 //逻辑外键
 ```
 
-![image-20250713210205847](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713210205847.png)
+
+
+
 
 > yid是tableX表里面的一个属性（关联两表），tableY.id是tableY表里面的id属性
 
-> ### 大厂不让使用join查询（部分场景）
+> #### 大厂不让使用join查询（部分场景）
 
 【【b站搜索关键词：关联 大厂】】
 
 
 
-> ![image-20250913151551115](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913151551115.png)
->
-> 如果两张表中存在两个字段名字一样，可以像这样给字段取个别名
+> 如果两张表中存在两个字段名字一样，可以给字段取个别名
 >
 > 
 
@@ -468,7 +694,6 @@ SELECT employee.*,department.name as departmentName left join department on empl
 
 
 
-路径传参：/{id}    @PathVariable
 
 
 
@@ -477,55 +702,59 @@ SELECT employee.*,department.name as departmentName left join department on empl
 
 
 
+### DML
 
 
 
-> data manipulation language
->
-> ![image-20250814183607944](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814183607944.png)
+#### DML-insert-插入
 
-### DML-insert-插入
+> Data Manipulation Language
 
 
 
-```
--- 为指定字段添加数据
+```sql
+# 为指定字段添加数据
 insert into 表名 (字段1,字段2,字段3...) values (数据1,数据2,数据3...);
--- 为全部字段添加数据
+# 为全部字段添加数据
 insert into 表名 values (数据1,数据2,数据3...);
--- 批量添加数据（指定字段）
+# 批量添加数据（指定字段）
 insert into 表名 (数据1,数据2,数据3) values (数据1,数据2,数据3),(数据a,数据b,数据c);
--- 批量添加数据（全部字段）
+# 批量添加数据（全部字段）
 insert into 表名 values (数据1,数据2,数据3...),(数据1,数据2,数据3...);
 
-
+# e.g.
+insert into emp(username,password,name,gender,phone) values ('宋江')
 ```
 
-insert into emp(username,password,name,gender,phone) values ('宋江')
+* 插入数据时，指定的字段顺序需要与值的顺序是一一对应的。
+* 字符串和日期型数据应该包含在引号中。
+* 插入的数据大小，应该在字段的规定范围内
+
+
 
 > 如果要 插入当前时间，不要写死，使用mysql里面的now()函数
 
-![image-20250814184957715](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814184957715.png)
+
 
 > 双引号也可以，推荐用单引号
 
 
 
-### DML-update-修改
+#### DML-update-修改
 
+```sql
+update 表名 set 字段1 = 数据1,字段2 = 数据2... [where 条件];
 ```
-update 表名 set 字段1 = 数据1,字段2 = 数据2... where id = x;
-```
 
-![image-20250814185212027](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814185212027.png)
+> **注：修改语句的条件可以有，也可以没有，如果没有条件，则会修改整张表的所有数据**
 
-#### 优化-动态sql
+
+
+##### 优化-动态sql
 
 > 只更新有改动的字段
 
-![image-20250913171333275](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913171333275.png)
-
-```
+```sql
 update emp set 
 	username=#{username},
 	password=#{password},
@@ -540,6 +769,8 @@ update emp set
 	update_time=#{updateTime}
 where id=#{id}
 ```
+
+
 
 **动态sql版本**
 
@@ -557,7 +788,7 @@ where id=#{id}
 >
 > 
 
-```
+```sql
 update emp set 
 	<set>
         <if test="username != null and username != ''">username = #{username},</if>
@@ -583,8 +814,6 @@ where id=#{id}
 >
 > 2. 自动删除掉更新字段后多余的逗号
 >
->    ![image-20250913173342465](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250913173342465.png)
->
 >    比如如果最后一个字段没有被录入，整个sql语句就会多一个逗号，此时set标签会自动删除这个逗号
 >
 > 
@@ -599,13 +828,17 @@ where id=#{id}
 
 
 
-### DML-delete-删除
+#### DML-delete-删除
 
-```
-delete from 表名 where id = x;
+```sql
+delete from 表名 [where 条件];
 ```
 
-![image-20250814185619788](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814185619788.png)
+> DELETE 语句的条件可以有，也可以没有， 如果没有条件，则会删除整张表的所有数据。
+>
+> DELETE 语句不能删除某一个字段的值 (可以使用UPDATE，将该字段值置为NULL即可)。
+> 
+>
 
 
 
@@ -615,13 +848,13 @@ delete from 表名 where id = x;
 >
 > dept是department的简写
 
-#### 设置某一字段为唯一索引
-
-![image-20250713211613912](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250713211613912.png)
-
-* 即不能出现相同的值
 
 
+
+
+### DCL
+
+> Data Controll Language
 
 
 

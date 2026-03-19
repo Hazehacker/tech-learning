@@ -4107,7 +4107,38 @@ XREADGROUP GROUP
 
 ![image-20260318143700106](assets/image-20260318143700106.png)
 
+点赞时更新数据库与加入redis集合
 
+```java
+@Override
+public Result likeBlog(Long id) {
+    // 1. 判断当前用户是否点赞过了
+    Long userId = UserHolder.getUser().getId();
+    String key = "blog:liked:" + id;
+    Boolean isMember = stringRedisTemplate.opsForSet().isMember(key, userId.toString());
+    if(BooleanUtil.isFalse(isMember)) {
+        // 2. 如果未点赞，可以点赞
+        // 2.1 修改数据库点赞数量
+        boolean success = update().setSql("liked = liked + 1").eq("id", id).update();
+        if (success) { // 更新数据库成功才保存到redis
+            // 2.2 将当前用户的id保存到Redis集合中
+            stringRedisTemplate.opsForSet().add(key, userId.toString());
+        }
+    }else {
+        // 3. 如果已点赞，取消点赞
+        // 3.1 修改数据库点赞数量
+        boolean success = update().setSql("liked = liked - 1").eq("id", id).update();
+        if (success) {
+            // 3.2 移除Redis集合中的当前用户id
+            stringRedisTemplate.opsForSet().remove(key, userId.toString());
+        }
+
+    }
+    return Result.ok();
+}
+```
+
+相关查询业务查询时要返回 是否点赞过 的属性
 
 
 
@@ -4121,6 +4152,1011 @@ XREADGROUP GROUP
 
 ### 点赞排行榜
 
+![image-20230716225504103](https://i-blog.csdnimg.cn/blog_migrate/63800d3bf7dfaca26ae6140acc6ef094.png)
+
+![image-20230717225605568](https://i-blog.csdnimg.cn/blog_migrate/b25561ab381aee64464c19a3945026b1.png)
+
+在平常我们所使用的软件中（比如微信、QQ、抖音）的点赞功能都会默认按照时间顺序对点赞的用户进行一个排序，后点赞的用户会排在最前面，而Set是无需的，无法满足这个需求，虽然 List有序，但是不唯一，查找效率也比较低，所以也不推荐使用，此时我们就可以选择使用SortedSet这个数据结构，它完美的满足了我们所有的需求：唯一、有序、查找效率高
+
+
+相较于Set集合，SortedList有以下不同之处：
+
+1. 对于Set集合我们可以使用 isMember方法判断用户是否存在，对于SortedList我们可以使用ZSCORE方法判断用户是否存在 (如果存在这个元素，就能返回分数；如果不存在，返回空)
+
+   ```java
+   // 添加元素
+   stringRedisTemplate.opsForZSet().add(key, userId.toString(), System.currentTimeMillis());
+   // 删除元素
+   stringRedisTemplate.opsForZSet().remove(key, userId.toString());
+   // 判断是否存在
+   Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
+   if(socore == null){
+       // ... 此时不存在该元素
+   }
+   ```
+
+   
+
+2. Set集合没有提供范围查询，无法获排行榜前几名的数据，SortedList可以使用ZRANGE方法实现范围查询
+
+```java
+@Service
+public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IBlogService {
+
+    @Resource
+    private IUserService userService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * 根据id查询博客
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Result queryBlogById(Long id) {
+        // 查询博客信息
+        Blog blog = this.getById(id);
+        if (Objects.isNull(blog)) {
+            return Result.fail("笔记不存在");
+        }
+        // 查询blog相关的用户信息
+        queryUserByBlog(blog);
+        // 判断当前用户是否点赞该博客
+        isBlogLiked(blog);
+        return Result.ok(blog);
+    }
+
+    /**
+     * 判断当前用户是否点赞该博客
+     */
+    private void isBlogLiked(Blog blog) {
+        UserDTO user = ThreadLocalUtls.getUser();
+        if (Objects.isNull(user)){
+            // 当前用户未登录，无需查询点赞
+            return;
+        }
+        Long userId = user.getId();
+        String key = BLOG_LIKED_KEY + blog.getId();
+        Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
+        blog.setIsLike(Objects.nonNull(score));
+    }
+
+    /**
+     * 查询热门博客
+     *
+     * @param current
+     * @return
+     */
+    @Override
+    public Result queryHotBlog(Integer current) {
+        // 根据用户查询
+        Page<Blog> page = this.query()
+                .orderByDesc("liked")
+                .page(new Page<>(current, SystemConstants.MAX_PAGE_SIZE));
+        // 获取当前页数据
+        List<Blog> records = page.getRecords();
+        // 查询用户
+        records.forEach(blog -> {
+            this.queryUserByBlog(blog);
+            this.isBlogLiked(blog);
+        });
+        return Result.ok(records);
+    }
+
+    /**
+     * 点赞
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Result likeBlog(Long id) {
+        // 1、判断用户是否点赞
+        Long userId = ThreadLocalUtls.getUser().getId();
+        String key = BLOG_LIKED_KEY + id;
+        // zscore key value
+        Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
+        boolean result;
+        if (score == null) {
+            // 1.1 用户未点赞，点赞数+1
+            result = this.update(new LambdaUpdateWrapper<Blog>()
+                    .eq(Blog::getId, id)
+                    .setSql("liked = liked + 1"));
+            if (result) {
+                // 数据库更新成功，更新缓存 zadd key value score
+                stringRedisTemplate.opsForZSet().add(key, userId.toString(), System.currentTimeMillis());
+            }
+        } else {
+            // 1.2 用户已点赞，点赞数-1
+            result = this.update(new LambdaUpdateWrapper<Blog>()
+                    .eq(Blog::getId, id)
+                    .setSql("liked = liked - 1"));
+            if (result) {
+                // 数据更新成功，更新缓存 zrem key value
+                stringRedisTemplate.opsForZSet().remove(key, userId.toString());
+            }
+        }
+        return Result.ok();
+    }
+
+    /**
+     * 查询所有点赞博客的用户
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public Result queryBlogLikes(Long id) {
+        // 查询Top5的点赞用户 zrange key 0 4
+        Long userId = ThreadLocalUtls.getUser().getId();
+        String key = BLOG_LIKED_KEY + id;
+        Set<String> top5 = stringRedisTemplate.opsForZSet().range(key, 0, 4);
+        if (top5 == null || top5.isEmpty()) {
+            return Result.ok(Collections.emptyList());
+        }
+        List<Long> ids = top5.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<UserDTO> userDTOList = userService.listByIds(ids).stream()
+                .map(user -> BeanUtil.copyProperties(user, UserDTO.class))
+                .collect(Collectors.toList());
+        return Result.ok(userDTOList);
+    }
+
+    /**
+     * 查询博客相关用户信息
+     *
+     * @param blog
+     */
+    private void queryUserByBlog(Blog blog) {
+        Long userId = blog.getUserId();
+        User user = userService.getById(userId);
+        blog.setName(user.getNickName());
+        blog.setIcon(user.getIcon());
+    }
+}
+
+```
+
+
+
+## 好友关注
+
+
+
+### 关注和取关
+
+![image-20230719230702274](https://i-blog.csdnimg.cn/blog_migrate/d692438e8cf5311e427479ea1179576e.png)
+
+> 进入这个页面的时候会 查询是否关注了该博主
+
+
+
+![image-20230719230740824](assets/image-20260318165526427.png)
+
+```java
+@RestController
+@RequestMapping("/follow")
+public class FollowController {
+
+    @Resource
+    private IFollowService followService;
+
+    /**
+     * 关注用户
+     * @param followUserId 关注用户的id
+     * @param isFollow 是否已关注
+     * @return
+     */
+    @PutMapping("/{id}/{isFollow}")
+    public Result follow(@PathVariable("id") Long followUserId, @PathVariable Boolean isFollow){
+        return followService.follow(followUserId, isFollow);
+    }
+
+    /**
+     * 是否关注用户
+     * @param followUserId 关注用户的id
+     * @return
+     */
+    @GetMapping("/or/not/{id}")
+    public Result isFollow(@PathVariable("id") Long followUserId){
+        return followService.isFollow(followUserId);
+    }
+}
+
+```
+
+```java
+@Service
+public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> implements IFollowService {
+
+    /**
+     * 关注用户
+     *
+     * @param followUserId 关注用户的id
+     * @param isFollow     是否已关注
+     * @return
+     */
+    @Override
+    public Result follow(Long followUserId, Boolean isFollow) {
+        Long userId = ThreadLocalUtls.getUser().getId();
+        if (isFollow) {
+            // 用户为关注，则关注
+            Follow follow = new Follow();
+            follow.setUserId(userId);
+            follow.setFollowUserId(followUserId);
+            this.save(follow);
+        } else {
+            // 用户已关注，删除关注信息
+            this.remove(new LambdaQueryWrapper<Follow>()
+                    .eq(Follow::getUserId, userId)
+                    .eq(Follow::getFollowUserId, followUserId));
+        }
+        return Result.ok();
+    }
+
+    /**
+     * 是否关注用户
+     *
+     * @param followUserId 关注用户的id
+     * @return
+     */
+    @Override
+    public Result isFollow(Long followUserId) {
+        Long userId = ThreadLocalUtls.getUser().getId();
+        int count = this.count(new LambdaQueryWrapper<Follow>()
+                .eq(Follow::getUserId, userId)
+                .eq(Follow::getFollowUserId, followUserId));
+        return Result.ok(count > 0);
+    }
+}
+
+```
+
+
+
+### 共同关注
+
+![image-20230720000900860](https://i-blog.csdnimg.cn/blog_migrate/771db68e15965361d1a4a602de793627.png)
+
+![image-20230720000925981](https://i-blog.csdnimg.cn/blog_migrate/baa3d546220248291ce4ec966c09b40c.png)
+
+我们想要查询出两个用户的共同关注对象，这就需要使用求交集，对于求交集，我们可以使用Set集合
+
+> 每次关注都要存 set 集合
+
+注意 ：redis里面的数据是有可能丢失的，如果redis中不存在对应的 key ，就要查数据库（或者可以用定时缓存预热的方案？）
+
+
+
+```java
+package com.hmdp.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.hmdp.dto.Result;
+import com.hmdp.dto.UserDTO;
+import com.hmdp.entity.Follow;
+import com.hmdp.entity.User;
+import com.hmdp.mapper.FollowMapper;
+import com.hmdp.mapper.UserMapper;
+import com.hmdp.service.IFollowService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmdp.service.IUserService;
+import com.hmdp.utils.UserHolder;
+import com.sun.org.apache.xalan.internal.xsltc.trax.DOM2TO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author 虎哥
+ * @since 2021-12-22
+ */
+@Service
+@RequiredArgsConstructor
+public class FollowServiceImpl extends ServiceImpl<FollowMapper, Follow> implements IFollowService {
+
+    private final FollowMapper followMapper;
+    private final StringRedisTemplate stringRedisTemplate;
+    private final IUserService userServiceImpl;
+
+
+    @Override
+    public Result follow(Long followUserId, boolean b) {
+        // true，代表关注
+        if(b){
+            boolean success = save(Follow.builder()
+                    .userId(UserHolder.getUser().getId())
+                    .followUserId(followUserId)
+                    .build());
+            if(success){
+                stringRedisTemplate.opsForSet().add("follow:" + UserHolder.getUser().getId(), followUserId.toString());
+            }
+            return Result.ok();
+        }
+        // false，代表取消关注
+        boolean success = remove(new LambdaQueryWrapper<Follow>()
+                .eq(Follow::getUserId, UserHolder.getUser().getId())
+                .eq(Follow::getFollowUserId, followUserId));
+        if(success) {
+            stringRedisTemplate.opsForSet().remove("follow:" + UserHolder.getUser().getId(), followUserId.toString());
+        }
+        return Result.ok();
+    }
+
+    @Override
+    public Result isFollow(Long followUserId) {
+        // 1. 查询是否关注
+        Long userId = UserHolder.getUser().getId();
+        Integer count = followMapper.selectCount(new LambdaQueryWrapper<Follow>()
+                        .eq(Follow::getUserId, userId)
+                        .eq(Follow::getFollowUserId, followUserId));
+        // 2. 返回结果
+        return Result.ok(count > 0);
+    }
+
+    @Override
+    public Result followCommons(Long followUserId) {
+        Long userId = UserHolder.getUser().getId();
+        // 如果其中一个用户没关注任何人，就返回空集 👍
+        if(!isKeyExist(userId)
+                || !isKeyExist(followUserId)){
+            return Result.ok(Collections.emptyList());
+        }
+
+        // 1. 求交集
+        Set<String> intersect = stringRedisTemplate.opsForSet().intersect("follow:" + userId, "follow:" + followUserId);
+        // 无交集，直接返回空列表
+        if(intersect == null || intersect.isEmpty()){
+            return Result.ok(Collections.emptyList());
+        }
+        List<Long> userIds = intersect.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<UserDTO> userDTOS = userServiceImpl.listByIds(userIds).stream().map(
+                user -> BeanUtil.copyProperties(user, UserDTO.class)
+        ).collect(Collectors.toList());
+        // 2. 返回结果
+        return Result.ok(userDTOS);
+    }
+    private Boolean isKeyExist(Long queryId){
+        String key = "follow:" + queryId;
+        if(!stringRedisTemplate.hasKey(key)){
+            // 如果redis中没有对应的key，就查数据库 👍
+            List<Long> followUserIds = followMapper.selectList(
+                    new LambdaQueryWrapper<Follow>()
+                            .eq(Follow::getUserId, queryId)
+            ).stream().map(Follow::getFollowUserId).collect(Collectors.toList());
+            // 该用户没有关注任何人
+            if(followUserIds == null || followUserIds.isEmpty()){
+                return false;
+            }
+            followUserIds.stream().forEach(
+                    id -> stringRedisTemplate.opsForSet()
+                            .add(key, id.toString())
+            );
+        }
+        return true;
+    }
+}
+
+```
+
+
+
+
+
+### 关注推送
+
+* Feed 流是什么
+
+  关注推送也叫做Feed流，直译为投喂。为用户持续的提供“沉浸式”的体验，通过无限下拉刷新获取新的信息。Feed流是一种基于用户个性化需求和兴趣的信息流推送方式，常见于社交媒体、新闻应用、音乐应用等互联网平台。Feed流通过算法和用户行为数据分析，动态地将用户感兴趣的内容以流式方式呈现在用户的界面上。
+
+![image-20230720170725188](https://i-blog.csdnimg.cn/blog_migrate/a55bc67352b2c5eafc0da2646d809619.png)
+
+
+
+* **Feed流产品有两种常见模式：**
+  * **时间排序（Timeline）**：不做内容筛选，简单的按照内容发布时间排序，常用于好友或关注。例如朋友圈
+    * 优点：信息全面，不会有缺失。并且实现也相对简单
+    * 缺点：信息噪音较多，用户不一定感兴趣，内容获取效率低
+  * **智能排序**：利用智能算法屏蔽掉违规的、用户不感兴趣的内容。推送用户感兴趣信息来吸引用户
+    * 优点：投喂用户感兴趣信息，用户粘度很高，容易沉迷
+    * 缺点：如果算法不精准，可能起到反作用
+
+
+
+本例中的个人页面，是基于关注的好友来做Feed流，因此采用 `Timeline` 的模式。该模式的实现方案有三种：
+
+![image-20230720171605977](https://i-blog.csdnimg.cn/blog_migrate/5852c7bc021c5311b41d666e04d3353c.png)
+
+1. **拉模式**：也叫做**读扩散**。在拉模式中，<u>终端用户或应用程序主动发送请求来获取最新的数据流</u>。它是一种按需获取数据的方式，<u>用户可以在需要时发出请求来获取新数据</u>。在Feed流中，数据提供方将数据发布到实时数据源中，而终端用户或应用程序通过订阅或请求来获取新数据。
+
+   **优点**：节约空间，<u>可以减少不必要的数据传输</u>，只需要获取自己感兴趣的数据，因为赵六在读信息时，并没有重复读取，而且读取完之后可以把他的收件箱进行清楚。
+
+   **缺点**：延迟较高，当用户读取数据时才去关注的人里边去读取数据，<u>假设用户关注了大量的用户，那么此时就会拉取海量的内容，对服务器压力巨大</u>。
+
+   ![image-20230720171036310](https://i-blog.csdnimg.cn/blog_migrate/11e1b802857531780e4dd83730411314.png)
+
+2. **推模式**：也叫做**写扩散**。在推模式中，<u>数据提供方主动将最新的数据推送给终端用户或应用程序。数据提供方会实时地将数据推送到终端用户或应用程序</u>，而<u>无需等待请求</u>。
+
+   **优点**：<u>数据延迟低，不用临时拉取</u>
+
+   **缺点**：<u>内存耗费大</u>，假设一个大V写信息，很多人关注他， 就会写很多份数据到粉丝那边去
+
+   ![image-20230720171141665](https://i-blog.csdnimg.cn/blog_migrate/67b1dd56c3de1a3ea6e63578b4a55381.png)
+
+   ![image-20260318205822253](assets/image-20260318205822253.png)
+
+3. **推拉结合**：也叫做**读写混合**，兼具推和拉两种模式的优点。在推拉结合模式中，数据提供方会主动将最新的数据推送给终端用户或应用程序，同时也支持用户通过拉取的方式来获取数据。这样可以实现实时的数据更新，并且用户也具有按需获取数据的能力。推拉模式是一个折中的方案，站在发件人这一端，<u>如果是个普通的人，那么我们采用写扩散的方式，直接把数据写入到他的粉丝中去，因为普通的人他的粉丝关注量比较小</u>，所以这样做没有压力，<u>如果是大V，那么他是直接将数据先写入到一份到发件箱里边去，然后再直接写一份到活跃粉丝收件箱里边去</u>，现在站在收件人这端来看，如果是活跃粉丝，那么大V和普通的人发的都会直接写入到自己收件箱里边来，而如果是普通的粉丝，由于他们上线不是很频繁，所以*<u>等他们上线时，再从发件箱里边去拉信息</u>*
+
+   ![image-20230720171524630](https://i-blog.csdnimg.cn/blog_migrate/2b4e0400d2c5ba2590bbcf6d18365c45.png)
+
+   
+
+**实现 -基于推模式实现关注推送功能**
+
+
+
+当前项目用户量比较小（千万以下都算少），所以这里我们选择使用推模式，延迟低、内存占比也没那么大
+
+由于我们需要实现分页查询功能，这里我们可以选择 list 或者 SortedSet，而不能使用Set，因为Set是无序的， list是有索引的，SortedSet 是有序的，那么我们该如何选择呢？
+
+如果我们选择 list 会存在索引漂移现象（这个在Vue中也存在），从而导致读取重复数据，所以我们不能选择使用 list
+
+
+![image-20230720170544169](https://i-blog.csdnimg.cn/blog_migrate/30d2179115f1e1c64e47a356ed281617.png)
+
+
+
+![image-20230720235701517](https://i-blog.csdnimg.cn/blog_migrate/03899462ddc28b0691605f1513a07291.png)
+
+我们可以选择使用==**滚动分页**==，我们使用`SortedSet`，如果使用排名和使用角标是一样的，但是`SortedSet`可以按照`Score`排序（Score默认按照时间戳生成，所以是固定的），每次我们可以选择比之前Score较小的，这样就能够实现滚动排序，从而防止出现问题
+
+![image-20260318212025579](assets/image-20260318212025579.png)
+
+**Feed流推送实现：**
+
+> 每一个收件箱都是一个 SortedSet
+
+```java
+/**
+ * 保存探店笔记
+ *
+ * @param blog
+ * @return
+ */
+@Override
+public Result saveBlog(Blog blog) {
+    Long userId = ThreadLocalUtls.getUser().getId();
+    blog.setUserId(userId);
+    // 保存探店笔记
+    boolean isSuccess = this.save(blog);
+    if (!isSuccess){
+        return Result.fail("笔记保存失败");
+    }
+    // 查询作者的所有粉丝
+    List<Long> followerIds = followService.list(new LambdaQueryWrapper<Follow>()
+            .eq(Follow::getFollowUserId, user.getId())).stream().map(Follow::getUserId).collect(Collectors.toList());
+    // 推送给所有粉丝
+    followerIds.forEach(followerId -> {
+        // 推送博文到每个粉丝各自的收件箱
+        String key = RedisConstants.FEED_KEY + followerId;
+        stringRedisTemplate.opsForZSet().add(key, blog.getId().toString(), System.currentTimeMillis());
+    });
+    return Result.ok(blog.getId());
+}
+
+```
+
+**推送页面分页查询实现**
+
+![image-20230721141224515](https://i-blog.csdnimg.cn/blog_migrate/a4f595051632176c8e64d08cbc061e6c.png)
+
+```java
+@GetMapping("/of/follow")
+public Result queryBlogOfFollow(@RequestParam("lastId") Long max,
+                               @RequestParam("offset") Integer offset) {
+    return blogService.queryBlogOfFollow(max, offset);
+}
+```
+
+
+
+```java
+/**
+ * 关注推送页面的笔记分页
+ *
+ * @param max
+ * @param offset
+ * @return
+ */
+@Override
+public Result queryBlogOfFollow(Long max, Integer offset) {
+    // 1、查询收件箱
+    Long userId = ThreadLocalUtls.getUser().getId();
+    String key = FEED_KEY + userId;
+    // ZREVRANGEBYSCORE key Max Min LIMIT offset count
+    Set<ZSetOperations.TypedTuple<String>> typedTuples = stringRedisTemplate.opsForZSet()
+            .reverseRangeByScoreWithScores(key, 0, max, offset, 2);
+    // 2、判断收件箱中是否有数据
+    if (typedTuples == null || typedTuples.isEmpty()) {
+        return Result.ok();
+    }
+
+    // 3、收件箱中有数据，则解析数据: blogId、minTime（时间戳）、offset
+    List<Long> ids = new ArrayList<>(typedTuples.size());
+    long minTime = 0; // 记录当前最小值
+    int os = 1; // 偏移量offset，用来计数
+    for (ZSetOperations.TypedTuple<String> tuple : typedTuples) { // 5 4 4 2 2
+        // 获取id
+        ids.add(Long.valueOf(tuple.getValue()));
+        // 获取分数（时间戳）
+        long time = tuple.getScore().longValue();
+        if (time == minTime) {
+            // 当前时间等于最小时间，偏移量+1
+            os++;
+        } else {
+            // 当前时间不等于最小时间，重置
+            minTime = time;
+            os = 1;
+        }
+    }
+
+    // 4、根据id查询blog（使用in查询的数据是默认按照id升序排序的，这里需要使用我们自己指定的顺序排序）
+    String idStr = StrUtil.join(",", ids);
+    List<Blog> blogs = this.list(new LambdaQueryWrapper<Blog>().in(Blog::getId, ids)
+            .last("ORDER BY FIELD(id," + idStr + ")"));
+    // 设置blog相关的用户数据，是否被点赞等属性值
+    for (Blog blog : blogs) {
+        // 查询blog有关的用户
+        queryUserByBlog(blog);
+        // 查询blog是否被点赞
+        isBlogLiked(blog);
+    }
+
+    // 5、封装并返回
+    ScrollResult scrollResult = new ScrollResult();
+    scrollResult.setList(blogs);
+    scrollResult.setOffset(os);
+    scrollResult.setMinTime(minTime);
+
+    return Result.ok(scrollResult);
+}
+
+```
+
+
+
+## 附近商户
+
+> 使用 es / mongodb也能实现
+
+#### GEO数据结构
+
+GEO就是Geolocation的简写形式，代表地理坐标。Redis在3.2版本中加入了对GEO的支持，允许存储地理坐标信息，帮助我们根据经纬度来检索数据。常见的命令有：
+
+* `GEOADD`：添加一个地理空间信息，包含：经度（longitude）、纬度（latitude）、值（member）
+
+  `GEODIST`：计算指定的两个点之间的距离并返回
+
+  `GEOHASH`：**将指定member的坐标转为hash字符串形式并返回**
+
+  `GEOPOS`：返回指定member的坐标
+
+  `GEORADIUS`：指定圆心、半径，找到该圆内包含的所有member，并按照与圆心之间的距离排序后返回。6.2以后已废弃
+
+  `GEOSEARCH`：在指定范围内搜索member，并按照与指定点之间的距离排序后返回。范围可以是圆形或矩形。6.2.新功能
+
+  `GEOSEARCHSTORE`：与GEOSEARCH功能一致，不过可以把结果存储到一个指定的key。 6.2.新功能
+
+
+
+![image-20230721152001915](assets/image-20260319092531402.png)
+
+```shell
+# 添加坐标数据
+GEOADD g1 116.378248 39.865275 bjnz 116.42803 39.903738 bjz 116.322287 39.893729 bjxz
+# 计算北京西站到北京站的距离
+GEODIST g1 bjnz bjxz km
+# 搜索天安门附近10km内的所有火车站，并按照距离升序排序
+GEOSEARCH g1 FROMLONLAT 116.397904 39.909005 BYRADIUS 10 km WITHDIST
+```
+
+![image-20230721154742019](https://i-blog.csdnimg.cn/blog_migrate/5cce3e81d24a43f2bc70e9c786f789a6.png)
+
+![image-20230721155907414](https://i-blog.csdnimg.cn/blog_migrate/98d21890f5f9d18e9c3a0d77f8e79e87.png)
+
+**备注**：
+
+1. 一定要登录Redis，如果有密码一定要输入密码登录，否则添加数据会报错 `unauthenticated multibulk length`
+2. `GEODIST`计算距离，默认的单位是米
+
+
+
+**附近商户搜索**
+
+![image-20230721160059091](https://i-blog.csdnimg.cn/blog_migrate/45f2bcdaa6a5be08a1efbd7335bed72a.png)
+
+1. GEO存储经度（longitude）和维度（latitude）还有值（member），为了节约内存，我们在memboer中值存储店铺id
+
+2. 由于前端传来一个type参数，但是GEO没有type数据，所以我们按照商铺类型进行分组，类型相同的商户分为一组，以typeId作为key同时存入一个GEO集合中
+
+   不同类型的商户存到对应类型的key下
+
+
+
+![image-20260319095127615](assets/image-20260319095127615.png)
+
+
+
+1）数据预热。将店铺数据按照 typeId 批量存入Redis
+
+```java
+import com.hmdp.entity.Shop;
+import com.hmdp.service.IShopService;
+import com.hmdp.utils.RedisConstants;
+import com.hmdp.utils.RedisIdWorker;
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+/**
+ * 预热店铺数据，按照typeId进行分组，用于实现附近商户搜索功能
+ */
+@Test
+public void loadShopListToCache() {
+    // 1、获取店铺数据
+    List<Shop> shopList = shopService.list();
+    // 2、根据 typeId 进行分类
+//        Map<Long, List<Shop>> shopMap = new HashMap<>();
+//        for (Shop shop : shopList) {
+//            Long shopId = shop.getId();
+//            if (shopMap.containsKey(shopId)){
+//                // 已存在，添加到已有的集合中
+//                shopMap.get(shopId).add(shop);
+//            }else{
+//                // 不存在，直接添加
+//                shopMap.put(shopId, Arrays.asList(shop));
+//            }
+//        }
+    // 使用 Lambda 表达式，更加优雅（优雅永不过时）
+    Map<Long, List<Shop>> shopMap = shopList.stream()
+            .collect(Collectors.groupingBy(Shop::getTypeId));
+
+    // 3、将分好类的店铺数据写入redis
+    for (Map.Entry<Long, List<Shop>> shopMapEntry : shopMap.entrySet()) {
+        // 3.1 获取 typeId
+        Long typeId = shopMapEntry.getKey();
+        List<Shop> values = shopMapEntry.getValue();
+        // 3.2 将同类型的店铺的写入同一个GEO ( GEOADD key 经度 维度 member )
+        String key = SHOP_GEO_KEY + typeId;// "shop:geo"
+        // 方式一：单个写入(这种方式，一个请求一个请求的发送，十分耗费资源，我们可以进行批量操作)
+//            for (Shop shop : values) {
+//                stringRedisTemplate.opsForGeo().add(key, new Point(shop.getX(), shop.getY()),
+//                shop.getId().toString());
+//            }
+        // 方式二：批量写入
+        List<RedisGeoCommands.GeoLocation<String>> locations = new ArrayList<>();
+        for (Shop shop : values) {
+           locations.add(new RedisGeoCommands.GeoLocation<>(shop.getId().toString(),
+                   new Point(shop.getX(), shop.getY())));
+        }
+        stringRedisTemplate.opsForGeo().add(key, locations);
+    }
+}
+
+```
+
+2）在ShopServiceImpl中编写查询代码
+
+> 调整依赖关系，引入适配 redis 6.0 以上的 Spring AMQP
+>
+> ![image-20260319102711410](assets/image-20260319102711410.png)
+>
+> ![image-20260319102715570](assets/image-20260319102715570.png)
+
+```java
+    @Override
+    public Result queryShopByType(Integer typeId, Integer current, Double x, Double y) {
+        // 判断是否需要根据坐标查询
+        if (x == null || y == null) {
+            // 根据类型分页查询
+            Page<Shop> page = query()
+                    .eq("type_id", typeId)
+                    .page(new Page<>(current, SystemConstants.DEFAULT_PAGE_SIZE));
+            // 返回数据
+            return Result.ok(page.getRecords());
+        }
+        // 根据坐标分页查询
+        // 计算分页参数
+        int from = (current - 1) * SystemConstants.DEFAULT_PAGE_SIZE;
+        int end = current * SystemConstants.DEFAULT_PAGE_SIZE;
+
+        // 查询redis、按照距离排序、分页、结果：shopId、distance
+        String key = RedisConstants.SHOP_GEO_KEY + typeId;
+        GeoResults<RedisGeoCommands.GeoLocation<String>> results = stringRedisTemplate.opsForGeo().search(
+                key,
+                GeoReference.fromCoordinate(x, y), // 圆心
+                new Distance(5000), // 半径5000米
+                RedisGeoCommands.GeoSearchCommandArgs.newGeoSearchArgs().includeDistance().limit(end) // includeDistance()-让结果中包含距离、includeCoordinates()-让结果中包含坐标、limit()-分页
+        );
+        if (results == null) {
+            return Result.ok();
+        }
+        // 截取 from~end的部分；解析出id
+        List<GeoResult<RedisGeoCommands.GeoLocation<String>>> list = results.getContent();
+        // 虽然做过非空判断，但截取后集合可能为空，后面查询shop的时候就会报错，所以这里判断一下截取之后是否为空
+        if (list.size() <= from) {
+            return Result.ok();
+        }
+        List<Long> ids = new ArrayList<>();
+        Map<String, Double> distanceMap = new HashMap<>();
+        list.stream().skip(from).forEach( result -> {
+            String shopIdStr = result.getContent().getName();// 获取店铺id
+            ids.add(Long.valueOf(shopIdStr));
+            Distance distance = result.getDistance();// 获取距离
+            distanceMap.put(shopIdStr, distance.getValue());
+        });
+
+        // 根据id查询shop，包装完返回
+        List<Shop> shops = query().in("id", ids).last("ORDER BY FIELD( id, " + StrUtil.join(",", ids) + ")").list();
+        // 注意末尾有list()
+        shops.forEach(
+                shop -> shop.setDistance(distanceMap.get(String.valueOf(shop.getId())))
+        );
+        return Result.ok(shops);
+
+    }
+```
+
+
+
+
+
+## 用户签到
+
+![image-20230721233115292](assets/image-20260319113743201.png)
+
+所以使用数据库来存签到信息是不合理的
+
+
+
+![image-20260319113812740](assets/image-20260319113812740.png)
+
+> 仅仅用一行 (32 bit) 就能把一个月的签到情况记录下来
+>
+> 将 某一个用户+某年某月 作为key，存储签到情况
+
+Redis中是利用string类型数据结构实现BitMap**，**因此最大上限是512M，转换为bit则是 2^32 个bit位。
+
+BitMap的操作命令有：
+
+* `SETBIT`：向指定位置（offset）存入一个0或1
+
+  ```shell
+  SETBIT bm1 0 1
+  ```
+
+* `GETBIT` ：获取指定位置（offset）的bit值
+
+  ```java
+  GETBIT bm1 2
+
+* `BITCOUNT` ：统计BitMap中值为1的bit位的数量
+
+* `BITFIELD` ：操作（查询、修改、自增）BitMap中bit数组中的指定位置（offset）的值
+
+* `BITFIELD_RO` ：获取BitMap中bit数组，并以十进制形式返回
+
+* `BITOP` ：将多个BitMap的结果做位运算（与 、或、异或）
+
+* `BITPOS` ：查找bit数组中指定范围内第一个0或1出现的位置
+
+
+
+#### **签到功能**
+
+![image-20230721235507240](https://i-blog.csdnimg.cn/blog_migrate/e1edaaa33fed2dbbe833caad549aa784.png)
+
+
+
+```java
+/**
+ * 用户签到
+ *
+ * @return
+ */
+@Override
+public Result sign() {
+    // 获取当前登录用户
+    User user = ThreadLocalUtls.getUser();
+    if(user == null) {
+        throw new BusinessExeception("请先登录");
+    }
+    Long userId = user.getId();
+    // 获取日期
+    LocalDateTime now = LocalDateTime.now();
+    // 拼接key
+    String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));
+    String key = USER_SIGN_KEY + userId + keySuffix;
+    // 获取今天是本月的第几天
+    int dayOfMonth = now.getDayOfMonth();
+    // 写入Redis SETBIT key offset 1
+    stringRedisTemplate.opsForValue().setBit(key, dayOfMonth - 1, true);
+    return Result.ok();
+}
+```
+
+#### 签到统计
+
+* **问题1**：什么叫做连续签到天数？
+
+  > 从最后一次签到开始向前统计，直到遇到第一次未签到为止，计算总的签到次数，就是连续签到天数。
+
+  ![image-20260319121722093](assets/image-20260319121722093.png)
+
+* **问题2**：如何得到本月到今天为止的所有签到数据？
+
+  > `BITFIELD key GET u[dayOfMonth] 0`
+
+* **问题3**：如何从后向前遍历每个bit位？
+
+  > 与 1 做**与运算**，就能得到最后一个bit位。随后右移1位，下一个bit位就成为了最后一个bit位。
+
+
+
+![image-20230721235532024](https://i-blog.csdnimg.cn/blog_migrate/09ad57ead796d6cdd2ca89cd66ef6909.png)
+
+```java
+@Override
+public Result signCount() {
+    // 获取当前登录用户
+    UserDTO user = UserHolder.getUser();
+    if(user == null) {
+//            throw new BusinessExeception("请先登录");
+        return Result.fail("请先登录");
+    }
+    Long userId = user.getId();
+    // 获取日期
+    LocalDateTime now = LocalDateTime.now();
+    // 拼接key
+    String key = "sign:" + userId + ":" + now.format(DateTimeFormatter.ofPattern("yyyyMM"));
+    // 获取今天是本月的第几天
+    int dayOfMonth = now.getDayOfMonth();
+
+    // 获取本月截止今天的所有签到记录（返回的是一个十进制的数字）
+    List<Long> results = stringRedisTemplate.opsForValue().bitField(
+            key,
+            BitFieldSubCommands.create()
+                    .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth))
+                    .valueAt(0)
+    );
+    if(results == null || results.isEmpty()){
+        // 没有任何签到结果
+        return Result.ok(0);
+    }
+    // 获取本月的签到数（List<Long>是因为BitFieldSubCommands是一个子命令，可能存在多个返回结果，
+    // 这里我们只是使用了Get，可以明确只有一个返回结果，即为本月的签到数，所以这里就可以直接通过get(0)来获取）
+    Long num = results.get(0);
+    if (num == null || num == 0) {
+        // 二次判断签到结果是否存在，让代码更加健壮
+        return Result.ok(0);
+    }
+    int count = 0;
+    // 当前逻辑是统计出截至目前的连续签到数
+    while (true) {
+        // 让这个数字与1做与运算，得到数字的最后一个bit位，并且判断这个bit位是否为0
+        if ((num & 1) == 0) {
+            // 如果为0，说明未签到，结束
+            break;
+        } else {
+            // 如果不为0，说明已签到，计数器+1
+            count++;
+        }
+        // 把数字右移一位，抛弃最后一个bit位，继续下一个bit位
+        num >>>= 1;
+        // >>> 符号会高位补0，即不会丢失数据，>>最高位会补符号位（对正数操作时 两者没区别）
+    }
+    return Result.ok(count);
+
+}
+```
+
+
+
+## UV统计
+
+首先我们搞懂两个概念：
+
+* **UV**：全称**U**nique **V**isitor，也叫独立访客量，是指通过互联网访问、浏览这个网页的自然人。1天内同一个用户多次访问该网站，只记录1次。
+
+* **PV**：全称**P**age **V**iew，也叫页面访问量或点击量，用户每访问网站的一个页面，记录1次PV，用户多次打开页面，则记录多次PV。往往用来衡量网站的流量。
+
+UV统计在服务端做会比较麻烦，因为要判断该用户是否已经统计过了，需要将统计过的用户信息保存。但是如果每个访问的用户都保存到Redis中，数据量会非常恐怖
+
+
+
+#### HyperLogLog用法
+
+Hyperloglog(HLL)是从Loglog算法派生的概率算法，用于确定非常大的集合的基数，而不需要存储其所有值。相关算法原理大家可以参考：https://juejin.cn/post/6844903785744056333#heading-0
+
+Redis中的HLL是基于string结构实现的，单个HLL的内存永远小于16kb，内存占用低的令人发指！作为代价，其测量结果是概率性的，有小于**0.81％**的误差。不过对于UV统计来说，这完全可以忽略。
+
+* HyperLogLog常用指令：
+  * `PFADD key element [element...]` ：添加指定元素到 HyperLogLog 中
+  * `PFCOUNT key [key ...]`：返回给定 HyperLogLog 的基数估算值
+  * `PFMERGE destkey sourcekey [sourcekey ...]`：将多个 HyperLogLog 合并为一个 HyperLogLog
+* **HyperLogLog的作用**：做海量数据的统计工作
+* **HyperLogLog的优缺点**：
+  - **优点**：内存占用极低、性能非常好
+  - **缺点**：有一定的误差
+
+**实现UV统计**
+
+由于当前系统并没有足够的用户数据量，所以这里我们需要模拟实现UV统计(●’◡’●)
+
+1）我们先来测试一下UV统计的内存占用情况
+
+内存查看前，我们先查看当前Redis占用内存情况
+
+```shell
+# 查看Redis的内存
+info memory
+```
+
+![image-20230722132304878](https://i-blog.csdnimg.cn/blog_migrate/d1b8b91e8132c51ba644889385d1fe9d.png)
+
+可以看到记录存储前：2.07MB（2.07 ∗ 2^10 ∗ 2^10 = 2174664 Byte）
+
+2）存储模拟用户数据
+
+```java
+/**
+ * 测试 HyperLogLog 实现 UV 统计的误差
+ */
+@Test
+public void testHyperLogLog() {
+    String[] values = new String[1000];
+    // 批量保存100w条用户记录，每一批1个记录
+    int j = 0;
+    for (int i = 0; i < 1000000; i++) {
+        j = i % 1000;
+        values[j] = "user_" + i;
+        if (j == 999) {
+            // 发送到Redis
+            stringRedisTemplate.opsForHyperLogLog().add("hl2", values);
+        }
+    }
+    // 统计数量
+    Long count = stringRedisTemplate.opsForHyperLogLog().size("hl2");
+    System.out.println("count = " + count);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4132,8 +5168,6 @@ XREADGROUP GROUP
 
 
 # 高级篇
-
-
 
 
 

@@ -420,7 +420,7 @@ SELECT 字段列表 FROM 表名 [WHERE 条件] GROUP BY 分组字段名 [ HAVING
 
 注意事项 :
 
-- 分组之后，**查询的字段一般为聚合函数和分组字段**，查询其他字段无任何意义。
+- 分组之后，<u>**查询的字段一般为聚合函数和分组字段**</u>，查询其他字段无任何意义。
 - **执行顺序 : where > 聚合函数 > having**
 - 支持多字段分组 , 具体语法为 : group by columnA, columnB
 
@@ -549,11 +549,17 @@ SELECT 字段列表 FROM 表名 LIMIT 起始索引, 查询记录数;
 >
 > ![image-20260319180324140](assets/image-20260319180324140.png)![image-20260319180328922](assets/image-20260319180328922.png)
 >
-> 
+> 准备四张表
+>
+> ![image-20260319192817466](assets/image-20260319192817466-1773919698443-1.png)
+
+
 
 
 
 #### 多表查询
+
+![image-20260319183523490](assets/image-20260319183523490.png)
 
 ```sql
 select 字段列表 FROM 表名1, 表名2...
@@ -568,17 +574,19 @@ select 字段列表 FROM 表名1, 表名2...
 > # 对于这条sql语句，如果emp表有17条数据，dept表5条数据，结果集就会有 17*5=85条数据【第一张表的每一条数据都会和第二张表的数据作匹配，一条数据就会有5行】
 > ```
 >
-> 这个现象叫做笛卡尔积 ⬇️
+> 这个现象叫做笛卡尔积 ⬇️ =>多表查询的目的，就是根据业务需求从多张表中查询数据，并且根据业务需要，消除掉无效的笛卡尔积（在这个例子中，我们只需要查出该员工对应的那个部门的信息，一条员工数据只用和一条部门数据作匹配）
 
 * 笛卡尔积：笛卡尔积是指在数学中，两个集合（A集合 和 B集合）的所有组合情况
 
 ![image-20260319181115431](assets/image-20260319181115431.png)
 
- =>多表查询的目的，就是根据业务需求
+**改进：增加关联条件（利用逻辑外键 只获取需要的笛卡尔积）**
 
+```sql
+select * from emp, dept where emp.dept_id = dept.id;
+```
 
-
-
+![image-20260319181642933](assets/image-20260319181642933.png)
 
 
 
@@ -586,78 +594,160 @@ select 字段列表 FROM 表名1, 表名2...
 
 #### 内连接
 
+* 内连接：查询A、B交集部分数据
+
+  A 表中没有和 B 表产生关联的数据(不符合连接条件)  是查不出来的
+
+```sql
+# 隐式内连接
+select 字段列表 FROM 表1, 表2 where 连接条件;
+# 显式内连接
+select 字段列表 FROM 表1 [inner] join 表2 on 连接条件;
+```
+
+> **推荐写显式内连接**
+
+* 隐式：两个表之间用逗号分隔，后面跟连接条件（where关键字），其他查询条件用and连接后跟在后面
+* 显式：多张表直接显式的使用关键字，后面跟联查条件(on关键字)
 
 
-> 内连接查询两个表达的交集部分
 
-> 隐式：两个表之间用逗号分隔，后面跟连接条件（where关键字），其他查询条件用and连接后跟在后面
+> **<u>案例</u>**
 >
-> ```
-> select emp.id , emp.name, dept.name from emp, dept where emp.dept_id = dept.id and emp.gender = 1;
-> ```
->
-> 显式：多张表直接显式的使用关键字，后面更联查条件(on关键字)
->
-> ```
-> select emp.id ,emp.name ,dept.name from emp inner join dept on emp.dept_id = dept.id;
-> select emp.id ,emp.name ,dept.name from emp join dept on emp.dept_id = dept.id;//(inner关键字可省略)
+> ```sql
+> # 查询员工的姓名，及所属部门名称（显式内连接实现）
+> select emp.id, emp.name, dept.name from emp inner join dept on emp.dept_id = dept.id;
+> # 如果其中某个员工不属于任何一个部门，就查不出来(不符合连接条件)，结果集中不会出现 [如果想要也查出这种数据，可以使用外连接]
 > 
+> # 查询价格低于10元的菜品名称、价格 及其 菜品的分类名称
+> select dish.name, dish.price from dish INNER JOIN category on dish.category_id = category.id where dish.price < 10;
+> 
+> # 查询各个分类下最贵的菜品，展示出分类的名称、最贵的菜品的价格【这里需要分组，确保MAX出来的值是每个分类下的MAx】
+> select c.name, MAX(d.price) from category c INNER JOIN dish d on c.id = d.category_id GRUOP BY c.name;
+> 
+> # 查询各个分类下 菜品状态为‘起售’，且 该分类下菜品总数量大于等于3 的分类名称
+> select c.name from category c INNER JOIN dish d on c.id = d.category_id where d.status = 1 GROUP BY c.name HAVING count(*) >= 3;
+> 
+> # 【查询出“商务套餐A”中包含了哪些菜品（展示出套餐名称、价格，包含的菜品名称、价格、份数）】
+> select 
+> 	s.name, 
+> 	s.price, 
+> 	d.name, 
+> 	d.price, 
+> 	sd.copies 
+> from setmeal s 
+> INNER JOIN 
+> 	setmeal_dish sd on s.id = sd.setmeal_id 
+> INNER JOIN 
+> 	dish d on sd.dish_id = d.id 
+> where s.name = '商务套餐A';
 > ```
 >
 > 
 
 > 如果只有其中一个表有这个字段，可以不用加所属表；但是还是<u>**建议：如果涉及到多表查询，字段前面都加上所属的表名**</u>
 
-> 给表起别名（了解）
->
-> 
->
-> ```
-> select emp.id ,emp.name ,dept.name from emp as e inner join dept as d on e.dept_id = d.id;
-> ```
->
-> 
+
+
+
+
+
 
 
 
 #### 外连接
 
+* 外连接
+  * 左外连接：查询左表所有数据（包含两张表的交集部分数据）
+  * 右外连接：查询右表所有数据（包含两张表的交集部分数据）
+
+```sql
+select 字段列表 FROM 表1 LEFT [outer] JOIN 表2 on 连接条件;
+select 字段列表 FROM 表1 RIGHT [outer] JOIN 表2 on 连接条件;
+```
 
 
-> 左外连接完全包含左表的字段
 
-> 查询员工表所有员工的姓名，和对应的部门名称
-> select emp.name,dept.name from emp left join dept on emp.dept_id = dept.id
+> **案例**
+>
+> ```sql
+> # 查询员工表 所有 员工的姓名，和相对应的部门名称
+> select emp.id, emp.name, dept.name FROM emp LEFT JOIN dept on emp.dept_id = dept.id;
+> # 查询部门表 所有 部门的名称，和相对应的员工名称
+> select dept.id, dept.name, emp.name FROM dept LEFT JOIN emp on dept.id = emp.dept_id;
+> 
+> # 查询所有价格在 10(含)-50(含)之间且 状态为 ‘起售’ 的菜品，展示出菜品的名称、价格 及其 菜品的分类名称（即使菜品没有分类，也需要将菜品查询出来）
+> select d.name, d.price, c.name from dish d LEFT JOIN category c on d.category_id = c.id where d.price between 10 and 50 and d.status = 1;
+> 
+> # 【查询出低于菜品平均价格的菜品信息（展示出菜品名称，菜品价格）】
+> select d.name, d.price FROM dish d where d.price < (select AVG(price) from dish);
+> ```
+>
+> 
+
+
+
+
 
 
 
 #### 子查询
 
+* SQL 语句中嵌套 select 语句，称为嵌套查询，又称子查询
+
+* 示例：
+
+  ```sql
+  select * FROM 表1 where column1 = (select column1 from 表2 ...)
+  ```
+
+* 子查询外部的语句可以是 insert / update / delete / select 中的任何一个，最常见的是 select
+
+* 分类
+  * 标量子查询：子查询返回的结果为单个值（数字、字符串、日期等）
+    常见操作符：=  <>  >  >=  <  <=
+  * 列子查询：子查询返回的结果为一列
+    常见操作符：in、not in 等
+  * 行子查询：子查询返回的结果为一行（可以是多列）
+    常见操作符：= 、<> 、in、not in
+  * 表子查询：子查询返回的结果为多行多列，常作为临时表
+    常见操作符：in
 
 
- 
 
-> [套娃查询]
+
+
+> **案例**
+>
+> ```sql
+> # 【查询在 方东白 之后入职的员工信息】（标量子查询）
+> select * from emp where entrydate > (select entrydate from emp where name = '方东白')
+> 
+> # 查询教研部和咨询部的所有员工信息（列子查询写法）
+> select * from emp where emp.dept_id in (select id from dept where name = '教研部' or '咨询部');
+> 
+> # 查询与“韦一笑”入职日期、职位都相同的员工的信息（行子查询）
+> select emp.* from emp, (select entrydate, job from emp where name = '韦一笑') temp where emp.entrydate = temp.entrydate and emp.job = temp.job;
+> select * from emp where (entrydate, job) = (select entrydate, job from emp where name = '韦一笑');
+> 
+> # 查询入职日期是“2006-01-01”之后的员工信息及其部门名称（表子查询写法）
+> select temp.*, dept.name from (select * from emp where entrydate > '2006-01-01') temp, dept where temp.dept_id = dept.id;
+> 
+> ```
+>
+> 
+>
+> 
 >
 > ```
-> select * from emp where entry_date = (select min(entry_date) from emp);
+> select * from emp where entry_date > (select entry_date from emp where name = '方东白')
 > ```
 >
-> ```
-> select * from emp where entry_date > (select entry_date from emp where name = '阮小五')
-> ```
->
-> ![image-20250912135419554](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912135419554.png)
->
-> ![image-20250912135714281](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912135714281.png)
+> 
 
 > select * from emp where dept_id = (select id from dept where name = '教研部') and entry_time > '2011_05_01'
 >
-> ![image-20250912141308470](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912141308470.png)
->
-> ![image-20250912142022878](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912142022878.png)
->
-> ![image-20250912142619833](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250912142619833.png)
+> 
 >
 > 
 

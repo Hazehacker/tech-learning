@@ -508,7 +508,7 @@ select s.* from tb_sku s, (select id from tb_sku order by id limit 2000000,10) a
 
 #### 联表查询优化
 
-能用inner join ，就不用 left join/right join，如必须使用，一定要以小表为驱动
+**能用 inner join ，就不用 left join/right join，如必须使用，一定要以小表为驱动**
 
 > 内连接会对两个表进行优化，优先把小表放到外边，把大表放到里边。left join / right join不会重新调整顺序
 

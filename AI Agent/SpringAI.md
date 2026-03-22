@@ -1,6 +1,14 @@
+# 文档
+
+[官方文档](https://java2ai.com/docs/overview/)
+
+
+
+
+
 # 介绍
 
-Hello各位兄弟姐妹大家好，我是黑马程序员的虎哥。
+
 
 本套教程会以SpringAI为基础，讲解传统Java应用与DeepSeek这样的大模型开发结合的方案，科普一下AI大模型开发的知识，促进传统项目智能化。
 
@@ -4097,7 +4105,7 @@ public ChatClient chatClient(OpenAiChatModel model, ChatMemory chatMemory) {
 * ![image-20260127093026829](assets/image-20260127093026829.png)
 
 
-  
+
   选中“图像”：如果此时的模型不支持图生成，后台自动切换到图生成模型
   上传附件：自动调用多模态模型处理，作为上下文的一部分
 

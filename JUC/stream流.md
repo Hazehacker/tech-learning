@@ -295,7 +295,7 @@ public Result followCommons(Long followUserId) {
 ```java
 // 查询作者的所有粉丝
 List<Long> followUserIds = followService.list(new LambdaQueryWrapper<Follow>()
-        .eq(Follow::getFollowUserId, user.getId())).stream().map(follow -> follow.getUserId).collect(Collectors.toList());
+        .eq(Follow::getFollowUserId, user.getId())).stream().map(follow -> follow.getUserId()).collect(Collectors.toList());
 
 // 查询作者的所有粉丝
 List<Long> followUserIds = followService.list(new LambdaQueryWrapper<Follow>()

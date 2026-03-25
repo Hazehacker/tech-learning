@@ -231,7 +231,7 @@ func main() {
 	fmt.Println(primes)		// [2 3 5 7 11 13]
 }
 ```
-#### **切片：**
+#### **Slice(切片)：**
 
 An array has a fixed size. A slice, on the other hand, **is a dynamically-sized, flexible view into the elements of an array** (切片是对数组元素的一种**动态大小、灵活的视图**). **In practice, slices are much more common than arrays.**
 
@@ -326,6 +326,8 @@ The `make` function allocates a zeroed array and returns a slice that refers to 
 a := make([]int, 5)  // len(a)=5
 ```
 
+> 计算长度的函数：`len(a []int)`
+
 To specify a capacity, pass a third argument to `make`:
 
 ```go
@@ -335,48 +337,248 @@ b = b[:cap(b)] // len(b)=5, cap(b)=5
 b = b[1:]      // len(b)=4, cap(b)=4
 ```
 
+Slices can contain any type, including other slices：
+
+```go
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	// Create a tic-tac-toe board.
+	board := [][]string{
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+		[]string{"_", "_", "_"},
+	}
+
+	// The players take turns.
+	board[0][0] = "X"
+	board[2][2] = "O"
+	board[1][2] = "X"
+	board[1][0] = "O"
+	board[0][2] = "X"
+
+	for i := 0; i < len(board); i++ {
+		fmt.Printf("%s\n", strings.Join(board[i], " "))
+	}
+}
+```
+
+**我们通常会在切片中添加新元素，因此 Go 提供了一个内置函数在切片中添加新元素**：`func append(s []T, vs ...T) []T`
+
+The resulting value is a slice containing all the elements of **the original slice plus the provided values.**
+If the backing array of is too small to fit all the given values **a bigger array will be allocated.** **The returned slice will point to the newly allocated array**
+
+(To learn more about slices, read the [Slices: usage and internals](https://go.dev/blog/go-slices-usage-and-internals) article.)
+
 ```go
 package main
 
 import "fmt"
 
 func main() {
-	a := make([]int, 5)
-	printSlice("a", a)
+	var s []int
+	printSlice(s) // len=0 cap=0 []
 
-	b := make([]int, 0, 5)
-	printSlice("b", b)
+	// append works on nil slices.
+	s = append(s, 0)
+	printSlice(s) // len=1 cap=1 [0]
 
-	c := b[:2]
-	printSlice("c", c)
+	// 【The slice grows as needed】
+	s = append(s, 1)
+	printSlice(s) // len=2 cap=2 [0 1]
 
-	d := c[2:5]
-	printSlice("d", d)
+	// We can add more than one element at a time.
+	s = append(s, 2, 3, 4)
+	printSlice(s) // len=5 cap=6 [0 1 2 3 4]
 }
 
-func printSlice(s string, x []int) {
-	fmt.Printf("%s len=%d cap=%d %v\n",
-		s, len(x), cap(x), x)
+func printSlice(s []int) {
+	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
 }
 
 ```
 
+**Range**
 
+When ranging over a slice, two values are returned for each iteration. The first is the index, and the second is a copy of the element at that index.
 
+```go
+package main
 
+import "fmt"
 
+var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
 
+func main() {
+	for i, v := range pow {
+		fmt.Printf("2**%d = %d\n", i, v)
+	}
+}
+```
+
+**Range continued**
+
+**You can skip the index or value by assigning to `_`.**
+
+```go
+for i, _ := range pow
+for _, value := range pow
+```
+
+> If you only want the index, you can omit the second variable.
+>
+> ```go
+> for i := range pow
+> ```
 
 
 
 ```go
-m := map[string]int{"a": 1}      // 映射
-person := Person{Name: "Alice"}  // 结构体
+package main
 
-// 指针
-p := &age      // 取地址
-value := *p    // 解引用
+import "fmt"
+
+func main() {
+	pow := make([]int, 10)
+	for i := range pow {
+		pow[i] = 1 << uint(i) // == 2**i
+	}
+	for _, value := range pow {
+		fmt.Printf("%d\n", value)
+	}
+}
 ```
+
+
+
+
+
+
+
+#### Map(映射)
+
+A map maps keys to values.
+
+The `make` function **returns a map of the given type**, initialized and ready for use.
+
+```go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m map[string]Vertex
+
+func main() {
+	m = make(map[string]Vertex)
+	m["Bell Labs"] = Vertex{
+		40.68433, -74.39967,
+	}
+	fmt.Println(m["Bell Labs"])
+}
+
+```
+
+**Map literals**
+
+Map literals are like struct literals, **but the keys are required.**
+
+```go
+package main
+
+import "fmt"
+
+type Vertex struct {
+	Lat, Long float64
+}
+
+var m1 = map[string]Vertex{
+	"Bell Labs": Vertex{
+		40.68433, -74.39967,
+	},
+	"Google": Vertex{
+		37.42202, -122.08408,
+	},
+}
+// If the top-level type is just a type name, you can omit it from the elements of the literal.
+var m2 = map[string]Vertex{
+	"Bell Labs": {40.68433, -74.39967},
+	"Google":    {37.42202, -122.08408},
+}
+
+func main() {
+	fmt.Println(m1)
+}
+```
+
+**Mutating Maps**
+
+Insert or update an element in map `m`:
+
+```go
+m[key] = elem
+```
+
+Retrieve an element:
+
+```go
+elem = m[key]
+```
+
+Delete an element:
+
+```go
+delete(m, key)
+```
+
+**Test that a key is present with a two-value assignment:**
+
+```go
+elem, ok = m[key]
+```
+
+**If `key` is in `m`, `ok` is `true`. If not, `ok` is `false`.**
+
+**If `key` is not in the map**, then **`elem` is the zero value for the map's element type.**
+
+<u>**Note:** If `elem` or `ok` have not yet been declared you could use a short declaration form:</u>
+
+```go
+elem, ok := m[key]
+```
+
+
+
+**==WordCount()函数==**
+
+`WordCount` 函数的实现：
+
+```go
+func WordCount(s string) map[string]int {
+    counts := make(map[string]int)
+    for _, word := range strings.Fields(s) {
+        counts[word]++
+    }
+    return counts
+}
+```
+
+**说明：**
+
+1. **创建 map**：`counts := make(map[string]int)` 初始化一个空映射，用于存储每个单词及其出现次数。
+2. **分割字符串**：`strings.Fields(s)` 将输入字符串按空白字符（空格、制表符、换行等）分割成单词切片。
+3. **遍历计数**：对每个单词，在 map 中将其计数加一。如果单词首次出现，Go 会自动初始化为 0，然后 +1。
+4. **返回结果**：最终返回包含所有单词计数的 map。
+
+
 
 
 
@@ -433,6 +635,40 @@ func main() {
 	fmt.Println(j) // see the new value of j
 }
 ```
+
+
+
+#### Function values
+
+Functions are values too. They can be passed around just like other values.
+
+Function values may be used as function arguments and return values.
+
+```go
+package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func compute(fn func(float64, float64) float64) float64 {
+	return fn(3, 4)
+}
+
+func main() {
+	hypot := func(x, y float64) float64 {
+		return math.Sqrt(x*x + y*y)
+	}
+	fmt.Println(hypot(5, 12)) //13
+
+	fmt.Println(compute(hypot)) // 5
+	fmt.Println(compute(math.Pow)) // 81
+}
+
+```
+
+
 
 
 
@@ -727,21 +963,76 @@ func Sum(nums ...int) int {
 func() {
     fmt.Println("Hello")
 }()  // 立即执行
+```
 
+
+
+https://go.dev/tour/moretypes/25
+
+https://go.dev/tour/moretypes/26
+
+**Go 函数可以是闭包。闭包是一个函数值，它引用了其函数体外部的变量。该函数可以访问并修改这些被引用的变量；从这个意义上说，这个函数“绑定”到了这些变量上。**
+
+> 简单理解：闭包就是“带着外部环境变量的函数”，即使外部函数已经执行完毕，内部函数仍能记住并使用那些变量。
+
+**例如，`adder` 函数返回一个闭包。每个闭包都绑定到它自己的 `sum` 变量。**
+
+> 这意味着每次调用 `adder()`，都会创建一个新的、独立的 `sum` 变量，返回的闭包会“记住”这个专属的 `sum`。
+
+```go
 // 闭包
+package main          // 主包，程序入口
+
+import "fmt"          // 导入格式化输出包
+
+// adder 函数返回一个闭包（匿名函数）
 func adder() func(int) int {
-    sum := 0
-    return func(x int) int {
-        sum += x
-        return sum
+    sum := 0                          // 定义局部变量 sum，初始为 0
+    return func(x int) int {          // 返回一个匿名函数，接收 int，返回 int
+        sum += x                      // 修改外部的 sum 变量（闭包特性）
+        return sum                    // 返回累加后的结果
     }
 }
 
-add := adder()
-fmt.Println(add(1))  // 1
-fmt.Println(add(2))  // 3
-fmt.Println(add(3))  // 6
+func main() {
+    pos, neg := adder(), adder()      // 创建两个独立的闭包：pos 和 neg
+                                    // 它们各自拥有独立的 sum 变量！
+
+    for i := 0; i < 10; i++ {         // 循环 10 次
+        fmt.Println(
+            pos(i),                   // pos 闭包：每次加上 i
+            neg(-2*i),                // neg 闭包：每次加上 -2*i
+        )
+    }
+}
 ```
+
+- `pos` 和 `neg` 是两个完全独立的闭包。
+- `pos` 的 `sum` 从 0 开始，每次加 `i` → 输出：0, 1, 3, 6, 10...
+- `neg` 的 `sum` 也从 0 开始，每次加 `-2*i` → 输出：0, -2, -6, -12, -20...
+
+> 输出
+>
+> ```text
+> 0 0
+> 1 -2
+> 3 -6
+> 6 -12
+> 10 -20
+> 15 -30
+> 21 -42
+> 28 -56
+> 36 -72
+> 45 -90
+> ```
+>
+> 
+
+
+
+
+
+
 
 ### 3. defer 机制
 

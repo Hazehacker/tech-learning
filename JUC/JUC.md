@@ -381,9 +381,9 @@ new Thread(() -> {
 > ```java
 > // Runnable runnable = () -> log.debug("running");
 > Runnable runnable = new Runnable() {
->  public void run(){
->      log.debug("I'm running");
->  }
+>      public void run(){
+>          log.debug("I'm running");
+>      }
 > };
 > Thread t = new Thread(runnable, "线程一");
 > t.start();
@@ -714,7 +714,7 @@ log.debug(": {}", t1.isInterrupted()); // 打印false
 
 
 
-**打断标记**：可以用于判断线程被打断之后继续运行还是终止
+**打断标记**：**可以用于判断线程被打断之后继续运行还是终止**
 
 * 在阻塞态被打断的线程，打断标记会置为false
 
@@ -781,7 +781,7 @@ private static void test() throws InterruptedException {
         // 如果不打断，会保持 park，下面的代码不再执行
         log.debug("unpark...");
         log.debug("打断状态: {}", Thread.currentThread().interrupted());
-        // interrupted()在返回打断标记的同时把打断标记置为
+        // interrupted()在返回打断标记的同时把打断标记置为false
         
         LockSuport.park();// 此时二次 park 会生效
         log.debug("unpark...");
@@ -912,9 +912,9 @@ notifyAll 的结果
 
 > ##### sleep(long n) 和 wait(long n) 的区别
 
-1) [API角度]sleep 是 Thread 的(静态)方法，而 wait 是 Object 的方法 
-2) [使用条件不同]sleep 不需要强制和 synchronized 配合使用，但 wait 需要 和 synchronized 一起用 
-3) [是否释放锁]sleep 在睡眠的同时，不会释放对象锁的，但 wait 在等待的时候会释放对象锁 
+1) [**API角度**]sleep 是 Thread 的(静态)方法，而 wait 是 Object 的方法 
+2) [**使用条件不同**]sleep 不需要强制和 synchronized 配合使用，但 wait 需要 和 synchronized 一起用 
+3) [**是否释放锁**]sleep 在睡眠的同时，不会释放对象锁的，但 wait 在等待的时候会释放对象锁 
 
 > 共同点：调用之后，线程状态都是 TIMED_WAITING
 
@@ -1055,8 +1055,6 @@ new Thread(() -> {
   * 如果有其它线程也在等待条件呢？
     如果还有其他线程也在等待，不能保证唤醒的是“小南”的线程
 
-
-
 **step3**
 
 ```java
@@ -1122,10 +1120,11 @@ new Thread(() -> {
 20:53:13.174 [小南] c.TestCorrectPosture - 没干成活... 
 ```
 
-* notify 只能随机唤醒一个 WaitSet 中的线程，这时如果有其它线程也在等待，那么就可能唤醒不了正确的线程，称之为【虚假唤醒】 
-* 解决方法，改为 notifyAll
+* notify 只能随机唤醒一个 WaitSet 中的线程，这时如果有其它线程也在等待，那么就可能唤醒不了正确的线程
 
 
+
+⬇️解决方法，改为 notifyAll
 
 **step4**
 
@@ -1155,8 +1154,11 @@ new Thread(() -> {
 
 ```
 
-* 用 notifyAll 仅解决某个线程的唤醒问题，但使用 if + wait 判断仅有一次机会，一旦条件不成立，就没有重新判断的机会了 
-* 解决方法，用 ==while + wait==（解决虚假唤醒问题，唤醒的时候惊喜那个条件判断，如果是假唤醒就继续等待），当条件不成立，再次 wait
+* notifyAll 会有虚假唤醒问题
+
+  > 本来只需要一个消费者，但是notifyAll唤醒了一群消费者，一群只有一个可以消费，那么其他消费者就是虚假唤醒了，所以才需要使用while来多次判断条件
+
+* 解决方法，用 ==while + wait==（解决虚假唤醒问题，**唤醒的时候进行条件判断，如果是假唤醒就继续等待**），当条件不成立，再次 wait
 
 
 
@@ -2868,7 +2870,7 @@ C==> CCCC
 
 
 
-### 如何设置最大线程数
+### ==如何设置最大线程数==
 
 * 过小会导致程序不能充分地利用系统资源、容易导致饥饿 
 * 过大会导致更多的线程上下文切换，占用更多内存
@@ -2913,7 +2915,9 @@ CPU 不总是处于繁忙状态，例如，当你执行业务计算时，这时�
 
 
 ```
-线程数 = 核数 * 期望 CPU 利用率 * 总时间(CPU计算时间+等待时间) / CPU 计算时间
+线程数 = CPU核心数 * 期望 CPU 利用率 * 总时间(CPU计算时间+等待时间) / CPU 计算时间
+或
+最佳线程数 = CPU核心数 * 期望 CPU 利用率 * (1 + IO 时间 / CPU 时间)
 ```
 
 > 即 `线程数*当前线程利用率 = 核心数*期望CPU利用率`
@@ -3113,7 +3117,7 @@ class MockConnection implements Connection {
 
 **问题分析** 
 
-> 以上的结果可能是正数、负数、零。为什么呢？因为 Java 中对静态变量的自增，自减并不是原子操作，要彻底理 解，必须从字节码来进行分析
+> 以上的结果可能是正数、负数、零。为什么呢？因为 Java 中对静态变量的**自增，自减并不是原子操作**，要彻底理 解，必须从字节码来进行分析
 >
 > 例如对于 i++ 而言（i 为静态变量），实际会产生如下的 JVM 字节码指令：
 >
@@ -3151,7 +3155,7 @@ class MockConnection implements Connection {
 >
 > 
 
-——上下文切换导致的指令交错
+——<u>上下文切换导致的指令交错</u>
 
 
 
@@ -3249,7 +3253,7 @@ class MockConnection implements Connection {
 >
 > 所以访问修饰符 private  / final 是有意义的，能避免子类重写
 
-
+<u>只要这个堆里的对象**只被当前线程的栈帧引用**（即没有“逃逸”），它就是安全的。一旦这个对象的引用（地址）被传递到了其他地方（如静态变量、其他线程、返回值），它就“逃逸”了，从而变得不安全。</u>
 
 
 
@@ -3266,7 +3270,7 @@ class MockConnection implements Connection {
 
 
 
-synchronized，即俗称的【对象锁】，它采用互斥的方式让同一时刻至多只有一个线程能持有【对象锁】，其它线程再想获取这个【对象锁】时就会阻塞住。这样就能保证拥有锁 的线程可以安全的执行临界区内的代码，不用担心线程上下文切换
+synchronized：采用互斥的方式让**同一时刻至多只有一个线程能持有【对象锁】**，其它线程再想获取这个【对象锁】时就会阻塞住。这样就能保证拥有锁 的线程可以安全的执行临界区内的代码，不用担心线程上下文切换
 
 > 互斥：
 >
@@ -3323,12 +3327,12 @@ log.debug("{}",counter);
 * `synchronized(对象)` 中的对象，可以想象为一个房间（room），有唯一入口（门）房间只能一次进入一人 进行计算，线程 t1，t2 想象成两个人
 * 当线程 t1 执行到 synchronized(room) 时就好比 t1 进入了这个房间，并锁住了门拿走了钥匙，在门内执行 `count++`代码
 * 这时候如果 t2 也运行到了 `synchronized(room)` 时，它发现门被锁住了，只能在门外等待，发生了上下文切换，阻塞住了
-* 这**中间即使 t1 的 cpu 时间片不幸用完，被踢出了门外（不要错误理解为锁住了对象就能一直执行下去哦）， 这时门还是锁住的，t1 仍拿着钥匙，t2 线程还在阻塞状态进不来，只有下次轮到 t1 自己再次获得时间片时才 能开门进入**
+* 这**中间即使 t1 的 cpu 时间片不幸用完，被踢出了门外（不要错误理解为锁住了对象就能一直执行下去哦）， 这时门还是锁住的，t1 仍拿着钥匙，t2 线程还在阻塞状态进不来，只有下次轮到 t1 自己再次获得时间片时才能开门进入**
 * 当 t1 执行完 synchronized{} 块内的代码，这时候才会从 obj 房间出来并解开门上的锁，唤醒 t2 线程把钥匙给他。t2 线程这时才可以进入 obj 房间，锁住了门拿上钥匙，执行它的 count-- 代码
 
 ![image-20260129102507711](assets/image-20260129102507711.png)
 
-synchronized 实际是用**对象锁**保证了**临界区内代码的原子性**，临界区内的代码对外是不可分割的，不会被线程切 换所打断。
+synchronized 实际是用**对象锁**<u>保证了**临界区内代码的原子性**</u>，临界区内的代码对外是不可分割的，不会被线程切 换所打断。
 
 为了加深理解，请思考下面的问题
 
@@ -3340,6 +3344,8 @@ synchronized 实际是用**对象锁**保证了**临界区内代码的原子性*
 * 如果 t1 synchronized(obj) 而 t2 没有加会怎么样？如何理解？-- 锁对象
 
   和没加锁一样，锁只有线程一持有 线程二不用尝试获取锁，线程二不会因为锁而被阻塞
+
+
 
 
 
@@ -3433,7 +3439,7 @@ TimeUnit
 
 现在结果是什么呢？
 
-结果：**==还是先发短信，然后再打电话 ==**
+结果：**==还是先发短信，然后再打电话==**
 
 > 原因：sleep不会释放锁
 >
@@ -3482,9 +3488,11 @@ class Phone {
 
 输出结果为
 
+```
 hello
 
 发短信
+```
 
 > 原因：hello是一个**普通方法，不受synchronized锁的影响**，==**不用等待锁的释放**==
 >
@@ -3596,11 +3604,17 @@ class Phone {
 
 输出结果
 
+```
 打电话
 
 发短信
+```
+
+
 
 > 原因：因为<u>一个锁的是Class类的模板，一个锁的是对象的调用者</u>。所以**不存在等待，直接运行**。
+
+==静态锁（Class）和实例锁（Object）是**两把不同的锁**，互不干扰==
 
 
 
@@ -3642,11 +3656,15 @@ class Phone {
 
 输出结果
 
+```
 打电话
 
 发短信
+```
 
 > 原因：两把锁锁的不是同一个东西
+
+
 
 
 
@@ -3715,10 +3733,10 @@ class Account {
 >
 > ```java
 > public synchronized void transfer(Account target, int amount) {
->  if (this.money > amount) {
->      this.setMoney(this.getMoney() - amount);
->      target.setMoney(target.getMoney() + amount);
->  }
+>      if (this.money > amount) {
+>          this.setMoney(this.getMoney() - amount);
+>          target.setMoney(target.getMoney() + amount);
+>      }
 > }
 > ```
 >
@@ -3752,7 +3770,7 @@ public void transfer(Account target, int amount) {
 
 ![image-20260129173719926](assets/image-20260129173719926.png)
 
-> 普通对象对象头用八个字节存储( 4 个字节的 Mark Word，4 个自己的 Klass Word)
+> 普通对象对象头用八个字节存储( 4 个字节的 Mark Word，4 个字节的 Klass Word)
 >
 > Klass Word 是个指针，指向这个对象的类（用于判断类是什么类型）
 >
@@ -3776,7 +3794,7 @@ Monitor是synchronized的底层原理，称之为monitor。
 
 Monitor 通常被翻译为**监视器**或**管程** 
 
-每个 Java 对象都可以关联一个 Monitor 对象，如果使用 synchronized 给对象上锁（重量级）之后，该对象头的 Mark Word 中就被设置指向 Monitor 对象的指针 
+每个 Java 对象都可以关联一个 Monitor 对象（锁监视器），如果使用 synchronized 给对象上锁（重量级）之后，该对象头的 <u>Mark Word 中就被设置指向 Monitor 对象的指针</u> 
 
 ![s](assets/image-20260129175210665.png)
 
@@ -3786,18 +3804,18 @@ Monitor 通常被翻译为**监视器**或**管程**
 
 * 当Thread-2 执行 synchronized(obj)里面的代码时 就会将 **obj 对象和**操作系统层面提供的 **Monitor相关联(在 obj 里面记录 monitor 对象的指针地址)**，将 Monitor 的Owner置为 Thread-2
 
-* 在 Thread-2 上锁的过程中，如果 Thread-3、 Thread-4、 Thread-5 也希望执行 synchronized(obj) 里面的代码，就会先判断 obj 是否关联和Monitor；
+* 在 Thread-2 上锁的过程中，如果 Thread-3、 Thread-4、 Thread-5 也希望执行 synchronized(obj) 里面的代码，**就会先判断 obj 是否关联和Monitor**；
 
-  * 如果关联了 monitor 锁：判断monitor 锁是否有owner 
+  * <u>如果关联了 monitor 锁：判断monitor 锁是否有owner</u> 
 
-    * 有owner了：Thread-3、 Thread-4、 Thread-5就会进入Monitor 的 EntryList（等待队列/阻塞队列）
+    * 有owner了：Thread-3、 Thread-4、 Thread-5就会<u>进入Monitor 的 EntryList</u>（等待队列/阻塞队列）
 
       > ![image-20260130152159137](assets/image-20260130152159137.png)
 
 * 执行完代码之后，就会**根据一定规则**唤醒 EntryList 里面的某个线程
   (先来先服务，优先级，最短时间优先......)
 
-* WaitSet中的线程是之前获得过锁、但条件不满足进入 WAITING 状态的线程
+* WaitSet中的线程是之前获得过锁、但进入 WAITING 状态的线程
 
   > ![image-20260130152527816](assets/image-20260130152527816.png)
 
@@ -3805,7 +3823,7 @@ Monitor 通常被翻译为**监视器**或**管程**
 
 * synchronized 必须是进入同一个对象的 monitor 才有上述效果
   另一个对象 关联 另一个 Monitor 锁
-* 不加 synchronized 的对象不会做monitor的检查 ，不会看对象头上的 Mark Word 、不会执行monitor相关的逻辑
+* <u>不加 synchronized 的对象不会关联锁监视器：不加 synchronized 的对象不会做monitor的检查 ，不会看对象头上的 Mark Word 、不会执行monitor相关的逻辑</u>
 
 
 
@@ -3883,7 +3901,7 @@ public static void main(java.lang.String[]);
 
 > ##### 小故事 
 >
-> 故事角色 
+> 故事角色
 >
 > * 老王 - JVM
 > * 小南 - 线程 
@@ -3938,13 +3956,13 @@ public static void method2() {
 
 
 
-* 创建锁记录（Lock Record）对象，每个线程都的栈帧都会包含一个锁记录的结构，内部可以存储锁定对象的 Mark Word
+* 创建锁记录（Lock Record）对象，**每个线程都的栈帧都会包含一个锁记录的结构**，内部可以存储锁定对象的 Mark Word
 
   ![image-20260130162128719](assets/image-20260130162956933.png)
 
-* 让锁记录中 Object reference 指向锁对象，并尝试用 cas 替换 Object 的 Mark Word，将 Mark Word 的值存 入锁记录
+* 让锁记录中 Object reference 指向被锁住的对象，并尝试用 cas 替换 Object 的 Mark Word，将 Mark Word 的值存 入锁记录
 
-  ![image-20260130162158061](assets/image-20260130163330103.png)
+  ![image-20260130162158061](assets/image-20260328170502417.png)
 
 * 如果 cas 替换成功(数据交换成功)，对象头中存储了 锁记录地址和状态 00 ，表示由该线程给对象加锁，这时图示如下
 

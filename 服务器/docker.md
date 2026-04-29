@@ -457,7 +457,7 @@ docker ps
 >    ```
 >    # 创建目录
 >    rm -f /etc/docker/daemon.json
->                                                                            
+>                                                                               
 >    # 复制内容
 >    tee /etc/docker/daemon.json <<-'EOF'
 >    {
@@ -472,10 +472,10 @@ docker ps
 >        ]
 >    }
 >    EOF
->                                                                            
+>                                                                               
 >    # 重新加载配置
 >    systemctl daemon-reload
->                                                                            
+>                                                                               
 >    # 重启Docker
 >    systemctl restart docker
 >    ```
@@ -2494,6 +2494,28 @@ sudo netstat -tulnp | grep ':8082'
 > ```
 >
 > 
+
+
+
+### 看现有部署情况
+
+看是什么操作系统、跑了哪些关键进程
+
+```shell
+uname -a
+cat /etc/os-release
+ps -ef | grep -i java       # 看有没有 Tomcat / Spring 在跑
+ps -ef | grep -i tomcat
+ps -ef | grep -i mysql
+ps -ef | grep -i redis
+ps -ef | grep -i nginx
+ps -ef | grep -i httpd      # Apache，HTTP 隧道脚本可能挂在这下面
+ps -ef | grep -i php
+```
+
+
+
+
 
 
 

@@ -72,17 +72,17 @@ flowchart TB
   master 不处理请求，只管 worker；worker 才负责干活
 - **每个 worker 一个 epoll 实例**
   "epoll 实例"是内核为 epoll 维护的一套数据结构（本质是一个 fd (**文件描述符**)），负责记住这个 worker 监听了哪些连接、哪些连接上有事件。每个 worker 独立一个，互不干扰。单线程、异步处理成千上万个连接
+  
+  > [epoll 是什么？](epoll 是什么.md)
 - **共享内存**能让 worker 之间共享状态（缓存元数据、限流计数、SSL 会话）。worker 自身的内存是隔离的
 - **Cache Manager / Loader** 是两个特殊进程，按需启动，专门管缓存目录
 - **HTTP / Stream / Mail / Core** 是 nginx 的四大子系统，模块化加载
 
-后面章节就是把上图的每一块单独拿出来放大。
-
 [spacer]
 
-## 进程模型：master + worker 各自在干啥
+## 进程模型：master + worker
 
-### master 在干什么
+### master 的作用
 
 master 进程本身**不处理任何请求**，它的工作只有四件：
 
@@ -91,11 +91,13 @@ master 进程本身**不处理任何请求**，它的工作只有四件：
 3. 监听信号（HUP/USR1/USR2/TERM/QUIT，信号是 Linux 进程间通信的一种方式——你可以理解成"给进程发一个数字代号，进程收到后做对应的事"），把信号转发给 worker
 4. 监控 worker，挂了就重启
 
-可以这么理解：master 是工头，worker 才是工人。工头不搬砖。
+master 的定位类似包工头——不搬砖，只管分配任务。worker 才是干活的。
 
-### worker 在干什么
+> 当 master 收到外界信号（比如 `nginx -s reload` 触发的 HUP 信号），master 会重新加载配置文件，fork 新 worker，然后给老 worker 发 QUIT 信号：老 worker 不再接收新请求，处理完当前请求后退出
 
-worker 才是真正处理请求的：
+### worker 的作用
+
+worker 负责真正处理请求：
 
 - 调用 `accept()` 接受新连接（accept 是系统级调用，从监听队列里取出一个已完成 TCP 三次握手的新连接）
 - 把连接的 socket 加进自己的 epoll
@@ -114,9 +116,9 @@ worker 才是真正处理请求的：
 
 - **多线程要锁**。锁就要竞争，竞争就有 cache miss（CPU 缓存没命中，得去慢得多的内存里取数据）和上下文切换开销（CPU 从一个线程切到另一个线程，要保存/恢复寄存器、刷新缓存，一次切换几十微秒到几百微秒）
 - **多线程一旦阻塞会卡住整个进程**——一个文件 IO 卡住，那个线程就堵了
-- **nginx 用异步非阻塞 IO**——所谓"非阻塞"，就是读数据时如果没有数据可读，函数立刻返回（而不是傻等），程序可以先处理别的连接，回头再来问。一个 worker 就能同时处理几万连接，根本不需要线程并发
+- **nginx 用异步非阻塞 IO**——所谓"非阻塞"，就是读数据时如果没有数据可读，函数立刻返回（而不是阻塞等待），程序可以先处理别的连接，回头再来问。一个 worker 就能同时处理几万连接，根本不需要线程并发
 
-简单说：nginx 的每个 worker 是个**单线程的事件循环**——"事件循环"就是一个 `while(1)` 死循环，反复问 epoll "谁有动静？"，有就处理，没有就等。靠 epoll + 非阻塞 IO 在并发模型上吊打多线程。后面会展开。
+简单说：nginx 的每个 worker 是个**单线程的事件循环**——"事件循环"就是一个 `while(1)` 死循环，反复问 epoll "谁有动静？"，有就处理，没有就等。靠 epoll + 非阻塞 IO，一个单线程 worker 能扛住多线程模型几倍到几十倍的并发连接。
 
 [spacer]
 
@@ -177,7 +179,7 @@ flowchart TD
 
 ### hot upgrade：不停机升级 nginx 二进制
 
-这个比较神奇。你 nginx 跑在线上，想把版本从 1.24 升到 1.26，**完全不停机**怎么做？
+你 nginx 跑在线上，想把版本从 1.24 升到 1.26，**完全不停机**怎么做？
 
 ```mermaid
 flowchart TD
@@ -204,7 +206,7 @@ flowchart TD
 
 ## 事件驱动：从 select/poll 到 epoll/kqueue
 
-前面说"一个 worker 能同时处理几万连接"——靠的就是这块。
+一个 worker 能同时处理几万连接，靠的就是事件驱动模型。
 
 ### 经典的并发模型对比
 
@@ -285,7 +287,7 @@ events {
 | 10 | `CONTENT` | **生成响应内容** | `proxy_pass`, `fastcgi_pass`, `return`, 静态文件 handler |
 | 11 | `LOG` | 写日志 | `access_log` |
 
-**怎么用这张表**：你写配置时遇到不知道指令属于哪个阶段时，回来查这张表。比如：
+用几个例子说清这张表怎么查：
 
 - `limit_req` 在 `PREACCESS`，所以**先限流再鉴权**——被限流的请求根本走不到鉴权那步，省 CPU
 - `proxy_pass` 在 `CONTENT`，是**生成响应**用的，不能在一个 location 里写两个 content handler
@@ -297,7 +299,7 @@ events {
 
 ## 内存池：为什么不用 malloc/free
 
-C 程序员对 `malloc`/`free` 的两大噩梦：
+nginx 是 C 写的，C 里手动管理内存有两个主要痛点：
 
 1. **内存碎片**：频繁分配释放小块内存会让堆变得稀碎
 2. **内存泄漏**：忘了 `free` 就泄漏，错误处理路径上特别容易漏
@@ -313,8 +315,6 @@ flowchart TD
     style A fill:#dbeafe,stroke:#2563eb
     style E fill:#f8d7da,stroke:#dc3545
 ```
-
-好处是显而易见的：
 
 - **零碎片**：pool 内部按 chunk 管理，请求结束 pool 一删，所有内存归还
 - **零泄漏**：根本不用 free，请求结束自动清
@@ -414,7 +414,7 @@ nginx: cache loader process     ← 和这个
 - **红黑树**：一种自平衡的二叉查找树，按 key 的 MD5 值快速定位某个缓存条目。O(log n) 的查找效率
 - **LRU（Least Recently Used）链表**：每访问一次就把节点移到链表头。链尾自然就是"最久没被访问过的"
 
-cache manager 清理时从**LRU 链表尾部**开始删——访问最少的先死。
+cache manager 清理时从**LRU 链表尾部**开始删——访问最少的先被淘汰。
 
 
 
@@ -448,7 +448,7 @@ keepalive_requests 1000;       # 一个连接最多服务 1000 个请求就关
 
 ### upstream keepalive：nginx 到后端
 
-默认情况下 **nginx 每次代理请求都会和后端新建 TCP 连接，处理完就关**——这在高并发下非常浪费。
+默认情况下 **nginx 每次代理请求都会和后端新建 TCP 连接，处理完就关**——高并发下，频繁建连和断连的开销很大。
 
 开启 upstream keepalive：
 
@@ -487,7 +487,7 @@ sysctl net.ipv4.ip_local_port_range
 ss -s
 ```
 
-upstream keepalive 是这个问题的根本解法——根本不建立那么多新连接，自然不会耗尽端口。
+upstream keepalive 是这个问题的根本解法——连接复用之后，新连接数大幅减少，端口自然够用。
 
 
 

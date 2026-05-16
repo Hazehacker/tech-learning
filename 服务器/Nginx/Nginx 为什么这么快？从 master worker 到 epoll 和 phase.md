@@ -71,9 +71,9 @@ flowchart TB
 - **一个 master，多个 worker**
   master 不处理请求，只管 worker；worker 才负责干活
 - **每个 worker 一个 epoll 实例**
-  "epoll 实例"是内核为 epoll 维护的一套数据结构（本质是一个 fd (**文件描述符**)），负责记住这个 worker 监听了哪些连接、哪些连接上有事件。每个 worker 独立一个，互不干扰。单线程、异步处理成千上万个连接
+  "epoll 实例"是内核为 epoll 维护的一套数据结构，负责记住这个 worker 监听了哪些连接、哪些连接上有事件。每个 worker 独立一个，互不干扰。单线程、异步处理成千上万个连接
   
-  > [epoll 是什么？](epoll 是什么.md)
+  > [epoll 是什么？](https://github.com/Hazehacker/tech-learning/blob/main/%E6%9C%8D%E5%8A%A1%E5%99%A8/Nginx/epoll%20%E6%98%AF%E4%BB%80%E4%B9%88.md)
 - **共享内存**能让 worker 之间共享状态（缓存元数据、限流计数、SSL 会话）。worker 自身的内存是隔离的
 - **Cache Manager / Loader** 是两个特殊进程，按需启动，专门管缓存目录
 - **HTTP / Stream / Mail / Core** 是 nginx 的四大子系统，模块化加载
@@ -93,13 +93,14 @@ master 进程本身**不处理任何请求**，它的工作只有四件：
 
 master 的定位类似包工头——不搬砖，只管分配任务。worker 才是干活的。
 
-> 当 master 收到外界信号（比如 `nginx -s reload` 触发的 HUP 信号），master 会重新加载配置文件，fork 新 worker，然后给老 worker 发 QUIT 信号：老 worker 不再接收新请求，处理完当前请求后退出
+> 当 master 收到外界信号（比如 `nginx -s reload` 触发的 HUP 信号），master 会重新加载配置文件，fork 新 worker，然后给老 worker 发 QUIT 信号：让老 worker 不再接收新请求，处理完当前请求后退出
 
 ### worker 的作用
 
 worker 负责真正处理请求：
 
-- 调用 `accept()` 接受新连接（accept 是系统级调用，从监听队列里取出一个已完成 TCP 三次握手的新连接）
+- 调用 `accept()` 接受新连接
+  （accept 是系统级调用，从监听队列里取出一个已完成 TCP 三次握手的新连接）
 - 把连接的 socket 加进自己的 epoll
 - 等事件来，处理事件，吐响应
 - 单进程内**所有连接都是这个 worker 一个人扛**——可能是几千、几万个
@@ -124,14 +125,14 @@ worker 负责真正处理请求：
 
 ### 惊群问题与 accept_mutex / SO_REUSEPORT
 
-这里有个细节坑：多个 worker 都在 listen 同一个端口，新连接进来时，**操作系统会唤醒哪个 worker？**
+如果多个 worker 都在 listen 同一个端口，新连接进来时，**操作系统会唤醒哪个 worker？**
 
-老内核实现是：**全部唤醒**，但只有一个能 accept 成功，其他白醒一次——这就是"惊群效应（thundering herd）"。
+老内核的实现是：**全部唤醒**，但只有一个能 accept 成功，其他白醒一次——这就是"惊群效应（thundering herd）"。
 
 nginx 的两种应对方式：
 
 1. **`accept_mutex on`**（老办法）：worker 之间抢一把锁，谁拿到谁去 accept
-2. **`reuseport`**（新办法）：内核在 listen socket（处于监听状态的 socket，等着接新连接）上做负载均衡，每个 worker 只被唤醒处理分给自己的连接
+2. **`reuseport`**（新办法）：内核在 <u>listen socket（处于监听状态的 socket，等着接新连接）上做负载均衡</u>，每个 worker 只被唤醒处理分给自己的连接
 
 ```nginx
 # 现在推荐的写法
@@ -147,15 +148,15 @@ http {
 }
 ```
 
-> Linux 3.9+ 支持 SO_REUSEPORT。性能最好，建议直接开。
+> Linux 3.9+ 支持 SO_REUSEPORT。性能最好，建议直接开
 
 
 
-## reload / quit / hot upgrade 是怎么发生的
+### reload / quit / hot upgrade 的处理流程
 
-入门篇讲了 `reload` 不会丢请求，那么它到底是怎么做到的？
+入门篇里面提到`nginx -s reload` 能做到不停机更新配置，它是怎么做到的？
 
-### reload 流程
+#### `reload` 流程
 
 ```mermaid
 flowchart TD
@@ -170,16 +171,17 @@ flowchart TD
 
 整个过程**新连接从一开始就由新 worker 接管，老连接由老 worker 处理完**——零中断。
 
-### quit 和 stop 的区别
+#### quit 和 stop 的区别
 
-- `nginx -s quit` ≈ 给 master 发 QUIT：master 转发给所有 worker，让它们处理完手头请求再退。**优雅停**
-- `nginx -s stop` ≈ TERM：立刻全部退，未处理完的连接直接断。**强制停**
+- `nginx -s quit` ≈ 给 master 发 QUIT：master 转发给所有 worker，让它们处理完手头请求再退。**优雅终止**
+- `nginx -s stop` ≈ TERM：立刻全部退，未处理完的连接直接断。**强制终止**
 
 `stop` 几乎不该用，除非 nginx 卡死了不响应 quit。
 
-### hot upgrade：不停机升级 nginx 二进制
+#### hot upgrade：不停机升级 nginx 二进制
 
-你 nginx 跑在线上，想把版本从 1.24 升到 1.26，**完全不停机**怎么做？
+如果 nginx 跑在线上，想把版本从 1.24 升到 1.26，**完全不停机**怎么做？
+可以使用 hot upgrade
 
 ```mermaid
 flowchart TD
@@ -200,7 +202,69 @@ flowchart TD
 
 如果新版有问题，可以一键回滚：`kill -HUP <老 master>` 让老 master 把 worker 拉回来。
 
+> ##### 具体操作
+>
+> 1. **备份**
+>
+>    - **备份旧的二进制文件：** `mv /path/to/nginx/sbin/nginx /path/to/nginx/sbin/nginx.old`
+>    - **备份整个 Nginx 目录（推荐）：** `tar -zcvf /tmp/nginx-backup-$(date +%F).tar.gz /path/to/nginx/`。这样在出现严重问题时，可以快速解压恢复。
+>
+> 2. **编译新版 Nginx**
+>
+>    - 下载新版本的 Nginx 源码（例如 1.26）。
+>    - **关键点：** 使用与旧版本**完全相同**的 `./configure` 参数进行编译。你可以用 `nginx -V` 命令查看当前版本的编译参数。
+>    - 执行 `make` 进行编译，但**千万不要**执行 `make install`，因为它会覆盖现有文件并可能中断服务。编译完成后，新的二进制文件通常在 `objs/nginx`。
+>
+> 3. **替换二进制文件**
+>
+>    - 将上一步编译好的新版二进制文件复制到 Nginx 的安装目录，覆盖原路径（此时原文件已被备份为 `nginx.old`）
+>
+>      ```bash
+>      cp ./objs/nginx /path/to/nginx/sbin/nginx
+>      ```
+>
+> 4. **启动新主进程 (`USR2`)**
+>
+>    - 向当前的 Nginx 主进程发送 `USR2` 信号。这会触发旧主进程启动一个新的主进程（加载新的二进制文件），同时将旧的 PID 文件重命名为 
+>
+>      ```
+>      nginx.pid.oldbin
+>      ```
+>
+>      ```bash
+>      kill -USR2 $(cat /path/to/nginx/logs/nginx.pid)
+>      ```
+>
+>    - 此时，系统中会同时存在两套 Nginx 进程：旧版和新版。新连接将由新版的 worker 进程处理。
+>
+> 5. **验证新版本**
+>
+>    - 这是决定下一步操作的关键。通过以下方式进行验证：
+>      - **检查进程：** `ps aux | grep nginx`，确认新旧进程都在运行。
+>      - **检查日志：** `tail -f /path/to/nginx/logs/error.log`，观察是否有报错信息。
+>      - **业务测试：** 访问你的服务，确认功能正常。
+>
+> 6. **决策：继续或回滚**
+>
+>    - **如果验证失败 (有问题？是) -> 立即回滚**
+>
+>      1. 向旧版主进程（其 PID 在 `nginx.pid.oldbin` 文件中）发送 `HUP` 信号。这会让旧版主进程重新加载配置，并拉起属于它自己的新版 worker 进程，从而接管所有流量。
+>
+>         ```bash
+>         kill -HUP $(cat /path/to/nginx/logs/nginx.pid.oldbin)
+>         ```
+>
+>      2. 然后，优雅地关闭掉那个有问题的新版主进程。
+>
+>         ```bash
+>         kill -QUIT $(cat /path/to/nginx/logs/nginx.pid)
+>         ```
+>
+>      3. 至此，服务已安全回退到旧版本。
+
 > 这个机制是 nginx 早期就有的"工业级"特性，被很多其他服务（如 Envoy）参考。
+
+
 
 
 
@@ -215,9 +279,9 @@ flowchart TD
 | **一连接一进程** | Apache prefork | fork 1 万次进程，OS 直接死 |
 | **一连接一线程** | Tomcat 默认 | 1 万线程，上下文切换吃 CPU |
 | **线程池 + 阻塞 IO** | Tomcat NIO 之前 | 池子满了就排队，吞吐有上限 |
-| **异步非阻塞 + 事件驱动** | Nginx, Node.js | 1 个进程/线程扛几万连接 |
+| **异步非阻塞 + 事件驱动** | **Nginx**, Node.js | 1 个进程/线程扛几万连接 |
 
-nginx 是最后一种。
+
 
 ### 为什么 epoll 快
 

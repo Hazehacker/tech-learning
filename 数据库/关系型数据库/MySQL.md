@@ -1,25 +1,5 @@
 
 
-[
-
-#### 创建数据库
-
-
-
-
-
-> ![image-20250814105950907](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814105950907.png)
->
-> 
-
-### 数据库相关
-
-![image-20250814110851375](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814110851375.png)
-
-> ![image-20250814110949990](C:\Users\Hazenix\AppData\Roaming\Typora\typora-user-images\image-20250814110949990.png)
-
-表名设为tableX
-
 
 
 ## SQL

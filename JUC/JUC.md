@@ -4335,6 +4335,8 @@ public void transfer(Account target, int amount) {
 
 ![image-20260129173853712](assets/image-20260129173853712.png)
 
+Mark Word 存储和锁相关的信息，包括是否和 monitor 关联/是否处于偏向锁的状态信息、指向monitor的指针、
+
 > Normal：哈希码；分代年龄；是否是偏向锁；加锁状态
 >
 > * 哈希码用的时候才产生，默认是0，只有第一次调用对象的hashcode，对象的哈希码才会产生，才在对象头的markword里面填充哈希码
@@ -4359,9 +4361,9 @@ Monitor 通常被翻译为**监视器**或**管程**
 
 * 刚开始 Monitor 中 Owner 为 null
 
-* 当Thread-2 执行 synchronized(obj)里面的代码时 就会将 **obj 对象和**操作系统层面提供的 **Monitor相关联(在 obj 里面记录 monitor 对象的指针地址)**，将 Monitor 的Owner置为 Thread-2
+* 当Thread-2 执行 synchronized(obj)里面的代码时 就会将 **obj 对象和**操作系统层面提供的 **Monitor相关联(在 obj 里面记录 monitor 对象的指针地址)**，将 Monitor 的 Owner 置为 Thread-2
 
-* 在 Thread-2 上锁的过程中，如果 Thread-3、 Thread-4、 Thread-5 也希望执行 synchronized(obj) 里面的代码，**就会先判断 obj 是否关联和Monitor**；
+* 在 Thread-2 上锁的过程中，如果 Thread-3、 Thread-4、 Thread-5 也希望执行 synchronized(obj) 里面的代码，**就会先判断 obj 是否关联了Monitor**；
 
   * <u>如果关联了 monitor 锁：判断monitor 锁是否有owner</u> 
 
@@ -4370,7 +4372,7 @@ Monitor 通常被翻译为**监视器**或**管程**
       > ![image-20260130152159137](assets/image-20260130152159137.png)
 
 * 执行完代码之后，就会**根据一定规则**唤醒 EntryList 里面的某个线程
-  (先来先服务，优先级，最短时间优先......)
+  (特定的算法，使用了一个 QMode 参数来控制)
 
 * WaitSet中的线程是之前获得过锁、但进入 WAITING 状态的线程
 

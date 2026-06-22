@@ -6,7 +6,7 @@
 
 
 
-[官方文档](https://go.dev/doc/)
+==[官方文档](https://go.dev/doc/)==
 
 [go语言中文网](https://studygolang.com/)
 
@@ -38,6 +38,11 @@ go的设计哲学是“少即是多”（Less is More），它刻意移除了许
 C:\Users\Hazenix>go version
 go version go1.26.1 windows/amd64
 ```
+
+#### 在线练习工具
+
+* [菜鸟工具](ttps://www.jyshare.com/)
+* 
 
 
 
@@ -82,14 +87,34 @@ https://www.jetbrains.com/go/download/
 
 
 
+
+
+
+
+
+
 ## 一、基础语法
 
-import
+
+
+### Hello world
 
 ```go
+package main // 当前属于的包
+
+import "fmt" // format库
+
+// 默认找到 main 函数执行，只能有一个 main 函数
+func main(){
+    // 调用 fmt 包中的 Println() 函数
+    fmt.Println("Hello, World")
+}
+
+
 ```
 
-
+* go 语言句末不需要分号
+* 
 
 
 
@@ -99,11 +124,15 @@ import
 
 ```go
 // 声明变量
+// 1. 全写
 var name string = "Alice"
 var age int = 30
 var isActive bool
 
-// 短变量声明（最常用）
+// 2. 省略类型并初始化
+var name = "Alice"
+
+// 3. 使用`:=`（常用）
 name := "Alice"
 age := 30
 
@@ -118,6 +147,7 @@ var x, y int = 1, 2 // A var declaration can include initializers, one per varia
 var rust, golang, javascript  = true, false, "no!"
 // If an initializer is present, the type can be omitted(省略); the variable will take the type of the initializer.
 
+// 一次性创建俩个变量
 a, b := 10, 20
 // Inside a function, the := short assignment statement can be used in place of a var declaration with implicit(隐含的) type.
 
@@ -134,17 +164,17 @@ var (
 
 
 // 常量
-const Pi = 3.14159
+const PI = 3.14159
 const (
-    StatusOK = 200
-    StatusNotFound = 404
+    STATUSOK = 200
+    STATUSNOTFOUND = 404
 )
 
 // iota 常量生成器（Go 特有）
 const (
-    Sunday = iota  // 0
-    Monday         // 1
-    Tuesday        // 2
+    SONDAY = iota  // 0
+    MONDAY         // 1
+    TUESDAY        // 2
 )
 ```
 
@@ -170,9 +200,10 @@ const (
   > }
   > ```
   >
-  > 
 
-- 类型推断
+  
+
+- 自动化类型推断：
 
   > When declaring a variable without specifying an explicit type (either by using the `:=` syntax or `var =` expression syntax), the variable's type is inferred from the value on the right hand side.
   >
@@ -210,6 +241,36 @@ var (
     text    string
 )
 ```
+#### string
+
+```go
+package main
+
+import "fmt"
+
+
+func main(){
+    s := "hello, world"
+    // 获取长度
+    fmt.Println(len(s))
+    
+    // 转成大写(需要使用到strings库)
+    fmt.Println(strings.ToUpper(s))
+    
+    fmt.Println(strings.Contains(s, "world"))
+    
+    fmt.Println(strings.Split(s, ","))
+    
+    // 把hello替换成你好
+    fmt.Println(strings.ReplaceAll(s,"hello", "你好"))
+    
+}
+```
+
+
+
+
+
 #### **数组：**
 
 ```go
@@ -219,18 +280,40 @@ package main
 import "fmt"
 
 func main() {
-    // The type [n]T is an array of n values of type T.
-    var arr [3]int	// declares a variable arr as an array of three integers.An array's length is part of its type, so arrays cannot be resized. 
+    // 1. 声明、再赋值
+    // var arr [length]type
+    var arr [3]int
 	var a [2]string
 	a[0] = "Hello"
 	a[1] = "World"
 	fmt.Println(a[0], a[1])// Hello World
 	fmt.Println(a)		   // [Hello World]
+    fmt.Println(len(a))	   // 2
 
+    // 2. 定义的时候直接初始化（指定长度）
 	primes := [6]int{2, 3, 5, 7, 11, 13}
 	fmt.Println(primes)		// [2 3 5 7 11 13]
+    
+    // 3. 定义的时候直接初始化（不指定长度）
+    arr2 := [...]int{1, 2, 3, 4} // 长度依然确定，为4
+    
+    // 数组的遍历：
+    for i:=0;i<len(primes);i++ {
+        fmt.Println(primes[i])
+    }
+    for index, value := range primes {
+        fmt.Println(index, value)
+    }
 }
 ```
+* 数组的长度是类型的一部分，数组大小不能重新调整
+
+  > “declares a variable arr as an array of three integers.An array's length is part of its type, so arrays cannot be resized.”
+
+
+
+
+
 #### **Slice(切片)：**
 
 An array has a fixed size. A slice, on the other hand, **is a dynamically-sized, flexible view into the elements of an array** (切片是对数组元素的一种**动态大小、灵活的视图**). **In practice, slices are much more common than arrays.**
@@ -243,11 +326,13 @@ package main
 import "fmt"
 
 func main() {
+    // 定义切片
     // The type []T is a slice with elements of type T.
 	slice := []int{1, 2, 3}
     
 	primes := [6]int{2, 3, 5, 7, 11, 13}
 
+    // 截取切片
     // A slice is formed by specifying two indices, a low and high bound, separated by a colon:
     // a[low : high] (you may omit the high or low bounds to use their defaults instead.The default is zero for the low bound and the length of the slice for the high bound.)
 	var s []int = primes[1:4] // 左闭右开
@@ -264,9 +349,9 @@ Other slices that share the same underlying array will see those changes.
 
 ![image-20260322141937351](assets/image-20260322141937351.png)
 
-**切片的定义：**
+切片，就是动态数组，相当于 Java/Python 里面的 List
 
-<u>A slice literal is like an array literal without the length.</u>
+> **切片的定义：**<u>A slice literal is like an array literal without the length.</u>
 
 This is an array literal:
 
@@ -317,7 +402,7 @@ func printSlice(s []int) {
 }
 ```
 
-**Creating a slice with make**
+**使用make创建切片**
 
 Slices can be created with the built-in `make` function; **this is how you create dynamically-sized arrays.**
 The `make` function allocates a zeroed array and returns a slice that refers to that array:
@@ -368,12 +453,14 @@ func main() {
 }
 ```
 
-**我们通常会在切片中添加新元素，因此 Go 提供了一个内置函数在切片中添加新元素**：`func append(s []T, vs ...T) []T`
+**向切片中添加新元素：Go 提供了一个内置函数在切片中添加新元素**：`func append(s []T, vs ...T) []T`
 
-The resulting value is a slice containing all the elements of **the original slice plus the provided values.**
-If the backing array of is too small to fit all the given values **a bigger array will be allocated.** **The returned slice will point to the newly allocated array**
+> The resulting value is a slice containing all the elements of **the original slice plus the provided values.**
+> If the backing array of is too small to fit all the given values **a bigger array will be allocated.** **The returned slice will point to the newly allocated array**
+>
+> (切片的更多使用：可以读这篇文章 [Slices: usage and internals](https://go.dev/blog/go-slices-usage-and-internals))
 
-(To learn more about slices, read the [Slices: usage and internals](https://go.dev/blog/go-slices-usage-and-internals) article.)
+
 
 ```go
 package main
@@ -385,7 +472,7 @@ func main() {
 	printSlice(s) // len=0 cap=0 []
 
 	// append works on nil slices.
-	s = append(s, 0)
+	s = append(s, 0) // 重新赋值给原切片
 	printSlice(s) // len=1 cap=1 [0]
 
 	// 【The slice grows as needed】
@@ -726,16 +813,19 @@ func main() {
 
 ### 3. 流程控制
 
-**if - else**
+#### if - else
 
 ```go
 
-// The expression need not be surrounded by parentheses ( ) but the braces { } are required.
+
 x, n := 2, 3
+// go里面条件表达式不需要用括号包裹
 if v := math.Pow(x, n); v < lim {
     return v
 }
-// Like for, the if statement can start with a short statement to execute before the condition.Variables declared by the statement are only in scope until the end of the if.
+// go允许在条件表达式之前定义局部变量("Like for, the if statement can start with a short statement to execute before the condition.Variables declared by the statement are only in scope until the end of the if.")
+
+
 fmt.Printf(v);// 这句会引发报错
 
 
@@ -756,7 +846,7 @@ if v := math.Pow(x, n); v < lim {
 }
 ```
 
-
+#### for
 
 ```go
 // for 循环（三种形式）
@@ -764,7 +854,15 @@ for i := 0; i < 10; i++ {// 传统循环
     fmt.Println(i)
 };
 
-// For is Go's "while"——At that point you can drop the semicolons(分号): C's while is spelled for in Go.
+// range 遍历
+for i, v := range slice {
+    fmt.Println(i, v)
+}
+for k, v := range map {
+    fmt.Println(k, v)
+}
+
+// Go 里面的 for 关键字能直接起到 while 的作用（只有一个条件表达式的时候）
 for i < 10 {
     
 }                    
@@ -773,14 +871,6 @@ for i < 10 {
 //无限循环
 for {
     
-}
-
-// range 遍历
-for i, v := range slice {
-    fmt.Println(i, v)
-}
-for k, v := range map {
-    fmt.Println(k, v)
 }
 ```
 
@@ -802,7 +892,7 @@ for k, v := range map {
     }
     ```
 
-
+#### switch
 
 
 ```go
@@ -827,6 +917,8 @@ case string:
 
 ```
 
+> go语言末尾自动加上 break
+>
 > The `break` statement that is needed at the end of each case in those languages is provided automatically in Go. Another important difference is that Go's switch cases need not be constants, and the values involved need not be integers.
 
 ```go
@@ -849,7 +941,7 @@ func main() {
 }
 ```
 
-
+* switch 适合每个条件表达式下的执行语句不多、简洁的情况，此时使用 switch 语句可读性好
 
 
 
@@ -914,18 +1006,21 @@ func main() {
 
 ### 1. 函数定义
 
+`func 函数名(入参) 返回值{`
+
+` }`
+
 ```go
 // 基础函数
 func Add(a int, b int) int{
-    //When two or more consecutive named function parameters share a type, you can omit the type from all but the last.
     return a + b
 }
+// 相同类型入参，简化写法：
 func Add(a, b int) int {
     return a + b
 }
 
-// 多返回值（Go 特色）
-// A function can return any number of results
+// 多返回值（Go 特色）：函数可以有任意数量的返回值
 func swap(x, y string) (string, string){
     return y, x;
 }
@@ -945,11 +1040,11 @@ func GetInfo() (name string, age int) {
     // Naked return statements should be used only in short functions, as with the example shown here. They can harm readability in longer functions.
 }
 
-// 可变参数
+// 可变参数：能动态接收多个参数
 func Sum(nums ...int) int {
     total := 0
-    for _, n := range nums {
-        total += n
+    for _, val := range nums {
+        total += val
     }
     return total
 }
